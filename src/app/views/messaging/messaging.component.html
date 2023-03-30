@@ -1,0 +1,78 @@
+<div class="container">
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1><i class="fas fa-smile"></i> Messaging</h1>
+        </header>
+        <main class="chat-main">
+            <div class="chat-sidebar">
+                <input class="form-control searchInput" type="search" placeholder="Search" (keyup)="search($event)">
+                <div *ngIf="users.length != 0" class="userSearch">
+                    <ul class="users">
+                        <li *ngFor="let i of users" class="user" (click)="profileBiId($event,i._id)">
+                            <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{i.image}}"
+                                alt="profile picture">
+                            {{i.name}}
+                        </li>
+                    </ul>
+                    <div class="userSearch--border"></div>
+                </div>
+
+                <ul class="contacts">
+                    <li *ngFor="let contact of contacts; let i=index" class="contact"
+                        (click)="profileBiId($event,contact._id)">
+                        <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{contact.image}}"
+                            alt="profile picture">
+                        <div class="contact__name">{{contact.name}}</div>
+                        <div class="contact__haedline">{{contact.headline}}</div>
+                        <!-- <p class="contact__lastMsg">{{lastMsg.message}}</p>
+                        <p class="contact__meta">{{formatDate(lastMsg.time)}}</p> -->
+                    </li>
+                </ul>
+            </div>
+
+            <div class="chat">
+                <div *ngIf="toUser._id" class="toUser">
+                    <button aria-label="Back button" id="backBtn" (click)="backButton($event)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 200 200"
+                            data-name="Layer 1" id="Layer_1">
+                            <path
+                                d="M160,89.75H56l53-53a9.67,9.67,0,0,0,0-14,9.67,9.67,0,0,0-14,0l-56,56a30.18,30.18,0,0,0-8.5,18.5c0,1-.5,1.5-.5,2.5a6.34,6.34,0,0,0,.5,3,31.47,31.47,0,0,0,8.5,18.5l56,56a9.9,9.9,0,0,0,14-14l-52.5-53.5H160a10,10,0,0,0,0-20Z" />
+                        </svg>
+                    </button>
+                    <picture>
+                        <img class="profile-pic" *ngIf="!profilePic(toUser)" class="profile-pic"
+                            src="data:image/png;base64,{{toUser.image}}" alt="profile picture">
+                        <img class="profile-pic" *ngIf="profilePic(toUser)" src="../../../assets/icons/34AD2.png"
+                            alt="profile picture">
+                    </picture>
+                    <h5>{{toUser.name}}</h5>
+                </div>
+                <div *ngIf="toUser._id" class="chat-messages">
+                    <p class="messages--state no-margin" *ngIf="msgs.length == 0">No messages yet</p>
+                    <div [ngClass]="{'chat-hidden': loading}" *ngFor="let msg of msgs; let i=index">
+                        <div class="wrapper">
+                            <div class="{{msg.sent? 'message-sent' : 'message'}}">
+                                <!-- <span class="delete-msg" (click)="delMsg(msg._id, i)">X</span> -->
+                                <p class="text" attr.state="{{msg.sent}}">{{msg.message}}</p>
+                                <p class="meta">{{formatDate(msg.time)}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="toUser._id" class="chat-form-container">
+                    <form id="chat-form" [formGroup]='msgForm' (ngSubmit)="message(msgForm.value)">
+                        <input class="form-control" id="msg" required type="text" formControlName="message"
+                            placeholder="Send message" autocomplete="off" />
+                            <button class="btn"><mat-icon>send</mat-icon></button>
+                    </form>
+                </div>
+                <div *ngIf="loading" class="chat-guideMsg">
+                    <p>loading...</p>
+                </div>
+                <div *ngIf="!toUser._id" class="chat-guideMsg">
+                    <p>Select a contact to send a message</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

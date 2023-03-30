@@ -1,0 +1,153 @@
+.navigation{
+    //     position: fixed;
+    // top: 0;
+    // left: 0;
+    // right: 0;
+    // z-index: 2;
+    // height: 60px;
+    // display: flex;
+    // align-items: center;
+    // gap: 4rem;
+    // background-color: cadetblue;
+    color:  #fff;
+    // padding-inline: 1.5rem; 
+    // font-size: 1.5rem;
+    // transition: all .3s ease-in-out;
+    &__list{
+        display: flex;
+        gap: 1rem;
+        padding: 0;
+        margin: 0%;
+        list-style: none;
+        align-items: center;
+        & .vline{
+            position: relative;
+            bottom: -.25rem;
+            display: inline-block;
+            width: .05rem;
+            height: 2rem;
+            background-color: rgb(223, 223, 223);
+        }
+    }
+    &__link{
+        position: relative;
+        text-decoration: none;
+        color:  #fff;
+        &::before{
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -12px;
+            width: 100%;
+            height: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: all .3s;
+            background-color:  rgb(255, 251, 4);
+        }
+        &.click{
+            color: rgb(255, 251, 4);
+            &::before{
+                transform: scaleX(1);
+            }
+        }
+        &::after{
+            content: "";
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 110%;
+            background-color: transparent;
+        }
+        &:hover{
+            color: rgb(255, 251, 4);
+        }
+    }
+    .profile-box{
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        gap: 5px;
+        & p {
+            margin: 0%;
+        }
+    }
+    .profile-pic{
+        width: 35px;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .msg-button{
+        display: inline-block;
+        position: relative;
+        top: .2rem;
+        width: 2rem;
+        aspect-ratio: 1/1;
+        background: url('../../../assets/icons/mail-svgrepo-com.svg');
+        filter: brightness(1);
+        cursor: pointer;
+        &:hover{
+            filter: brightness(1.1);
+        }
+        
+        & span{
+            padding-bottom: 5px;
+            height: 1.5rem;
+            aspect-ratio: 1/1;
+            position: absolute;
+            top: -9px;
+            right: -20px;
+            line-height: 1;
+            color: rgb(255, 251, 4);
+            font-weight: 600;
+        }
+    }
+
+    .messages{
+        position: absolute;
+        top: 3rem;
+        display: flex;
+        flex-direction: column;
+        background-color: cadetblue;
+        transform: scaleY(0);
+        transform-origin: top;
+        opacity: 0;
+        transition: all .3s ease-in-out;
+        &--state{
+            padding: 10px;
+            white-space: nowrap;
+        }
+        & .message{
+            position: relative;
+            display: flex;
+            gap: 1rem;
+            border-bottom: .5px solid rgb(187, 187, 187);
+            padding: 1rem .5rem;
+            &__head{
+                width: 35%;
+            }
+            .delete-msg{
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+                cursor: pointer;
+                &:hover{
+                    color: brown;
+                }
+            }
+        }
+    }
+}
+mat-icon{
+    position: relative;
+    top: 5px;
+}
+@keyframes draw {
+    to{
+        stroke-dashoffset: -75;
+    }
+}

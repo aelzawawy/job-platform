@@ -1,0 +1,71 @@
+.card {
+  max-height: 40rem;
+  overflow-y: auto;
+  // overscroll-behavior-y: auto;
+  // animation: fadeIn 0.5s ease-in-out;
+  flex: .6;
+  background-color: transparent;
+  &-head {
+    padding: 1rem;
+    padding-block: 1.5rem;
+    box-shadow: 0rem 0.1rem 0.3rem rgb(197, 197, 197);
+    &--right{
+      display: flex;
+      gap: 10px;
+      padding-top: 10px;
+      // & .save{
+      //   background-color: rgb(230, 230, 230);
+      //   border: none;
+      //   padding: 10px;
+      //   border-radius: 10px;
+      //   &:hover{
+      //       background-color: rgb(219, 219, 219);
+      //   }
+      // }
+      & .apply{
+        padding-inline: 2rem;
+        font-size: 1.2rem;
+        // background-color: rgb(90, 184, 187);
+        // font-weight: 600;
+        // color: white;
+        // border: none;
+        // padding: 5px 16px;
+        // border-radius: 10px;
+        // &:hover{
+        //   background-color: cadetblue;
+        // }
+      }
+
+    }
+  }
+  & .detail-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid #e4e2e0;
+    &--item {
+      background-color: transparent;
+      font-weight: 400;
+      margin: 0;
+      border-radius: 3px;
+      padding: 1px 10px;
+      background-color: rgb(235, 235, 235);
+    }
+  }
+  & p {
+    margin-bottom: 0%;
+  }
+}
+.job-location{
+    display: flex;
+    gap: 5px;
+    & span{
+        position: relative;
+        top: -2px;
+        display: block;
+        width: 11px;
+    }
+}

@@ -1,0 +1,26 @@
+<div class="mat-app-background card">
+    <div class="card-head">
+        <div class="card-head--left">
+            <h5 class="title">{{job.title}}</h5>
+            <p>{{job.company}}</p>
+            <p class="job-location"><span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14"><path d="M5 0A4.984 4.984 0 0 0 .013 4.987c0 3.12 3.469 7.479 4.62 8.84.195.23.54.23.734 0 1.152-1.361 4.62-5.72 4.62-8.84A4.984 4.984 0 0 0 5 0zm0 6.769a1.782 1.782 0 1 1 .001-3.564 1.782 1.782 0 0 1 0 3.564z" fill="#767676"/></svg></span>{{job.location}}</p>
+        </div>
+        <div class="card-head--right">
+            <!-- <button class="btn apply" (click)="applyJob(job._id)">Apply</button> -->
+            <button class="apply" title="Apply to job" mat-flat-button color="accent" (click)="applyJob(job._id)">Apply</button>
+            <button title="{{job.checkSaved? 'Remove from favorites' : 'Add to favorites'}}" mat-stroked-button color="accent" (click)="saveJob(job._id)">
+                <mat-icon>{{job.checkSaved? 'favorite' : 'favorite_border'}}</mat-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <h5 class="title">Job details</h5>
+        <div class="detail-row">
+            <p><span class="detail-row--item">Salary</span> {{currencyFormat(job.salary)}}</p>
+            <p><span class="detail-row--item">Job Type</span> {{job.type}}</p>
+            <p *ngIf="job.remote"><span class="detail-row--item">Remote</span> YAY, you can work from home🎉.</p>
+        </div>
+        <h5 class="title">Full Job Description</h5>
+        <p class="description">{{job.description}}</p>
+    </div>
+</div>

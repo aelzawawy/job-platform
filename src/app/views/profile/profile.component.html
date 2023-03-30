@@ -1,0 +1,85 @@
+<mat-drawer-container class="">
+    <mat-drawer [ngClass]="{'moreWidth': expanded}" mode="side" opened="true">
+        <mat-nav-list>
+            <mat-list-item (click)="expanded = !expanded">
+                <mat-icon class="navBtn" mat-list-icon [ngClass]="{'rotated': expanded}">chevron_right</mat-icon>
+            </mat-list-item>
+            <mat-list-item title="Job Posts" *ngIf="role == 'employer'" class="employer" routerLink="/jobPosts">
+                <mat-icon mat-list-icon>post_add</mat-icon>
+                <span *ngIf="expanded">JobPosts</span>
+            </mat-list-item>
+            <mat-list-item title="Saved Posts" class="employer" routerLink="/saved-jobs">
+                <mat-icon mat-list-icon>favorite_border</mat-icon>
+                <span *ngIf="expanded">Saved Jobs</span>
+            </mat-list-item>
+        </mat-nav-list>
+    </mat-drawer>
+    
+    <mat-drawer-content>
+        <div class="container">
+            <div class="bgPic">
+                <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}" alt="backgoround picture">
+        
+                <input accept="image/*" type="file" name="backgoroundImage" id="bgupload" (change)="uploadBgImg($event)">
+                <div class="imgOptions">
+                    <div title="Change_backgroung" class="imgOptions__icon" [matMenuTriggerFor]="menu">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                            fill="currentColor" class="mercado-match" width="30" height="30" focusable="false">
+                            <path
+                                d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                            </path>
+                        </svg>
+                    </div>
+        
+                    <mat-menu #menu="matMenu">
+                        <label mat-menu-item for="bgupload">Change</label>
+                        <button mat-menu-item (click)="delBg()">Remove!</button>
+                    </mat-menu>
+                </div>
+        
+            </div>
+            <div class="head">
+                <div class="pic">
+                    <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+                    
+                    <input accept="image/*" type="file" name="image" id="upload" (change)="uploadImg($event)">
+                    <label title="Change_picture" id="uploadImg" (click)="openDialog()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                            fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
+                            <path
+                                d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                            </path>
+                        </svg>
+                    </label>
+                    <!-- <label for="upload" id="uploadImg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                            fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
+                            <path
+                                d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                            </path>
+                        </svg>
+                    </label> -->
+                </div>
+                <button title="Edit_Info!" mat-fab color="primary" aria-label="Edit profile" class="editProfile" (click)="openEdit()">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <!-- <button class="editProfile" routerLink="/profile/edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor"
+                        class="mercado-match" width="24" height="24" focusable="false">
+                        <path
+                            d="M21.13 2.86a3 3 0 00-4.17 0l-13 13L2 22l6.19-2L21.13 7a3 3 0 000-4.16zM6.77 18.57l-1.35-1.34L16.64 6 18 7.35z">
+                        </path>
+                    </svg>
+                </button> -->
+            </div>
+            <div class="body">
+                <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
+                <p>{{user.headline}}</p>
+                <p>{{user.email}}</p>
+                <p style="text-transform: capitalize;">{{user.location}}</p>
+                
+            </div>
+        
+        </div>
+    </mat-drawer-content>
+</mat-drawer-container>
