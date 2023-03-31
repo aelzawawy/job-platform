@@ -34,21 +34,20 @@ export class HomeComponent implements OnInit {
     location:'' 
   }
   ngOnInit(): void {
-    const tabBtns = document.querySelector('.mat-tab-labels') as HTMLElement;
+    // const tabBtns = document.querySelector('.mat-tab-labels') as HTMLElement;
     setTimeout(() => {
       // const jobPosts = document.querySelector('.content__posts') as HTMLElement;
-      const jobDetails = document.querySelector('.content__details') as HTMLElement;
-      const observer = new IntersectionObserver((entries) => {
+      // const jobDetails = document.querySelector('.content__details') as HTMLElement;
+      // const observer = new IntersectionObserver((entries) => {
         
-        entries.forEach((e) =>{
-          jobDetails.classList.toggle("sticky-position", !e.isIntersecting);
-          // jobPosts.style.width = '512px'
-        })
-      },
-      {
-        threshold:0,
-      });
-      observer.observe(tabBtns)
+      //   entries.forEach((e) =>{
+      //     jobDetails.classList.toggle("sticky-position", !e.isIntersecting);
+      //   })
+      // },
+      // {
+      //   threshold:0,
+      // });
+      // observer.observe(tabBtns)
       const jobPost = document.querySelectorAll('.card');
       jobPost[0]?.classList.add('selected');
     }, 500);
