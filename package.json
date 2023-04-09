@@ -15,6 +15,7 @@
     "openai": "^3.2.1",
     "sharp": "^0.31.3",
     "socket.io": "^4.5.3",
+    "uuid": "^9.0.0",
     "validator": "^13.7.0"
   },
   "name": "online-jobs",
@@ -22,7 +23,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
