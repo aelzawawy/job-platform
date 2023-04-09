@@ -1,0 +1,54 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav mat-app-background" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false && loggedIn()">
+    <mat-toolbar>REACH</mat-toolbar>
+    <mat-nav-list>
+      <mat-list-item routerLinkActive="active" title="Job Posts" *ngIf="role == 'employer'" class="employer" routerLink="/jobPosts">
+        <mat-icon mat-list-icon>folder</mat-icon>
+        <span>JobPosts</span>
+      </mat-list-item>
+      <mat-list-item routerLinkActive="active" title="Saved Posts" class="employer" routerLink="/saved-jobs">
+        <mat-icon mat-list-icon>favorite_border</mat-icon>
+        <span>Saved Jobs</span>
+      </mat-list-item>
+      <mat-list-item routerLinkActive="active" title="Post a job" class="employer" routerLink="/jobs-form">
+        <mat-icon mat-list-icon>post_add</mat-icon>
+        <span>Post a job</span>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+        *ngIf="(isHandset$ | async) && loggedIn()">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span class = "spread" *ngIf="(isHandset$ | async) || !loggedIn()">REACH</span>
+
+      <button [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" mat-button routerLink="/">JobsFeed</button>
+      <button mat-button *ngIf="loggedIn()" routerLinkActive="active" class="profile-box" [matMenuTriggerFor]="menu">
+        <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+        <span>Me</span>
+      </button>
+
+      <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/login">Login</button>
+      <button *ngIf="loggedIn()" routerLinkActive="active" mat-button title="Messaging" routerLink="/messaging"><mat-icon>mail</mat-icon></button>
+      <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/employers">For Employers</button>
+
+      <mat-menu #menu="matMenu" [overlapTrigger]="false">
+        <a mat-menu-item *ngIf="loggedIn()" routerLink="/profile">Profile</a>
+        <a mat-menu-item *ngIf="loggedIn()" routerLink="/" (click)="logOut()">Logout</a>
+      </mat-menu>
+
+
+    </mat-toolbar>
+
+
+    <!-- Add Content Here -->
+    <main [@routeAnimations]='prepareRoute(outlet)'>
+      <router-outlet #outlet="outlet"></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

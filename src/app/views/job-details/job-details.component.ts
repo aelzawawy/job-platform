@@ -1,4 +1,4 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import { JobsService } from 'src/app/services/jobs.service';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { MatSnackBar, MatSnackBarRef, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -8,21 +8,28 @@ import { MatSnackBar, MatSnackBarRef, MatSnackBarHorizontalPosition, MatSnackBar
   templateUrl: './job-details.component.html',
   styleUrls: ['./job-details.component.scss']
 })
-export class JobDetailsComponent implements OnInit {
+export class JobDetailsComponent implements OnInit, OnChanges  {
 
   constructor(private jobsService: JobsService, private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-  
+    
   }
 
   posts: JobPost[] = [];
-  // @Input() jobSaved:boolean = false;
   @Input() job:JobPost = {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    // if (changes['job']) {
+    //*    The ngOnChanges() hook is a good choice for this, since it is called whenever an @Input property changes.
+    // }
+  }
+  
+  @Output() unSave = new EventEmitter<string>()
   durationInSeconds = 5;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
-  
+ 
   applyJob(id:any){
     this.jobsService.applyJob(id).subscribe({
       next: (res:any) => {
@@ -71,7 +78,7 @@ export class JobDetailsComponent implements OnInit {
       })
       setTimeout(() => {
         this.job.checkSaved = !this.job.checkSaved;
-      }, 500);
+      }, 800);
     }else{
       this.jobsService.unSaveJob(id).subscribe({
         next: (res:any) => {
@@ -81,6 +88,7 @@ export class JobDetailsComponent implements OnInit {
               verticalPosition: this.verticalPosition,
               duration: this.durationInSeconds * 500,
             });
+            this.unSave.emit(id);
           }, 800);
         },
         error: (e:any) => {
@@ -95,7 +103,7 @@ export class JobDetailsComponent implements OnInit {
       })
       setTimeout(() => {
         this.job.checkSaved = !this.job.checkSaved;
-      }, 500);
+      }, 800);
     }
   }
 

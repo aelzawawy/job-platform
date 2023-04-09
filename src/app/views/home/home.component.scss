@@ -6,9 +6,11 @@
 }
 .head{
     height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
     & .search-form{
-        // width: 100%;
-        height: inherit;
         display: flex;
         gap: 1rem;
         justify-content: center;
@@ -136,7 +138,7 @@
     &__details{
         max-height: 40rem;
         position:  sticky;
-        top: 2rem;
+        top: 5rem;
         // right: 1rem;
         flex: .6;
         // width: 20rem;
@@ -175,12 +177,60 @@
     aspect-ratio: 1/1;
     background-color: #a4c7ff;
 }
+.paginate{
+    display: flex;
+    justify-content: center;
+    & > *{
+        width: 55px;
+    }
+}
+.inputsEmpty{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    animation: shake .2s;
+    & > p{
+        width: fit-content;
+        padding: 15px 20px;
+        border-radius: 10px;
+        background-color: rgb(254, 238, 239);
+        border: 1px solid rgb(217, 58, 64);
+        text-align: center;
+        & svg{
+            width: 25px;
+            margin-inline: 5px;
+            margin-bottom: 2px;
+            color: rgb(217, 58, 64);
+        }
+    }
+
+}
 @keyframes fadeIn {
     from{
+        transform: translateY(100px);
         opacity: 0;
     }
     to{
+        transform: translateY(0px);
         opacity: 1;
+    }
+}
+@keyframes shake {
+    0%{
+        transform: translateX(3px);
+    }
+    25%{
+        transform: translateX(-3px);
+    }
+    50%{
+        transform: translateX(3px);
+    }
+    75%{
+        transform: translateX(-3px);
+    }
+    100%{
+        transform: translateX(0px);
     }
 }
 @media (max-width: 766px) {

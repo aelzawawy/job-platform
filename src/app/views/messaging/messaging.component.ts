@@ -4,10 +4,6 @@ import { Router } from '@angular/router';
 import { User } from 'src/app/interfaces/user';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { Message } from 'src/app/interfaces/message';
-// import { formatDate } from '@angular/common';
-
-// let fromUser = '';
-// let toUser = '';
 @Component({
   selector: 'app-messaging',
   templateUrl: './messaging.component.html',
@@ -27,23 +23,41 @@ export class MessagingComponent implements OnInit {
   newMessage: string = '';
   messageList: string[] = [];
   msgs: Message[] = [];
-  loading:boolean = false;
-  lastMsg = {
-    message: '',
-    time:''
-  }
-  msgscount = 0;
-  sent: boolean = false;
-  loggedIn: boolean = false;
-  msgForm = this.fb.group({
-    message: [],
-  });
+  loading: boolean = false;
+  loadingContacts: boolean = false;
 
+  message: string = '';
+  file: any;
+  sent: boolean = false;
+
+  context_menu:any = {}
+   
+  //! Context menu
+  openContext(e:any, msg:any, i:number){
+    if(e.which == 3){
+      this.context_menu={
+        'display': 'block',
+        'position': 'absolute',
+        'top': e.clientY,
+        'left': e.clientX,
+      }
+    }
+  }
+
+  closeMenu(){
+    
+    console.log('outside')
+    this.context_menu = {
+      'display': 'none'
+    }
+    
+  }
+  
   search(event: any) {
     const input = event.target.value;
-    if (input == ''){
+    if (input == '') {
       this.users = [];
-    }else{
+    } else {
       this.userService.search(input?.trim()).subscribe({
         next: (res: any) => {
           this.users = res;
@@ -55,17 +69,19 @@ export class MessagingComponent implements OnInit {
     }
   }
 
-  // Getting selected user's id
+  //! Getting selected user's id
   profileBiId(e: any, id: any) {
     const sideBar = document.querySelector('.chat-sidebar') as HTMLElement;
     const chat = document.querySelector('.chat') as HTMLElement;
-    const searchInput = document.querySelector('.searchInput') as HTMLInputElement;
+    const searchInput = document.querySelector(
+      '.searchInput'
+    ) as HTMLInputElement;
 
     searchInput.value = '';
     this.users = [];
 
-    if(!this.toUser._id || this.toUser._id != id){
-      this.userService.contactChatRoom(this.user._id,id)
+    if (!this.toUser._id || this.toUser._id != id) {
+      this.userService.contactChatRoom(this.user._id, id);
       this.userService.profileById(id).subscribe({
         next: (res: any) => {
           this.toUser = res;
@@ -85,69 +101,48 @@ export class MessagingComponent implements OnInit {
     }
   }
 
-  // Sending message to selected user
-  message(data: any) {
+  //! Sending message to selected user
+  sendMsg() {
     const msg = document.querySelector('#msg') as HTMLInputElement;
-    if (!data.message || msg.value == '') return;
-    this.userService.message(this.toUser._id, data).subscribe();
-    msg.value = '';
-    let timer: ReturnType<typeof setTimeout> = setTimeout(() => {
-      const chatMsgs = document.querySelector('.chat-messages') as HTMLElement;
-      chatMsgs.scrollTop = chatMsgs.scrollHeight;
-    }, 1);
-  }
+    const chatMsgs = document.querySelector('.chat-messages') as HTMLElement;
 
-  getMsgs(id:any){
-    this.loading = true;
-    this.userService.getMsgs(id).subscribe({
-      next: (res:any) => {
-        this.msgs = res;
-        const chatMsgs = document.querySelector('.chat-messages') as HTMLElement;
-        // setTimeout(() => {
-        //   chatMsgs.scrollTop = chatMsgs.scrollHeight;
-        // }, 1);
-        this.scroll(chatMsgs);
-        setTimeout(() => {
-          this.loading = false;
-        }, 1);
-      },
-      error: (err:any) => {
-        console.log(err);
-      }
-    })
-  }
-  scroll(el:HTMLElement){
-    setTimeout(() => {
-      el.scrollTop = el.scrollHeight;
-    }, 10);
-  }
-
-  currentUser() {
-    this.userService.profile().subscribe({
-      next: (res: any) => {
-        this.user = res;
-        this.userService.curretUser(res._id)
-        // fromUser = `${res._id}`
-        // this.lastMsg = res.messages.pop()
-        
-        res.messages.forEach((msg: any) => {
-          if (msg.sent) {
-            this.sent = true;
-          } else {
-            this.sent = false;
-          }
-        });
-
-        res.contactList?.forEach((item: any) => {
-          this.userService.profileById(item.contact).subscribe({
-            next: (res: any) => {
-              this.contacts.push(res);
-            },
-            error: (err: any) => {
-              console.log(err);
-            },
+    if ((this.message == '' || msg.value == '') && !this.file) return;
+    this.userService
+      .message(this.toUser._id, this.message, this.file)
+      .subscribe({
+        next: (res: any) => {
+          this.msgs.unshift({
+            id: res.id,
+            message: res.message,
+            time: res.time,
+            file: res.file,
+            sent: res.sent,
+            file_name: res.file_name,
+            file_size: res.file_size,
           });
-        });
+        },
+        error: (e: any) => {
+          console.log(e);
+        },
+      });
+    this.message = '';
+    msg.value = '';
+    this.file = null;
+    setTimeout(() => {
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }, 100);
+  }
+  getFile(e: any) {
+    this.file = e.target.files[0];
+  }
+
+  getMsgs(id: any) {
+    this.loading = true;
+    this.message = '';
+    this.userService.getMsgs(id).subscribe({
+      next: (res: any) => {
+        this.msgs = res.reverse();
+        this.loading = false;
       },
       error: (err: any) => {
         console.log(err);
@@ -155,11 +150,42 @@ export class MessagingComponent implements OnInit {
     });
   }
 
-  delMsg(id: any, i: number) {
-    this.userService.delMsg(id).subscribe({});
-    this.msgs.splice(i, 1);
-    this.msgscount--;
+  currentUser() {
+    this.loadingContacts = true;
+    this.userService.profile().subscribe({
+      next: (res: any) => {
+        this.user = res;
+        this.userService.curretUser(res._id);
+        res.messages.forEach((msg: any) => {
+          if (msg.sent) {
+            this.sent = true;
+          } else {
+            this.sent = false;
+          }
+        });
+        if (res.contactList) {
+          this.userService.getContacts().subscribe({
+            next: (res: any) => {
+              this.contacts = res;
+              this.loadingContacts = false;
+            },
+            error: (err: any) => {
+              console.log(err);
+            },
+          });
+        }
+      },
+      error: (err: any) => {
+        console.log(err);
+      },
+    });
   }
+
+  // delMsg(id: any, i: number) {
+  //   this.userService.delMsg(id).subscribe({});
+  //   this.msgs.splice(i, 1);
+  //   this.msgscount--;
+  // }
 
   // Default profile pic
   profilePic(user: any): boolean {
@@ -196,12 +222,10 @@ export class MessagingComponent implements OnInit {
     }).format(date);
   };
 
-  liggedIn(): boolean {
+  loggedIn(): boolean {
     if (localStorage['token']) {
-      this.loggedIn = true;
       return true;
     }
-    this.loggedIn = false;
     return false;
   }
 
@@ -254,19 +278,16 @@ export class MessagingComponent implements OnInit {
       }
     });
   }
-  
 
   ngOnInit(): void {
     this.currentUser();
-
     this.userService.getNewMessage().subscribe((message: any) => {
       this.msgs.push({
         message: message.msg,
         time: message.time,
-        sent: message.sent
+        sent: message.sent,
       });
       // this.lastMsg = { message: message, time: `${Date.now()}`}
     });
-    
   }
 }

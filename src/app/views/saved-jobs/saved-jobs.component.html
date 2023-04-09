@@ -35,7 +35,7 @@
         </ul>
         
         <div *ngIf="posts.length != 0" class="content__details">
-            <app-job-details [job]="job"></app-job-details>
+            <app-job-details (unSave)="unSave($event)" [job]="job"></app-job-details>
         </div>
         
     </div>

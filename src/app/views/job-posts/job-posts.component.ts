@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewEncapsulation} from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
 import { JobsService } from 'src/app/services/jobs.service';
-import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/interfaces/user';
 import { JobPost } from 'src/app/interfaces/job-post';
 import {MatDialog} from '@angular/material/dialog';
 import { JobApplicationsComponent } from 'src/app/job-applications/job-applications.component';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { Router, ActivatedRoute} from '@angular/router';
 @Component({
   selector: 'app-job-posts',
   templateUrl: './job-posts.component.html',
@@ -14,20 +14,19 @@ import { JobApplicationsComponent } from 'src/app/job-applications/job-applicati
 })
 export class JobPostsComponent implements OnInit {
   constructor(
-    private userService:UserService,
-    private fb: FormBuilder,
     private jobsService: JobsService,
     public dialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   posts: JobPost[] = [];
   user:User = {};
-  // State variables
-  checked = false
-  postId = ''
-  postIndex = ''
-  edit = false
-
+  details = ''
+  public Editor = ClassicEditor;
+  public config = {
+    placeholder: 'Job description',
+  }
   profilePic(user:any):boolean{
     if(!user.image){
       return true
@@ -35,114 +34,16 @@ export class JobPostsComponent implements OnInit {
     return false
   }
 
-  postJob = this.fb.group({
-    title: ['', [Validators.required]],
-    description: ['', [Validators.required]],
-    location: ['', [Validators.required]],
-    salary: ['', [Validators.required]],
-    company: ['', [Validators.required]],
-    type: ['', [Validators.required]],
-    remote: [false],
-  });
-
-  showForm(e:any, id:any, i:any) {
-    const form = document.querySelector('#form') as HTMLFormElement;
-    const posts = document.querySelector('.content__posts') as HTMLFormElement;
-    const formcontrols = document.querySelectorAll('.control');
-
-    const title = document.querySelector('#title') as HTMLInputElement
-    const description = document.querySelector('#description') as HTMLInputElement
-    const location = document.querySelector('#location') as HTMLInputElement
-    const salary = document.querySelector('#salary') as HTMLInputElement
-    const company = document.querySelector('#company') as HTMLInputElement
-  
-    this.postId = id
-    this.postIndex = i
-
-    // To edit post instead of adding new
-    if(e.target.classList.contains('update')){
-      this.edit = true
-      window.scroll({top: 0});
-
-      this.postJob.patchValue({
-        title: `${this.posts[i].title}`,
-        description: `${this.posts[i].description}`,
-        location: `${this.posts[i].location}`,
-        salary: `${this.posts[i].salary || 0}`,
-        company: `${this.posts[i].company}`,
-        remote: this.posts[i].remote,
-        type: `${this.posts[i].type}`,
-      })
-
-      title.classList.add('active');
-      location.classList.add('active');
-      salary.classList.add('active');
-      company.classList.add('active');
-      description.classList.add('active');
-      
-    }else{this.edit = false}
-
-    // Form toggle actions
-    if(e.target.classList.contains('btn-success') && !form.classList.contains('hidden')){
-      formcontrols.forEach( btn => {
-        if(btn.classList.contains('btn-danger'))
-        btn.classList.add('btn-success');
-        btn.classList.remove('btn-danger');;
-      })
-      e.target.classList.remove('btn-success');
-      e.target.classList.add('btn-danger');
-    
-    }else if(e.target.classList.contains('btn-success')){
-      form.classList.toggle('hidden');
-      posts?.classList.add('slide-down');
-      e.target.classList.remove('btn-success');
-      e.target.classList.add('btn-danger');
-    
-    }else{
-      form.classList.toggle('hidden');
-      posts?.classList.remove('slide-down');
-      e.target.classList.add('btn-success');
-      e.target.classList.remove('btn-danger');
-    }
-  }
-
-  // Post & Update function
-  postJobs(body: any, id:any, e:any) {
-    const posts = document.querySelector('.content__posts') as HTMLFormElement;
-    const formcontrols = document.querySelectorAll('.control');
-    formcontrols.forEach( btn => {
-      if(btn.classList.contains('btn-danger'))
-      btn.classList.add('btn-success');
-      btn.classList.remove('btn-danger')
-    })
-    e.target.classList.toggle('hidden');
-    posts?.classList.toggle('slide-down');
-    if(this.edit == false){
-      this.jobsService.postJob(body).subscribe({
-        next: (res: any) => {
-          this.posts.unshift(res);
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      });
-    }else{
-      this.jobsService.updateJOb(id, body).subscribe({
-        next: (res:any)=> {
-          this.jobPosts();
-          console.log(res);
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      })
-    }
+  updatePost(id:any, index:number) {
+    this.router.navigate(['/jobs-form'], {queryParams: {update_post: id}})
+    this.jobsService.toUpdate = this.posts[index]
   }
 
   delJob(id:any, i:number){
     this.jobsService.delJOb(id).subscribe({
       next:()=> {
         this.posts.splice(i, 1);
+        this.details = '';
       },
       error(err:any){
         console.log(err);
@@ -202,20 +103,20 @@ export class JobPostsComponent implements OnInit {
 
   // Display posts
   jobPosts() {
-    this.jobsService.getPosts().subscribe({
-      next: (res: any) => {
-        this.posts = res;
-      }
-    });
+    if(localStorage['role'] == 'employer'){
+      this.jobsService.getPosts().subscribe({
+        next: (res: any) => {
+          this.posts = res.reverse();
+        }
+      });
+    }
   }
 
   // Details function
   showDetails(e: any, i: number) {
-    if(e.target.closest('.abs-pos') || e.target.closest('.card--options-toggle')) return;
+    if(e.target.closest('.card--options')) return;
     const posts = document.querySelectorAll(".card");
     const current = e.target.closest('.card');
-    const detailCard = document.querySelector('.content__details') as HTMLElement;
-    detailCard.innerHTML = '';
     posts.forEach(post => post.classList.remove('selected'))
     current.classList.add('selected');
     const remote = this.posts[i].remote? '<p><span class="detail-row--item">Remote</span> YAY, you can work from home🎉.</p>': ''
@@ -234,12 +135,11 @@ export class JobPostsComponent implements OnInit {
             <p><span class="detail-row--item">Salary</span> ${this.currencyFormat(this.posts[i].salary)}</p>
             <p><span class="detail-row--item">Job Type</span> ${this.posts[i].type}</p>${remote}
           </div>
-          <h5 class="title">Full Job Description</h5>
-          <p class="description">${this.posts[i].description}</p>
+          <div class="description">${this.posts[i].description}</div>
         </div>
     </div>
     `;
-    detailCard.insertAdjacentHTML("beforeend", details);
+    this.details = details;
   }
 
   // Close form on outside click 

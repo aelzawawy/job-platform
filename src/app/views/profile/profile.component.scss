@@ -125,6 +125,45 @@ form {
     vertical-align: top;
   }
 }
+#uploadResume{
+  position: relative;
+  display: flex;
+  width: 150px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  background-color: coral;
+  border-radius: 50px;
+  overflow: hidden;
+  transition: all .7s cubic-bezier(0.075, 0.82, 0.165, 1);
+  & > b{
+    position: absolute;
+    transition: all .7s cubic-bezier(0.075, 0.82, 0.165, 1);
+    white-space: nowrap;
+  }
+  & > span{
+    position: absolute;
+    transform: translate(0%, 150%);
+    opacity: 0;
+    transition: all .5s .4s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
+  &.success{
+    width: 60px;
+    height: 60px;
+    border-radius: 50px;
+    background-color: rgb(46, 143, 46);
+    & > b{
+      opacity: 0;
+      transform: translateZ(100%);
+    }
+    & > span{
+      transform: translate(0%, 0%);
+      opacity: 1;
+      font-size: 40px;
+      color: white;
+    }
+  }
+}
 
 .example-container {
   width: 400px;

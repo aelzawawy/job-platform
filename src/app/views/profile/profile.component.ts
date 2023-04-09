@@ -27,13 +27,17 @@ export class ProfileComponent implements OnInit {
   role = '';
   profileImg: any;
   backgoroundImg: any;
+  resume: any;
   expanded:boolean = true;
+
   profile() {
     this.userService.profile().subscribe({
       next: (res: any) => {
         const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
         this.user = res;
         this.role = res.roles;
+        localStorage.setItem('role', res.roles);
+        this.userService.emitRole(res.roles);
         image[0].src = `data:image/png;base64,${res.image}`;
       },
       error: (err: any) => {
@@ -62,6 +66,22 @@ export class ProfileComponent implements OnInit {
     imageOut.src = URL.createObjectURL(this.backgoroundImg);
   }
 
+  uploadResume(e:any){
+    this.resume = e.target.files[0];
+    const myResume = new FormData();
+    myResume.append('resume', this.resume);
+
+    this.userService.resume(myResume).subscribe({
+      next: (res:any) => {
+        // console.log(res.message);
+      }, error: (e:any) => {
+        console.log(e);
+      }
+    })
+    const uploadBtn = document.querySelector('#uploadResume') as HTMLLabelElement;
+    uploadBtn.classList.toggle('success')
+  }
+
   delBg(){
     const bgOut = document.getElementById(
       'backgoround-pic'
@@ -75,19 +95,13 @@ export class ProfileComponent implements OnInit {
       width: '220px',
       height: '115px',
     })
-    dialog.afterClosed().subscribe(result => {
-      // this.router.navigateByUrl('/profile')
-    });
+    // dialog.afterClosed().subscribe(result => {
+    //   // this.router.navigateByUrl('/profile')
+    // });
   }
 
   openEdit(){
-    const dialogRef = this.dialog.open(EditProfileComponent, {
-      width: '40%',
-      height: '80%',
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      this.router.navigateByUrl('/profile')
-    });
+    this.router.navigate(['/profile'], {queryParams: {edit: true}})
   }
   
   // search(event: any) {
@@ -161,48 +175,53 @@ export class ProfileComponent implements OnInit {
   //   }
   //   return false;
   // }
- 
+  
   ngOnInit(): void {
     this.profile();
-    const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
-    // imageOut.forEach(el => el.src = URL.createObjectURL(this.profileImg))
-  //   function getBase64(file:any) {
-  //     var reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = function () {
-  //       console.log(reader.result);
-  //     };
-  //     reader.onerror = function (error) {
-  //       console.log('Error: ', error);
-  //     };
-  //  }
-  //  getBase64(this.user.image)
-    // image[0].src = URL.createObjectURL(this.user.image);
+    
     this.userService.updatedProfile().subscribe((body) => {
       this.user.name = body.name;
       this.user.location = body.location;
       this.user.headline = body.headline;
       this.user.email = body.email;
     })
-    window.addEventListener('resize', () => {
-      if(window.innerWidth < 700){
-        this.expanded = false;
-      }else{
-        this.expanded = true;
-      }
-    })
 
-    // const editDialog = this.route.snapshot.params['id'];
-    // if (editDialog === 'edit') {
-    //   console.log(this.route.snapshot);
-    //   const dialogRef = this.dialog.open(EditProfileComponent, {
-    //     width: '40%',
-    //     height: '80%',
-    //   });
-    //   dialogRef.afterClosed().subscribe(result => {
-    //     this.router.navigateByUrl('/profile')
-    //   });
-    // }
+    // const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
+    // imageOut.forEach(el => el.src = URL.createObjectURL(this.profileImg))
+    //   function getBase64(file:any) {
+    //     var reader = new FileReader();
+    //     reader.readAsDataURL(file);
+    //     reader.onload = function () {
+    //       console.log(reader.result);
+    //     };
+    //     reader.onerror = function (error) {
+    //       console.log('Error: ', error);
+    //     };
+    //  }
+    //  getBase64(this.user.image)
+    // image[0].src = URL.createObjectURL(this.user.image);
+
+    // window.addEventListener('resize', () => {
+    //   if(window.innerWidth < 700){
+    //     this.expanded = false;
+    //   }else{
+    //     this.expanded = true;
+    //   }
+    // })
+
+    
+    this.route.queryParamMap.subscribe((param) => {
+      if (param.get('edit') == 'true') {
+        const dialogRef = this.dialog.open(EditProfileComponent, {
+          width: '40%',
+          height: '80%',
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          this.router.navigateByUrl('/profile')
+        });
+      }
+      
+    })
   }
 }
 

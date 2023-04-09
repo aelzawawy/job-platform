@@ -56,11 +56,11 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  routePath = this.route.snapshot.url[0].path;
-  state = this.router.routerState;
+  // routePath = this.route.snapshot.url[0].path;
+  // state = this.router.routerState;
   ngOnInit(): void {
-    if (localStorage['token'] && this.routePath == 'login') {
-      this.router.navigateByUrl('/');
-    }
+    // if (localStorage['token'] && this.routePath == 'login') {
+    //   this.router.navigateByUrl('/');
+    // }
   }
 }

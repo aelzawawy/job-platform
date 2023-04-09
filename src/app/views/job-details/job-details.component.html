@@ -20,7 +20,6 @@
             <p><span class="detail-row--item">Job Type</span> {{job.type}}</p>
             <p *ngIf="job.remote"><span class="detail-row--item">Remote</span> YAY, you can work from home🎉.</p>
         </div>
-        <h5 class="title">Full Job Description</h5>
-        <p class="description">{{job.description}}</p>
+        <div class="description" [innerHTML]="job.description"></div>
     </div>
 </div>

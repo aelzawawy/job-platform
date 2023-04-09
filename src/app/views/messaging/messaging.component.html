@@ -18,8 +18,11 @@
                 </div>
 
                 <ul class="contacts">
-                    <li *ngFor="let contact of contacts; let i=index" class="contact"
-                        (click)="profileBiId($event,contact._id)">
+                    <div *ngIf="loadingContacts" class="chat-guideMsg">
+                        <p>loading...</p>
+                    </div>
+                    <li [class.chat-hidden]="loadingContacts" *ngFor="let contact of contacts; let i=index"
+                        class="contact" (click)="profileBiId($event,contact._id)">
                         <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{contact.image}}"
                             alt="profile picture">
                         <div class="contact__name">{{contact.name}}</div>
@@ -47,23 +50,42 @@
                     </picture>
                     <h5>{{toUser.name}}</h5>
                 </div>
-                <div *ngIf="toUser._id" class="chat-messages">
-                    <p class="messages--state no-margin" *ngIf="msgs.length == 0">No messages yet</p>
-                    <div [ngClass]="{'chat-hidden': loading}" *ngFor="let msg of msgs; let i=index">
-                        <div class="wrapper">
+                <div *ngIf="toUser._id" class="chat-messages" oncontextmenu="return false">
+                    <p class="messages--state no-margin" *ngIf="msgs.length == 0">No messages yet...</p>
+                    <div [class.chat-hidden]="loading" *ngFor="let msg of msgs; let i=index">
+                        <div class="wrapper" (mouseup)="openContext($event, msg, i)">
                             <div class="{{msg.sent? 'message-sent' : 'message'}}">
-                                <!-- <span class="delete-msg" (click)="delMsg(msg._id, i)">X</span> -->
-                                <p class="text" attr.state="{{msg.sent}}">{{msg.message}}</p>
-                                <p class="meta">{{formatDate(msg.time)}}</p>
+                                <!-- <span class="delete-msg" (click)="delMsg(msg.id, i)">X</span> -->
+                                <a *ngIf="msg.file" id="attach_file" href="data:application/pdf;base64,{{msg.file}}" download="{{msg.file_name}}">
+                                    <div class="file">
+                                        <div class="file__icon"><svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 96 960 960" width="30"><path d="M220 976q-24 0-42-18t-18-42V236q0-24 18-42t42-18h361l219 219v521q0 24-18 42t-42 18H220Zm331-554h189L551 236v186Z"/></svg></div>
+                                        <div class="file__info">
+                                            <span class="file__info--name">{{msg.file_name}}</span>
+                                            <span class="file__info--size">{{msg.file_size}}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="text">
+                                    <p *ngIf="msg.message" class="text__msg" attr.state="{{msg.sent}}">{{msg.message}}</p>
+                                    <p class="text__meta">{{formatDate(msg.time)}}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div *ngIf="toUser._id" class="chat-form-container">
-                    <form id="chat-form" [formGroup]='msgForm' (ngSubmit)="message(msgForm.value)">
-                        <input class="form-control" id="msg" required type="text" formControlName="message"
+                    <form id="chat-form" (submit)="sendMsg()">
+                        <div class="uploadResume">
+                            <input style="display:none" accept="file/*" type="file" name="file" id="upload-resume"
+                                (change)="getFile($event)">
+                            <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
+                                <span class="material-symbols-outlined">attach_file</span>
+                                <span class="material-symbols-outlined">check</span>
+                            </label>
+                        </div>
+                        <input class="form-control" id="msg" required type="text" [(ngModel)]="message" name="message"
                             placeholder="Send message" autocomplete="off" />
-                            <button class="btn"><mat-icon>send</mat-icon></button>
+                        <button type="submit" class="btn"><mat-icon>send</mat-icon></button>
                     </form>
                 </div>
                 <div *ngIf="loading" class="chat-guideMsg">
@@ -75,4 +97,23 @@
             </div>
         </main>
     </div>
+
+    <!-- <div class="context-menu" [ngStyle]="context_menu" (clickOutSide)="closeMenu()">
+        <ul>
+            <li><button><mat-icon mat-list-icon>delete</mat-icon>
+                <span>Delete</span></button></li>
+            <li><button><mat-icon mat-list-icon>person_add</mat-icon>
+                <span>Add</span></button></li>
+        </ul>
+    </div> -->
+    <!-- <mat-action-list>
+        <mat-list-item>
+            <mat-icon mat-list-icon>delete</mat-icon>
+            <span>Delete</span>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>person_add</mat-icon>
+            <span>Add</span>
+        </mat-list-item>
+    </mat-action-list> -->
 </div>

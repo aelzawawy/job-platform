@@ -28,6 +28,16 @@ import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { JobApplicationsComponent } from './job-applications/job-applications.component';
 import { UserProfileComponent } from './views/user-profile/user-profile.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
+import { AppNavigationComponent } from './app-navigation/app-navigation.component';
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { JobsComponent } from './views/jobs/jobs.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +57,9 @@ import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
     JobApplicationsComponent,
     UserProfileComponent,
     SavedJobsComponent,
+    AppNavigationComponent,
+    JobsComponent,
+    JobPostsFormComponent,
   ],
   // entryComponents: [MessagingComponent],
   imports: [
@@ -58,6 +71,13 @@ import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
     ReactiveFormsModule,
     MaterialModule,
     MatDialogModule,
+    LayoutModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule,
+    CKEditorModule
   ],
   providers: [
     AuthService,

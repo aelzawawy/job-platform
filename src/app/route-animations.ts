@@ -36,10 +36,13 @@ export const fader = trigger('routeAnimations', [
 // Positioned
 
 export const slider = trigger('routeAnimations', [
-  transition('* => isLeft', slideTo('left')),
-  transition('* => isRight', slideTo('right')),
-  transition('isRight => *', slideTo('left')),
-  transition('isLeft => *', slideTo('right')),
+  // transition('* => isLeft', slideTo('left')),
+  // transition('* => isRight', slideTo('right')),
+  // transition('isRight => *', slideTo('left')),
+  // transition('isHome => *', slideTo('left')),
+  // transition('* => isHome', slideTo('right')),
+  transition('isLogin => isSignup', slideTo('right')),
+  transition('isSignup => isLogin', slideTo('left')),
 ]);
 
 function slideTo(direction:any) {
@@ -48,20 +51,20 @@ function slideTo(direction:any) {
     query(':enter, :leave', [
       style({
         position: 'absolute',
-        top: 60,
+        top: 0,
         [direction]: 0,
-        width: '98.5%'
+        width: '100%'
       })
     ], optional),
     query(':enter', [
-      style({ [direction]: '-100%'})
+      style({ [direction]: '100%'})
     ]),
     group([
       query(':leave', [
-        animate('600ms ease-in-out', style({ [direction]: '100%', opacity: 0}))
+        animate('500ms cubic-bezier(0.075, 0.82, 0.165, 1)', style({ [direction]: '-100%', opacity: 0}))
       ], optional),
       query(':enter', [
-        animate('600ms ease-in-out', style({ [direction]: '0%'}))
+        animate('500ms cubic-bezier(0.075, 0.82, 0.165, 1)', style({ [direction]: '0%'}))
       ])
     ])
   ];

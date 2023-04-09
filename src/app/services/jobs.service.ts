@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces/user';
-
+import { BehaviorSubject } from 'rxjs';
+import { io } from "socket.io-client";
+import { JobPost } from 'src/app/interfaces/job-post';
 @Injectable({
   providedIn: 'root'
 })
@@ -9,9 +11,11 @@ export class JobsService {
 
   constructor(private http:HttpClient) { }
   url:string= 'http://localhost:3000/';
+  socket = io('http://localhost:3000/');
+  public saveRm$: BehaviorSubject<string> = new BehaviorSubject('');
 
-  getJobs(){
-    return this.http.get(this.url + 'jobs-feed')
+  getJobs(body:any){
+    return this.http.post(this.url + 'jobs-feed', body)
   };
 
   jobById(id:any){
@@ -50,6 +54,7 @@ export class JobsService {
   currUser:User = {}
   jobId = '';
   applicationId = []
+  toUpdate:JobPost = {}
   getJobInfo(id:any, applicationId:any){
     this.jobId = id;
     this.applicationId = applicationId.map((el:any) => el._id);

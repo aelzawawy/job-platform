@@ -1,0 +1,20 @@
+@import '../home/home.component.scss';
+.sortBox{
+    display: flex;
+    gap: 5px;
+    margin-left: 10px;
+    & a{
+        text-decoration: none;
+        color: rgb(55, 0, 255);
+        &:hover{
+            text-decoration: underline;
+            color: rgb(0, 110, 255);
+        }
+    }
+}
+.active{
+    color: #000000!important;
+    cursor: text;
+    font-weight: 500;
+    text-decoration: underline !important;
+}

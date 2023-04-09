@@ -8,5 +8,6 @@ export interface User {
     headline?: string,
     location?: string,
     image?:File,
+    resume?:File,
     backgoroundImage?:File,
 }

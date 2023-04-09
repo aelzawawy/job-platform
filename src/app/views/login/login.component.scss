@@ -34,6 +34,9 @@
       rgba(143, 211, 244, 1)
     );
   }
+  .container{
+    height: calc(100vh - 100px);
+  }
   form{
     position: relative;
   }

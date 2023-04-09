@@ -51,3 +51,29 @@ $reachJobs-app-theme: mat.define-light-theme((
 // }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+::-webkit-scrollbar{
+  width: 10px;
+  height: 0px;
+}
+::-webkit-scrollbar-track {
+  background-color: whitesmoke;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(68, 152, 155); 
+  border-radius: 5px;
+}
+.ck-editor__editable {
+  min-height: 300px;
+  max-height: 500px;
+}
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+  background-color: rgba(206, 206, 206, 0.04);
+  border-color: var(--ck-color-base-border);
+}
+.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
+  // background-color: rgba(0, 0, 0, 0.04);
+  box-shadow: none !important;
+  border: 1px solid var(--ck-color-base-border) !important;
+}

@@ -6,7 +6,7 @@
     </div>
     <ul class="navigation__list" (click)="active($event)">
         <li class="navigation__items"><a routerLink="/" class="home navigation__link">JobsFeed</a></li>
-        <li *ngIf="liggedIn()" class="navigation__items navigation__items--pofile">
+        <li *ngIf="loggedIn()" class="navigation__items navigation__items--pofile">
             <a class="navigation__link profile-box">
                 <picture>
                     <img class="profile-pic" *ngIf="!profilePic()" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
@@ -15,50 +15,50 @@
                 <p>Me</p>
             </a>
             <div class="dropdown">
-                <a *ngIf="liggedIn()" class="navigation__link" routerLink="/profile">Profile</a>
-                <a *ngIf="liggedIn()" class="navigation__link" routerLink="/" (click)="logOut()">Logout</a>
+                <a *ngIf="loggedIn()" class="navigation__link" routerLink="/profile">Profile</a>
+                <a *ngIf="loggedIn()" class="navigation__link" routerLink="/" (click)="logOut()">Logout</a>
             </div>
         </li>
-        <li *ngIf="!liggedIn()" class="navigation__items"><a routerLink="/login" class="navigation__link">Login</a>
+        <li *ngIf="!loggedIn()" class="navigation__items"><a routerLink="/login" class="navigation__link">Login</a>
         </li>
-        <li *ngIf="liggedIn()" class="navigation__items">
+        <li *ngIf="loggedIn()" class="navigation__items">
             <a routerLink="/messaging"><span class="msg-button"><span *ngIf="msgscount > 0">{{msgscount}}</span></span></a>
         </li>
-        <span *ngIf="!liggedIn()" class="vline"></span>
-        <li *ngIf="!liggedIn()" class="navigation__items"><a routerLink="/employers" class="navigation__link">
+        <span *ngIf="!loggedIn()" class="vline"></span>
+        <li *ngIf="!loggedIn()" class="navigation__items"><a routerLink="/employers" class="navigation__link">
                 Employers</a>
         </li>
     </ul>
 </div> -->
 <mat-toolbar color="primary" class="mat-elevation-z6 navigation">
     <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">verified_user</mat-icon> -->
-    <div class="logo-box">
+    <!-- <div class="logo-box">
         <a routerLink="/">
             <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="home" color="accent"></mat-icon>
         </a>
-    </div>
-    <ul class="navigation__list" (click)="active($event)">
+    </div> -->
+    <!-- <ul class="navigation__list" (click)="active($event)">
         <li title="Jobs_feed" class="navigation__items"><a routerLink="/" class="home navigation__link">JobsFeed</a></li>
-        <li title="Profile/Logout" *ngIf="liggedIn()" class="navigation__items navigation__items--pofile">
+        <li title="Profile/Logout" *ngIf="loggedIn()" class="navigation__items navigation__items--pofile">
             <a class="navigation__link profile-box" [matMenuTriggerFor]="menu">
                 <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
                 <p>Me</p>
             </a>
 
             <mat-menu #menu="matMenu">
-                <a mat-menu-item *ngIf="liggedIn()" routerLink="/profile">Profile</a>
-                <a mat-menu-item *ngIf="liggedIn()" routerLink="/" (click)="logOut()">Logout</a>
+                <a mat-menu-item *ngIf="loggedIn()" routerLink="/profile">Profile</a>
+                <a mat-menu-item *ngIf="loggedIn()" routerLink="/" (click)="logOut()">Logout</a>
             </mat-menu>
         </li>
-        <li *ngIf="!liggedIn()" class="navigation__items"><a routerLink="/login" class="navigation__link">Login</a>
+        <li *ngIf="!loggedIn()" class="navigation__items"><a routerLink="/login" class="navigation__link">Login</a>
         </li>
-        <li title="Messaging" *ngIf="liggedIn()" class="navigation__items">
+        <li title="Messaging" *ngIf="loggedIn()" class="navigation__items">
             <a class="navigation__link" routerLink="/messaging"><span class="msg-button"><span
                         *ngIf="msgscount > 0">{{msgscount}}</span></span></a>
         </li>
-        <span *ngIf="!liggedIn()" class="vline"></span>
-        <li *ngIf="!liggedIn()" class="navigation__items"><a routerLink="/employers" class="navigation__link">
+        <span *ngIf="!loggedIn()" class="vline"></span>
+        <li *ngIf="!loggedIn()" class="navigation__items"><a routerLink="/employers" class="navigation__link">
                 Employers</a>
         </li>
-    </ul>
+    </ul> -->
 </mat-toolbar>

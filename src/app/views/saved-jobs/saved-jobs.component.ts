@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterContentInit } from '@angular/core';
 import { JobsService } from 'src/app/services/jobs.service';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { UserService } from 'src/app/services/user.service';
@@ -6,76 +6,70 @@ import { UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'app-saved-jobs',
   templateUrl: './saved-jobs.component.html',
-  styleUrls: ['./saved-jobs.component.scss']
+  styleUrls: ['./saved-jobs.component.scss'],
 })
 export class SavedJobsComponent implements OnInit {
   constructor(
     private jobsService: JobsService,
-    private userService: UserService,
+    private userService: UserService
   ) {}
+
   ngOnInit(): void {
     this.userService.profile().subscribe({
-      next: (res:any) => {
-        this.getJob(res.savedJobs[0])
-        res.savedJobs.forEach((post:any) => {
-          this.jobsService.jobById(post).subscribe({
-            next: (res: any) => {
-              this.posts.unshift(res);
-            },
-            error: (e:any) => {
-              console.log(e);
-            }
-          });
-        })
-      },
-      error: (e:any) => {
-        console.log(e);
-      }
-    })
-
-    setTimeout(() => {
-      const jobPost = document.querySelectorAll('.card');
-      jobPost[0]?.classList.add('selected');
-    }, 500);
-  }
-
-  posts = new Array;
-  job: JobPost = {};
-
-  // Save function
-  saveJob(e: any, id: any) {}
-
-  getJob(id: any) {
-    if(id == undefined) return
-    this.jobsService.jobById(id).subscribe({
       next: (res: any) => {
-        this.job = res;
+        this.posts = res.savedJobs.reverse();
+        this.job = this.posts[0];
+        if (this.posts.length != 0) this.job.checkSaved = true;
+      },
+      error: (e: any) => {
+        console.log(e);
       },
     });
+    setTimeout(async () => {
+      await this.updateJobPosts();
+    }, 50);
+  }
 
-    this.jobsService.checkSaved(id).subscribe({
-      next: (res:any) => {
-        if(res){
-          this.job.checkSaved = true;
-        }else{
-          this.job.checkSaved = false;
+  posts = new Array();
+  job: JobPost = {};
+  jobPosts!: NodeListOf<HTMLElement>;
+
+  // updateJobPosts() {
+  //   this.jobPosts = document.querySelectorAll('.card');
+  //   if (this.jobPosts.length > 0) {
+  //     this.jobPosts[0].classList.add('selected');
+  //   }
+  // }
+
+  async updateJobPosts() {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        this.jobPosts = document.querySelectorAll('.card');
+        if (this.jobPosts.length > 0) {
+          this.jobPosts[0].classList.add('selected');
         }
-      },
-      error: (e:any) => {
-        console.log(e);
-      }
-    })
+        resolve();
+      }, 0);
+    });
+  }
+  
+  async unSave(id: string) {
+    const index = this.posts.indexOf(this.posts.find((el) => el._id == id));
+    if (index != -1) {
+      this.posts.splice(index, 1);
+      this.job = this.posts[0];
+      this.job.checkSaved = true;
+      await this.updateJobPosts();
+    }
   }
 
   // Details function
   showDetails(e: any, id: any, i: number) {
-    const posts = document.querySelectorAll('.card');
     const current = e.target.closest('.card');
-
-    posts.forEach((post) => post.classList.remove('selected'));
+    this.jobPosts.forEach((post) => post.classList.remove('selected'));
     current.classList.add('selected');
-
-    this.getJob(id);
+    this.job = this.posts[i];
+    this.job.checkSaved = true;
   }
 
   // Salary formatting

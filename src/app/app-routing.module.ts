@@ -12,19 +12,22 @@ import { MessagingComponent } from './views/messaging/messaging.component';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { UserProfileComponent } from './views/user-profile/user-profile.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
+import { JobsComponent } from './views/jobs/jobs.component';
+import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 
 const routes: Routes = [
   {path:'', component:HomeComponent, data:{animation:'isHome'}},
-  {path:'signup', component:SignupComponent, data:{animation:'isRight'}},
-  {path:'login', component:LoginComponent, data:{animation:'isRight'}},
+  {path:'jobs', component:JobsComponent, data:{animation:'jobs'}},
+  {path:'signup', component:SignupComponent, data:{animation:'isSignup'}, canActivate:[AuthGuardService]},
+  {path:'login', component:LoginComponent, data:{animation:'isLogin'}, canActivate:[AuthGuardService]},
   {path:'profile', component:ProfileComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
   {path:'profile/:id', component:UserProfileComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path:'employers', component:EmployersComponent, data:{animation:'isLeft'}},
-  {path: 'employers-signup', component:EmployersSignupComponent, data:{animation:'isRight'}},
+  {path: 'employers-signup', component:EmployersSignupComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path: 'jobPosts', component:JobPostsComponent, data:{animation:'isTop'}, canActivate:[AuthGuardService]},
   {path: 'messaging', component:MessagingComponent, data:{animation:'isMsg'}, canActivate:[AuthGuardService]},
-  {path: 'saved-jobs', component:SavedJobsComponent, data:{animation:'isRight'}}
-  // {path: 'profile/:edit', component:EditProfileComponent, data:{animation:'isLeft'}},
+  {path: 'saved-jobs', component:SavedJobsComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
+  {path: 'jobs-form', component:JobPostsFormComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
 ];
 
 @NgModule({

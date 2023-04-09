@@ -1,90 +1,37 @@
-<div class="container h-100" (click)="formClose($event)">
-    <div class="features">
-        <h3 *ngIf="posts.length == 0">You haven't posted any jobs yet!</h3>
-        <button class="btn btn-success control" aria-controls="form" (click)="showForm($event, postId, postIndex)">Post a job</button>
-        <div class="form">
-            <form id="form" class="hidden" [formGroup]='postJob' (ngSubmit)="postJobs(postJob.value, postId, $event)">
-                <div class="form-outline mb-4">
-                    <input (keyup)="effect($event)" type="text" class="form-control form-control-lg" formControlName="title"
-                        required type="text" id="title" />
-                    <label class="form-label" for="title">Job Title</label>
-                </div>
-                <div class="form-outline mb-4">
-                    <textarea (keyup)="effect($event)" class="form-control form-control-lg" formControlName="description"
-                        name="description" id="description"></textarea>
-                    <label class="form-label" for="description">Job description</label>
-                </div>
-                <div class="form-outline mb-4">
-                    <input (keyup)="effect($event)" type="text" class="form-control form-control-lg" formControlName="location"
-                        required type="text" id="location" />
-                    <label class="form-label" for="location">Job location</label>
-                </div>
-                <div class="form-outline mb-4">
-                    <input (keyup)="effect($event)" type="text" class="form-control form-control-lg" formControlName="salary"
-                        required type="text" id="salary" />
-                    <label class="form-label" for="salary">Job salary</label>
-                </div>
-                <div class="form-outline mb-4">
-                    <input (keyup)="effect($event)" type="text" class="form-control form-control-lg" formControlName="company"
-                        required type="text" id="company" />
-                    <label class="form-label" for="company">Company</label>
-                </div>
-                <div class="form-outline mb-4 options">
-                    <div class="options__item">
-                        <label for="fullTime">Full Time</label>
-                        <input class="form-check-input" type="radio" value="Full Time" formControlName="type" required
-                            name="type" id="fullTime">
+<div class="container">
+    <h3 *ngIf="posts.length == 0">You haven't posted any jobs yet!</h3>
+    <div class="content" *ngIf="posts.length != 0">
+        <ul class="content__posts" >
+            <li *ngFor="let post of posts; let i = index">
+                <div (click)="showDetails($event, i)" class="card">
+                    <div class="card--options">
+                        <button mat-icon-button [matMenuTriggerFor]="menu"><span class="material-symbols-outlined">more_vert</span></button>
+                        <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
+                            <button mat-menu-item (click)="updatePost(post._id, i)">
+                                <span class="material-symbols-outlined">edit</span>
+                                <span>Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="delJob(post._id, i)">
+                                <span class="material-symbols-outlined">delete</span>
+                                <span>Delete</span>
+                            </button>
+                        </mat-menu>
                     </div>
-                    <div class="options__item">
-                        <label for="partTime">Part Time</label>
-                        <input class="form-check-input" type="radio" value="Part Time" formControlName="type" required
-                            name="type" id="partTime">
-                    </div>
-                    <div class="options__item">
-                        <label for="remote">Remote?</label>
-                        <input class="form-check-input" type="checkbox" formControlName="remote" name="remote" id="remote">
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-success btn-lg">Post</button>
-                </div>
-            </form>
-        </div>
-        <div class="content" *ngIf="posts.length != 0">
-            <ul class="content__posts" >
-                <li *ngFor="let post of posts; let i = index">
-                    <div (click)="showDetails($event, i)" class="card">
-                        <div class="card--options">
-                            <button class="card--options-toggle" aria-expanded="false"><svg width="24" height="24" role="presentation" aria-hidden="true" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 7C13.1 7 14 6.1 14 5C14 3.9 13.1 3 12 3C10.9 3 10 3.9 10 5C10 6.1 10.9 7 12 7ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM12 17C10.9 17 10 17.9 10 19C10 20.1 10.9 21 12 21C13.1 21 14 20.1 14 19C14 17.9 13.1 17 12 17Z" fill="#2d2d2d" data-darkreader-inline-fill="" style="--darkreader-inline-fill:#ccc7c0;"></path></svg></button>
-                            <div class="card--options-menu">
-                                <button class="btn btn-sm btn-success control update" aria-controls="form" (click)="showForm($event, post._id, i)">
-                                    <img src="../../../assets/icons/icons8-edit-64.png" alt="">
-                                    <p>Edit job</p>
-                                </button>
-                                <button class="btn btn-sm btn-danger" (click)="delJob(post._id, i)">
-                                    <img src="../../../assets/icons/icons8-remove-60.png" alt="">
-                                    <p>Remove job</p>
-                                </button>
-                            </div>
+                    <div class="card-body">
+                        <h5 class="title">{{post.title}}</h5>
+                        <p>{{post.company}}</p>
+                        <p>{{post.location}}</p>
+                        <div class="detail-row">
+                            <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
+                            <p class="detail-row--item">{{post.type}}</p>
+                            <p class="detail-row--item" *ngIf="post.remote">Remote</p>
                         </div>
-                        <div class="card-body">
-                            <h5 class="title">{{post.title}}</h5>
-                            <p>{{post.company}}</p>
-                            <p>{{post.location}}</p>
-                            <div class="detail-row">
-                                <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
-                                <p class="detail-row--item">{{post.type}}</p>
-                                <p class="detail-row--item" *ngIf="post.remote">Remote</p>
-                            </div>
-                            <p class="post-date">{{formatDate(post.date)}}</p>
-                            <button title="Applications" class="abs-pos" mat-mini-fab (click)="applicants(post.applictions, post._id)"><mat-icon>group</mat-icon></button>
-                        </div>
+                        <p class="post-date">{{formatDate(post.date)}}</p>
+                        <button title="Applications" class="abs-pos" mat-mini-fab (click)="applicants(post.applictions, post._id)"><mat-icon>group</mat-icon></button>
                     </div>
-                </li>
-            </ul>
-            <div class="content__details">
-                
-            </div>
-        </div>
+                </div>
+            </li>
+        </ul>
+        <div class="content__details" [innerHTML]="details"></div>
     </div>
 </div>

@@ -1,9 +1,17 @@
 <div class="container h-100">
     <div class="head">
+        <div *ngIf="search_Warning" class="inputsEmpty">
+            <p><svg xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" fill="currentColor"
+                    viewBox="0 0 24 24" aria-hidden="true" class="css-1xqhio eac13zx0">
+                    <path fill-rule="evenodd"
+                        d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 14.75a.25.25 0 01-.25.25h-1.5a.25.25 0 01-.25-.25v-1.5a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v1.5zm0-4a.25.25 0 01-.25.25h-1.5a.25.25 0 01-.25-.25v-5.5a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v5.5z"
+                        clip-rule="evenodd"></path>
+                </svg>Enter a job title or location to start a search</p>
+        </div>
         <form (submit)="jobSearch()" class="search-form">
             <mat-form-field appearance="outline" class="form-field">
                 <span matPrefix><label for="what" class="search-form-label">What</label></span>
-                <input name="search_terms" id="what" placeholder="Keywords" matInput type="text"
+                <input name="search_terms" id="what" placeholder="job title, keyword" matInput type="text"
                     [(ngModel)]="search.search_terms">
                 <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
@@ -18,7 +26,7 @@
             <button type="submit" mat-raised-button color="primary" class="search-form-submit">Find Jobs</button>
         </form>
     </div>
-
+    <mat-divider></mat-divider>
     <div class="content">
         <ul class="content__posts">
             <li *ngFor="let post of posts; let i = index">
@@ -64,5 +72,9 @@
             <app-job-details [job]="job"></app-job-details>
         </div>
     </div>
-    
+    <mat-list class="paginate">
+        <mat-list-item><mat-label><b>Pages</b></mat-label></mat-list-item>
+        <mat-list-item *ngFor="let page of pages"><button mat-icon-button color="accent"
+                (click)="pageUp(page)"><b>{{page}}</b></button></mat-list-item>
+    </mat-list>
 </div>

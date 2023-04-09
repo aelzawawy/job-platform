@@ -1,90 +1,20 @@
 *{
     margin: 0%;
 }
-.features{
-    position: relative;
-    margin: auto;
-    padding-block: 20px;
-}
+// .features{
+//     position: relative;
+//     margin: auto;
+//     padding-block: 20px;
+// }
 #form{
     position: absolute;
-    width: 450px;
+    // width: 450px;
     margin-block: 35px;
     transform-origin: top;
     transition: all .3s ease-out;
     z-index: 50;
 }
-.update{
-    position: relative;
-    &::after{
-        content: "";
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        background-color: transparent;
-        cursor: pointer;
-    }
-}
-.hidden{
-    position: absolute;
-    transform: scaleY(0);
-    opacity: 0;
-}
-.form-outline{
-    position: relative;
-}
-.form-control{
-    &:focus{
-        box-shadow: none;
-        border: 2px solid #3B71CA;
-        background-color: transparent;
-        &~.form-label {
-            color: #3B71CA;
-            background-color: white;
-            top: -.7rem;
-            left: .70rem;
-            font-size: .8rem;
-            padding-inline: 5px;
-        }
-    }
-}
-.form-select{
-    &:focus{
-        box-shadow: none;
-        border: 2px solid #3B71CA;
-        background-color: transparent; 
-    }
-}
-.active{
-    &~.form-label {
-        color: #3B71CA;
-        background-color: white;
-        top: -.7rem;
-        left: .70rem;
-        font-size: .8rem;
-        padding-inline: 5px;
-    }
-}
-.form-label{
-    position: absolute;
-    top: .75rem;
-    left: .75rem;
-    color: rgba(0,0,0,.6);
-    pointer-events: none;
-    transition: all .2s ease-out;
-}
-.options{
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    &__item{
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-}
-.features .content{
+.container .content{
     position: relative;
     display: flex;
     gap: 1rem;
@@ -115,72 +45,17 @@
             }
             &--options{
                 position: absolute;
-                right: 0;
+                right: 5px;
                 z-index: 10;
-                &-toggle{
-                    position: absolute;
-                    right: 10px;
-                    top: 10px;
-                    background-color: transparent;
-                    border: none;
-                    &::after{
-                        content: "";
-                        position: absolute;
-                        inset: 0;
-                        width: 100%;
-                        height: 100%;
-                        background-color: transparent;
-                        cursor: pointer;
-                    }
-                    &:hover svg path{
-                        fill: #0062ff;
-                    }
-                }
-                .showMenu{
-                    border: 1.5px solid #0051d4;
-                    border-radius: 50px;
-                }
-            }
-            &--options-menu{
-                position: absolute;
-                top: 44px;
-                right: 0;
-                display: flex;
-                flex-direction: column;
-                width: 150px;
-                background-color: white;
-                box-shadow: 0 0 .5rem rgb(187, 187, 187);
-                visibility: hidden;
-                & .btn{
-                    display: flex;
-                    gap: 5px;
-                    align-items: center;
-                    background-color: transparent;
-                    color: black;
-                    border: none;
-                    &:hover{
-                        background-color: rgb(230, 230, 230);
-                    }
-                    &:first-of-type{
-                        padding-block: 7px;
-                        padding-left: 10px;
-                    }
-                }
-                & .btn img{
-                    width: 30px;
-                }
-            }
-            .show{
-                visibility: visible;
             }
         }
     }
     &__details{
         max-height: 40rem;
         position:  sticky;
-        top: 2rem;
+        top: 6rem;
        
-        flex: .5;
+        flex: .6;
         & .card{
             max-height: 40rem;
             overflow-y: auto;
@@ -219,6 +94,7 @@
         padding-inline: 10px;
         margin-block: 10px;
         border-radius: 10px;
+        user-select: none;
     }
 }
 .card-body{
@@ -235,7 +111,7 @@ button.abs-pos{
     margin-top: 10px;
 }
 .slide-down{
-    transform: translateY(526px);
+    transform: translateY(800px);
 }
 .selected{
     border: 2px solid #3B71CA;

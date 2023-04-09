@@ -12,10 +12,15 @@ export class UserService {
   url:string= 'http://localhost:3000/';
   socket = io('http://localhost:3000/');
   public message$: BehaviorSubject<string> = new BehaviorSubject('');
+  public role$: BehaviorSubject<string> = new BehaviorSubject('');
   public body$: BehaviorSubject<any> = new BehaviorSubject('');
 
   profile(){
     return this.http.get(this.url + 'profile')
+  };
+
+  getContacts(){
+    return this.http.get(this.url + 'contacts')
   };
 
   editProfile(body:any){
@@ -28,6 +33,10 @@ export class UserService {
   
   backgoroundImage(image:any){
     return this.http.post(this.url + 'backgoroundImage', image)
+  }
+
+  resume(file:any){
+    return this.http.post(this.url + 'resume', file)
   }
 
   removeProfileImage(){
@@ -53,18 +62,19 @@ export class UserService {
     return this.http.get(this.url + 'users')
   };
 
-  contacts(){
-    return this.http.get(this.url + 'users/contacts')
-  };
-
   search(input:any){
     return this.http.get(this.url + 'profile/' + input)
   };
 
-  message(id:any, data:any){
-    this.socket.emit('message', {msg:data.message, to:id});
-    return this.http.post(this.url + 'message/' + id, data);
-  };
+  message(id: any, message: any, file:File) {
+    const encodedFileName = encodeURIComponent(file?.name);
+    const formData = new FormData(); 
+    formData.append('message', message);
+    formData.append('encodedFileName', encodedFileName);
+    formData.append('file', file);
+    this.socket.emit('message', {msg: message, to: id});
+    return this.http.post(this.url + 'message/' + id, formData);
+  }
   
   getMsgs(id:any){
     return this.http.get(this.url + 'message/' + id);
@@ -93,4 +103,15 @@ export class UserService {
     
     return this.message$.asObservable();
   };
+
+  emitRole(role:string){
+    this.socket.emit('role', role);
+  };
+
+  public getRole = () => {
+    this.socket.on('role', (role) => {
+      this.role$.next(role)
+    });
+    return this.role$.asObservable();
+  }
 }
