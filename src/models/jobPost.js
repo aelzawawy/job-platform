@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
     title:{
         type: String,
+        lowercase: true,
         trim: true,
     },
     description:{
@@ -12,11 +13,11 @@ const postSchema = new mongoose.Schema({
     location:{
         type: String,
         required: true,
+        lowercase: true,
         default: "Cairo",
     },
     salary:{
         type:Number,
-        required: true,
     },
     type:{
         type: String,

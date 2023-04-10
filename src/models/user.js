@@ -93,10 +93,17 @@ const userSchema = new mongoose.Schema({
   ],
   messages: [
     {
+      id:String,
       from:mongoose.Schema.Types.ObjectId,
       to:mongoose.Schema.Types.ObjectId,
       name: String,
       time: String,
+      file: String,
+      file_size: String,
+      file_name: {
+        type: String,
+        trim: true,
+      },
       sent: {
         type: Boolean,
         default: false
@@ -114,7 +121,7 @@ const userSchema = new mongoose.Schema({
   ],
   savedJobs: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Object,
       required: true,
       ref: "JobPost",
     },
@@ -126,6 +133,9 @@ const userSchema = new mongoose.Schema({
   backgoroundImage: {
     type: Buffer,
     default: fs.readFileSync('assets/bg.jpg'),
+  },
+  resume: {
+    type: Buffer,
   },
 });
 

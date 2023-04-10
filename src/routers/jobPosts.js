@@ -25,10 +25,13 @@ router.post("/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
 });
 
 // get all posts
-router.get("/jobs-feed", async (req, res) => {
+router.post("/jobs-feed", async (req, res) => {
   try {
-    const posts = await JobPost.find({});
-    res.status(200).send(posts);
+    const { page, limit, order } = req.body;
+    const posts = await JobPost.find({}).limit(limit * 1).skip((page - 1) * limit).sort({date: order});
+    const count = await JobPost.count();
+    const totalPages = Math.ceil(count / limit);
+    res.status(200).send({posts, totalPages});
   } catch (e) {
     res.status(400).send(e.message);
   }
@@ -72,7 +75,7 @@ router.patch(
         new: true,
         runValidators: true,
       });
-      res.status(200).send(jobPost);
+      res.status(200).send({message: "success"});
     } catch (e) {
       res.status(400).send(e);
     }
@@ -103,8 +106,8 @@ router.get("/apply/:id", auth.userAuth, async (req, res) => {
     const jobPost = await JobPost.findById(_id);
 
     if (req.user._id.toString() == jobPost.employer.toString())
-      return res.send("You posted this one, so you can't apply!!");
-    if (!jobPost.available) return res.send("job is not available anymore.");
+      return res.send({message: "You posted this one, so you can't apply!!"});
+    if (!jobPost.available) return res.send({message: "job is not available anymore."});
 
     exists = function () {
       if (jobPost.applictions.length != 0) {
@@ -281,21 +284,17 @@ router.get(
 // Save a job
 router.get("/save/:id", auth.userAuth, async (req, res) => {
   try {
+    const job = await JobPost.findById(req.params.id)
+    
     const exists = function () {
       if (req.user.savedJobs.length != 0) {
-        for (let post of req.user.savedJobs) {
-          if (post.toString() == req.params.id) {
-            return true;
-          } else {
-            return false;
-          }
-        }
+        return req.user.savedJobs.some(el => el._id.toString() == req.params.id);
       } else {
         return false;
       }
     };
     if (!exists()) {
-      req.user.savedJobs.unshift(req.params.id);
+      req.user.savedJobs.push(job);
       await req.user.save();
       res.send({message: "Added to favourites✅"});
     } else {
@@ -311,7 +310,7 @@ router.get("/check_saved/:id", auth.userAuth, async (req, res) => {
   try {
     const exists = function () {
       if (req.user.savedJobs.length != 0) {
-        return req.user.savedJobs.includes(req.params.id);
+        return req.user.savedJobs.some(el => el._id.toString() == req.params.id);
       } else {
         return false;
       }
@@ -329,10 +328,12 @@ router.get("/check_saved/:id", auth.userAuth, async (req, res) => {
 // Unsave a job
 router.get("/unSave/:id", auth.userAuth, async (req, res) => {
   try {
-    if (req.user.savedJobs.indexOf(req.params.id) == -1) {
+    const index = req.user.savedJobs.indexOf(req.user.savedJobs.find(el => el._id.toString() == req.params.id));
+    
+    if (index == -1) {
       res.send("Was not saved to begin with!");
     } else {
-      req.user.savedJobs.splice(req.user.savedJobs.indexOf(req.params.id), 1);
+      req.user.savedJobs.splice(index, 1);
       await req.user.save();
       res.status(200).send({message: "Removed from favourites✅"});
     }
@@ -341,7 +342,7 @@ router.get("/unSave/:id", auth.userAuth, async (req, res) => {
   }
 });
 
-router.post("/api-search", auth.userAuth, async (req, res) => {
+router.post("/api-search", async (req, res) => {
   // try {
   //   const { search_terms, location, country = "gb" } = req.body;
   //   // const options = {
@@ -363,112 +364,177 @@ router.post("/api-search", auth.userAuth, async (req, res) => {
   //   //   res.status(400).send(error);
   //   // });
 
-  //   //////////////// ADZONA
 
-  const { search_terms, location, country = "gb" } = req.body;
-  const targetURL = `${process.env.BASE_URL}/${country.toLowerCase()}/${
-    process.env.BASE_PARAMS
-  }&app_id=${process.env.APP_ID}&app_key=${
-    process.env.API_KEY
-  }&what=${search_terms}&where=${location}`;
-  axios
-    .get(targetURL)
-    .then(async (response) => {
-      const recommendedJobs = await getRecommendations(search_terms, location, response);
-      
-      res.send(recommendedJobs);
-    })
-    .catch((e) => {
-      // (e.message) sent to front as an error, while (e) is sent as a normal response
-      res.send(e);
-    });
+  try{
+    const { search_terms, location, sort, country = "gb" } = req.body;
+    if(sort){
+      if(location == ''){
+        const posts = await JobPost.find({
+          $or: [
+            { title: { $regex: `\\b${search_terms}\\b`} },
+            { description: { $regex: `\\b${search_terms}\\b` } },
+          ]
+        }).sort({date: -1});
+        res.status(200).send(posts);
+      }else if(search_terms == ''){
+        const posts = await JobPost.find({
+          $or: [
+            { location: { $regex: `\\b${location}\\b` } },
+          ],
+        }).sort({date: -1});
+        res.status(200).send(posts);
+      }else{
+        const posts = await JobPost.find({
+          $or: [
+            { title: { $regex: `\\b${search_terms}\\b`} },
+            { description: { $regex: `\\b${search_terms}\\b` } },
+            { location: { $regex: `\\b${location}\\b` } },
+          ]
+        }).sort({date: -1});
+        res.status(200).send(posts);
+      }
+    }else{
+      if(location == ''){
+        const posts = await JobPost.find({
+          $or: [
+            { title: { $regex: `\\b${search_terms}\\b`} },
+            { description: { $regex: `\\b${search_terms}\\b` } },
+          ]
+        });
+        const sorted = await sortByRelevance(posts, search_terms);
+        res.status(200).send(sorted);
+      }else if(search_terms == ''){
+        const posts = await JobPost.find({
+          $or: [
+            { location: { $regex: `\\b${location}\\b` } },
+          ],
+        });
+        const sorted = await sortByRelevance(posts, search_terms);
+        res.status(200).send(sorted);
+      }else{
+        const posts = await JobPost.find({
+          $or: [
+            { title: { $regex: `\\b${search_terms}\\b`} },
+            { description: { $regex: `\\b${search_terms}\\b` } },
+            { location: { $regex: `\\b${location}\\b` } },
+          ]
+        });
+        const sorted = await sortByRelevance(posts, search_terms);
+        res.status(200).send(sorted);
+      }
+    }
+  } catch (e){
+    res.status(400).send(e.message);
+  }
+  //   //////////////// ADZONA
+  // const targetURL = `${process.env.BASE_URL}/${country.toLowerCase()}/${process.env.BASE_PARAMS}&app_id=${process.env.APP_ID}&app_key=${ process.env.API_KEY}&what=${search_terms}&where=${location}`;
+  // axios.get(targetURL).then(async (response) => {
+  //     // const recommendedJobs = await getRecommendations(search_terms, location, response);
+  //     res.send(response.data.results);
+  //   }).catch((e) => {
+  //     res.send(e);
+  //   });
 });
+
+async function sortByRelevance(jobs, keyword) {
+  return jobs.sort((job1, job2) => {
+    // count the number of times the keyword appears in each job's title and description
+    const job1Matches = ((job1.title + ' ' + job1.description).match(new RegExp(keyword, 'gi')) || []).length;
+    const job2Matches = ((job2.title + ' ' + job2.description).match(new RegExp(keyword, 'gi')) || []).length;
+    
+    // sort the jobs by the number of matches, with the most matches first
+    return job2Matches - job1Matches;
+  });
+}
+
+
 
 
 // Define a function to match a job title or description to a list of keywords
-function matchKeywords(text, keywords) {
-  for (let i = 0; i < keywords.length; i++) {
-    if (text.toLowerCase().includes(keywords[i])) {
-      return true;
-    }
-  }
-  return false;
-}
+// function matchKeywords(text, keywords) {
+//   for (let i = 0; i < keywords.length; i++) {
+//     if (text.toLowerCase().includes(keywords[i])) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
 
 // Define a list of keywords for each job category
-const categoryKeywords = {
-  "IT Jobs": ["software", "developer", "engineer", "programmer"],
-  "Engineering Jobs": ["engineer", "designer", "technician"],
-  "Finance Jobs": ["finance", "accountant", "banking"],
-  "Sales Jobs": ["sales", "marketing", "business development"],
-  "Healthcare Jobs": ["healthcare", "nurse", "doctor", "medical"],
-};
+// const categoryKeywords = {
+//   "IT Jobs": ["software", "developer", "engineer", "programmer"],
+//   "Engineering Jobs": ["engineer", "designer", "technician"],
+//   "Finance Jobs": ["finance", "accountant", "banking"],
+//   "Sales Jobs": ["sales", "marketing", "business development"],
+//   "Healthcare Jobs": ["healthcare", "nurse", "doctor", "medical"],
+// };
+
 // Define a function to preprocess the job data
-function preprocessJobData(jobs) {
-  // Extract the relevant features from the job data
-  const features = jobs.map((job) => ({
-    title: job.title,
-    description: job.description,
-    category: job.category.label,
-    location: job.location.display_name,
-    url:job.redirect_url,
-  }));
+// function preprocessJobData(jobs) {
+//   // Extract the relevant features from the job data
+//   const features = jobs.map((job) => ({
+//     title: job.title,
+//     description: job.description,
+//     category: job.category.label,
+//     location: job.location.display_name,
+//     url:job.redirect_url,
+//   }));
 
-  // Match each job to a category based on keywords in the title or description
-  features.forEach((job) => {
-    for (const [category, keywords] of Object.entries(categoryKeywords)) {
-      if (matchKeywords(job.title, keywords) || matchKeywords(job.description, keywords)) {
-        job.category = category;
-        break;
-      }
-    }
-  });
+//   // Match each job to a category based on keywords in the title or description
+//   features.forEach((job) => {
+//     for (const [category, keywords] of Object.entries(categoryKeywords)) {
+//       if (matchKeywords(job.title, keywords) || matchKeywords(job.description, keywords)) {
+//         job.category = category;
+//         break;
+//       }
+//     }
+//   });
 
-  return features;
-}
+//   return features;
+// }
 
-function filterJobsByKeywords(jobs, keywords) {
-  return jobs.filter(job => {
-    const jobText = `${job.title} ${job.description}`;
-    return keywords.every(keyword => jobText.toLowerCase().includes(keyword.toLowerCase()));
-  });
-}
+// function filterJobsByKeywords(jobs, keywords) {
+//   return jobs.filter(job => {
+//     const jobText = `${job.title} ${job.description}`;
+//     return keywords.every(keyword => jobText.toLowerCase().includes(keyword.toLowerCase()));
+//   });
+// }
 
-function sortJobsByRelevance(jobs, query) {
-  return jobs.sort(async (a, b) => {
-    const aText = `${a.title} ${a.description}`;
-    const bText = `${b.title} ${b.description}`;
-    const aScore = calculateRelevanceScore(aText, query);
-    const bScore = calculateRelevanceScore(bText, query);
-    return bScore - aScore;
-  });
-}
+// function sortJobsByRelevance(jobs, query) {
+//   return jobs.sort(async (a, b) => {
+//     const aText = `${a.title} ${a.description}`;
+//     const bText = `${b.title} ${b.description}`;
+//     const aScore = calculateRelevanceScore(aText, query);
+//     const bScore = calculateRelevanceScore(bText, query);
+//     return bScore - aScore;
+//   });
+// }
 
-function calculateRelevanceScore(text, query) {
-  const textWords = text.toLowerCase().split(/\W+/);
-  const queryWords = query.toLowerCase().split(/\W+/);
-  const commonWords = textWords.filter(word => queryWords.includes(word));
-  return commonWords.length;
-}
+// function calculateRelevanceScore(text, query) {
+//   const textWords = text.toLowerCase().split(/\W+/);
+//   const queryWords = query.toLowerCase().split(/\W+/);
+//   const commonWords = textWords.filter(word => queryWords.includes(word));
+//   return commonWords.length;
+// }
 
-async function getRecommendations(search_terms, location, response) {
- // Extract the search keywords from the query
- const keywords = `${search_terms} ${location}`;
+// async function getRecommendations(search_terms, location, response) {
+//  // Extract the search keywords from the query
+//  const keywords = `${search_terms} ${location}`;
 
- // Load the job data
- const jobData = await preprocessJobData(response.data.results);
+//  // Load the job data
+//  const jobData = await preprocessJobData(response.data.results);
  
- // Filter the job data based on the keywords
- const filteredJobs = filterJobsByKeywords(jobData, [search_terms, location]);
+//  // Filter the job data based on the keywords
+//  const filteredJobs = filterJobsByKeywords(jobData, [search_terms, location]);
 
- // Sort the filtered jobs by relevance
- const sortedJobs = sortJobsByRelevance(filteredJobs, keywords);
+//  // Sort the filtered jobs by relevance
+//  const sortedJobs = sortJobsByRelevance(filteredJobs, keywords);
 
- // Return the top 10 recommended jobs
- const recommendedJobs = sortedJobs.slice(0, 10);
+//  // Return the top 10 recommended jobs
+//  const recommendedJobs = sortedJobs.slice(0, 10);
  
- return recommendedJobs;
-}
+//  return recommendedJobs;
+// }
 
 // async function trainModel(jobs) {
 //   const API_KEY = process.env.GPT_KEY;
