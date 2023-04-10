@@ -4,7 +4,9 @@
             <h1><i class="fas fa-smile"></i> Messaging</h1>
         </header>
         <main class="chat-main">
-            <div class="chat-sidebar">
+            <div class="chat-sidebar" [ngClass]="{
+                'flex1': (isHandset$ | async ) && !contact,
+                'flex0': (isHandset$ | async) && contact}">
                 <input class="form-control searchInput" type="search" placeholder="Search" (keyup)="search($event)">
                 <div *ngIf="users.length != 0" class="userSearch">
                     <ul class="users">
@@ -33,8 +35,10 @@
                 </ul>
             </div>
 
-            <div class="chat">
-                <div *ngIf="toUser._id" class="toUser">
+            <div *ngIf="contact" class="chat" [ngClass]="{
+                'flex1': (isHandset$ | async) && contact,
+                'flex0': ((isHandset$ | async) && !contact) } ">
+                <div class="toUser">
                     <button aria-label="Back button" id="backBtn" (click)="backButton($event)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 200 200"
                             data-name="Layer 1" id="Layer_1">
@@ -42,23 +46,28 @@
                                 d="M160,89.75H56l53-53a9.67,9.67,0,0,0,0-14,9.67,9.67,0,0,0-14,0l-56,56a30.18,30.18,0,0,0-8.5,18.5c0,1-.5,1.5-.5,2.5a6.34,6.34,0,0,0,.5,3,31.47,31.47,0,0,0,8.5,18.5l56,56a9.9,9.9,0,0,0,14-14l-52.5-53.5H160a10,10,0,0,0,0-20Z" />
                         </svg>
                     </button>
-                    <picture>
-                        <img class="profile-pic" *ngIf="!profilePic(toUser)" class="profile-pic"
-                            src="data:image/png;base64,{{toUser.image}}" alt="profile picture">
-                        <img class="profile-pic" *ngIf="profilePic(toUser)" src="../../../assets/icons/34AD2.png"
-                            alt="profile picture">
-                    </picture>
-                    <h5>{{toUser.name}}</h5>
+                    <a href="/profile/{{toUser._id}}">
+                        <div class="d-flex w-100">
+                            <img *ngIf="(isHandset$ | async) && contact" class="profile-pic" class="profile-pic"
+                                src="data:image/png;base64,{{toUser.image}}" alt="profile picture">
+                            <h5>{{toUser.name}}</h5>
+                        </div>
+                    </a>
                 </div>
-                <div *ngIf="toUser._id" class="chat-messages" oncontextmenu="return false">
+                <div class="chat-messages">
                     <p class="messages--state no-margin" *ngIf="msgs.length == 0">No messages yet...</p>
                     <div [class.chat-hidden]="loading" *ngFor="let msg of msgs; let i=index">
-                        <div class="wrapper" (mouseup)="openContext($event, msg, i)">
+                        <div class="wrapper">
                             <div class="{{msg.sent? 'message-sent' : 'message'}}">
                                 <!-- <span class="delete-msg" (click)="delMsg(msg.id, i)">X</span> -->
-                                <a *ngIf="msg.file" id="attach_file" href="data:application/pdf;base64,{{msg.file}}" download="{{msg.file_name}}">
+                                <a *ngIf="msg.file" id="attach_file" href="data:application/pdf;base64,{{msg.file}}"
+                                    download="{{msg.file_name}}">
                                     <div class="file">
-                                        <div class="file__icon"><svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 96 960 960" width="30"><path d="M220 976q-24 0-42-18t-18-42V236q0-24 18-42t42-18h361l219 219v521q0 24-18 42t-42 18H220Zm331-554h189L551 236v186Z"/></svg></div>
+                                        <div class="file__icon"><svg xmlns="http://www.w3.org/2000/svg" height="30"
+                                                viewBox="0 96 960 960" width="30">
+                                                <path
+                                                    d="M220 976q-24 0-42-18t-18-42V236q0-24 18-42t42-18h361l219 219v521q0 24-18 42t-42 18H220Zm331-554h189L551 236v186Z" />
+                                            </svg></div>
                                         <div class="file__info">
                                             <span class="file__info--name">{{msg.file_name}}</span>
                                             <span class="file__info--size">{{msg.file_size}}</span>
@@ -66,14 +75,15 @@
                                     </div>
                                 </a>
                                 <div class="text">
-                                    <p *ngIf="msg.message" class="text__msg" attr.state="{{msg.sent}}">{{msg.message}}</p>
+                                    <p *ngIf="msg.message" class="text__msg" attr.state="{{msg.sent}}">{{msg.message}}
+                                    </p>
                                     <p class="text__meta">{{formatDate(msg.time)}}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="toUser._id" class="chat-form-container">
+                <div class="chat-form-container">
                     <form id="chat-form" (submit)="sendMsg()">
                         <div class="uploadResume">
                             <input style="display:none" accept="file/*" type="file" name="file" id="upload-resume"
@@ -91,9 +101,9 @@
                 <div *ngIf="loading" class="chat-guideMsg">
                     <p>loading...</p>
                 </div>
-                <div *ngIf="!toUser._id" class="chat-guideMsg">
-                    <p>Select a contact to send a message</p>
-                </div>
+            </div>
+            <div *ngIf="!(isHandset$ | async) && !contact" class="chat-guideMsg">
+                <p>Select a contact to send a message</p>
             </div>
         </main>
     </div>

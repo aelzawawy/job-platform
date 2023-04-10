@@ -51,7 +51,7 @@ export class UserService {
     return this.http.get(this.url + 'users/' + id)
   };
 
-  curretUser(id:any){
+  currentUser(id:any){
     this.socket.emit('addUser', id);
   }
   contactChatRoom(currId:any, id:any){

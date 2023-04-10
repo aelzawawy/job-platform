@@ -9,8 +9,7 @@ import { EmployersComponent } from './views/employers/employers.component';
 import { EmployersSignupComponent } from './views/employers-signup/employers-signup.component';
 import { JobPostsComponent } from './views/job-posts/job-posts.component';
 import { MessagingComponent } from './views/messaging/messaging.component';
-import { EditProfileComponent } from './edit-profile/edit-profile.component';
-import { UserProfileComponent } from './views/user-profile/user-profile.component';
+// import { UserProfileComponent } from './views/user-profile/user-profile.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
 import { JobsComponent } from './views/jobs/jobs.component';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
@@ -20,8 +19,7 @@ const routes: Routes = [
   {path:'jobs', component:JobsComponent, data:{animation:'jobs'}},
   {path:'signup', component:SignupComponent, data:{animation:'isSignup'}, canActivate:[AuthGuardService]},
   {path:'login', component:LoginComponent, data:{animation:'isLogin'}, canActivate:[AuthGuardService]},
-  {path:'profile', component:ProfileComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
-  {path:'profile/:id', component:UserProfileComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
+  {path:'profile/:id', component:ProfileComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
   {path:'employers', component:EmployersComponent, data:{animation:'isLeft'}},
   {path: 'employers-signup', component:EmployersSignupComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path: 'jobPosts', component:JobPostsComponent, data:{animation:'isTop'}, canActivate:[AuthGuardService]},

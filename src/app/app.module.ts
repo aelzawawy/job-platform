@@ -26,7 +26,6 @@ import { MaterialModule } from 'src/app/material/material.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { JobApplicationsComponent } from './job-applications/job-applications.component';
-import { UserProfileComponent } from './views/user-profile/user-profile.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
 import { AppNavigationComponent } from './app-navigation/app-navigation.component';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -55,7 +54,6 @@ import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.com
     JobDetailsComponent,
     EditProfileComponent,
     JobApplicationsComponent,
-    UserProfileComponent,
     SavedJobsComponent,
     AppNavigationComponent,
     JobsComponent,

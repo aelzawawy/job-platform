@@ -24,21 +24,33 @@ export class ProfileComponent implements OnInit {
   // routeQueryParams$: Subscription;
   users: User[] = [];
   user: User = {};
+  user_toView_id!:string;
   role = '';
   profileImg: any;
   backgoroundImg: any;
   resume: any;
   expanded:boolean = true;
+  toView:boolean = false;
 
   profile() {
     this.userService.profile().subscribe({
       next: (res: any) => {
-        const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
-        this.user = res;
-        this.role = res.roles;
-        localStorage.setItem('role', res.roles);
-        this.userService.emitRole(res.roles);
-        image[0].src = `data:image/png;base64,${res.image}`;
+        if(res._id === this.user_toView_id) {
+          const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
+          this.user = res;
+          this.role = res.roles;
+          this.userService.emitRole(res.roles);
+          image[0].src = `data:image/png;base64,${res.image}`;
+        }else{
+          this.userService.profileById(this.user_toView_id).subscribe({
+            next: (res: any) => {
+              this.user = res;
+            },
+            error: (err: any) => {
+              console.log(err);
+            },
+          });
+        }
       },
       error: (err: any) => {
         console.log(err);
@@ -101,7 +113,7 @@ export class ProfileComponent implements OnInit {
   }
 
   openEdit(){
-    this.router.navigate(['/profile'], {queryParams: {edit: true}})
+    this.router.navigate([`/profile/${this.user._id}`], {queryParams: {edit: true}})
   }
   
   // search(event: any) {
@@ -177,8 +189,11 @@ export class ProfileComponent implements OnInit {
   // }
   
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.user_toView_id = params['id'];
+      this.toView = localStorage['id'] == params['id']
+    })
     this.profile();
-    
     this.userService.updatedProfile().subscribe((body) => {
       this.user.name = body.name;
       this.user.location = body.location;
@@ -217,7 +232,7 @@ export class ProfileComponent implements OnInit {
           height: '80%',
         });
         dialogRef.afterClosed().subscribe(result => {
-          this.router.navigateByUrl('/profile')
+          this.router.navigateByUrl(`/profile/${this.user._id}`)
         });
       }
       

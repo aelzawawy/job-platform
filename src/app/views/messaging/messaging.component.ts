@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/interfaces/user';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { Message } from 'src/app/interfaces/message';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 @Component({
   selector: 'app-messaging',
   templateUrl: './messaging.component.html',
@@ -13,13 +16,16 @@ export class MessagingComponent implements OnInit {
   constructor(
     private userService: UserService,
     private router: Router,
-    private fb: FormBuilder
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private breakpointObserver: BreakpointObserver,
   ) {}
 
   users: User[] = [];
   contacts: User[] = [];
   user: User = {};
   toUser: User = {};
+  contact:boolean = false;
   newMessage: string = '';
   messageList: string[] = [];
   msgs: Message[] = [];
@@ -30,29 +36,35 @@ export class MessagingComponent implements OnInit {
   file: any;
   sent: boolean = false;
 
-  context_menu:any = {}
-   
-  //! Context menu
-  openContext(e:any, msg:any, i:number){
-    if(e.which == 3){
-      this.context_menu={
-        'display': 'block',
-        'position': 'absolute',
-        'top': e.clientY,
-        'left': e.clientX,
-      }
-    }
-  }
+  // context_menu:any = {}
+  // Context menu
+  // openContext(e:any, msg:any, i:number){
+  //   if(e.which == 3){
+  //     this.context_menu={
+  //       'display': 'block',
+  //       'position': 'absolute',
+  //       'top': e.clientY,
+  //       'left': e.clientX,
+  //     }
+  //   }
+  // }
 
-  closeMenu(){
+  // closeMenu(){
     
-    console.log('outside')
-    this.context_menu = {
-      'display': 'none'
-    }
+  //   console.log('outside')
+  //   this.context_menu = {
+  //     'display': 'none'
+  //   }
     
-  }
+  // }
   
+  isHandset$: Observable<boolean> = this.breakpointObserver
+    .observe([Breakpoints.XSmall, Breakpoints.Small])
+    .pipe(
+      map((result) => result.matches),
+      shareReplay()
+  );
+
   search(event: any) {
     const input = event.target.value;
     if (input == '') {
@@ -71,34 +83,14 @@ export class MessagingComponent implements OnInit {
 
   //! Getting selected user's id
   profileBiId(e: any, id: any) {
-    const sideBar = document.querySelector('.chat-sidebar') as HTMLElement;
-    const chat = document.querySelector('.chat') as HTMLElement;
+    this.router.navigateByUrl('/messaging')
+    this.router.navigate([`/messaging`], {queryParams: {contact: id}})
     const searchInput = document.querySelector(
       '.searchInput'
     ) as HTMLInputElement;
 
     searchInput.value = '';
     this.users = [];
-
-    if (!this.toUser._id || this.toUser._id != id) {
-      this.userService.contactChatRoom(this.user._id, id);
-      this.userService.profileById(id).subscribe({
-        next: (res: any) => {
-          this.toUser = res;
-          this.windowListener(this.toUser);
-          this.getMsgs(this.toUser._id);
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      });
-    }
-
-    if (window.innerWidth <= 767) {
-      chat.style.display = 'flex';
-      chat.style.flex = '1';
-      sideBar.style.flex = '0';
-    }
   }
 
   //! Sending message to selected user
@@ -155,14 +147,7 @@ export class MessagingComponent implements OnInit {
     this.userService.profile().subscribe({
       next: (res: any) => {
         this.user = res;
-        this.userService.curretUser(res._id);
-        res.messages.forEach((msg: any) => {
-          if (msg.sent) {
-            this.sent = true;
-          } else {
-            this.sent = false;
-          }
-        });
+        this.userService.currentUser(res._id);
         if (res.contactList) {
           this.userService.getContacts().subscribe({
             next: (res: any) => {
@@ -179,20 +164,6 @@ export class MessagingComponent implements OnInit {
         console.log(err);
       },
     });
-  }
-
-  // delMsg(id: any, i: number) {
-  //   this.userService.delMsg(id).subscribe({});
-  //   this.msgs.splice(i, 1);
-  //   this.msgscount--;
-  // }
-
-  // Default profile pic
-  profilePic(user: any): boolean {
-    if (!user.image) {
-      return true;
-    }
-    return false;
   }
 
   // Date formatting
@@ -230,57 +201,29 @@ export class MessagingComponent implements OnInit {
   }
 
   backButton(e: any) {
-    const sideBar = document.querySelector('.chat-sidebar') as HTMLElement;
-    const chat = document.querySelector('.chat') as HTMLElement;
-    const backBtn = chat.firstChild?.firstChild;
-    this.toUser = {};
-    if (window.innerWidth <= 767) {
-      chat.style.display = 'none';
-      chat.style.borderLeft = 'none';
-      chat.style.flex = '0';
-      sideBar.style.flex = '1';
-    }
-  }
-  windowListener(user: any) {
-    const sideBar = document.querySelector('.chat-sidebar') as HTMLElement;
-    const chat = document.querySelector('.chat') as HTMLElement;
-
-    let timer: ReturnType<typeof setTimeout> = setTimeout(() => {
-      const chatImg = chat.firstChild?.childNodes[1] as HTMLElement;
-      if (window.innerWidth <= 767) {
-        chatImg.style.display = 'block';
-      } else {
-        chatImg.style.display = 'none';
-      }
-    }, 1);
-    window.addEventListener('resize', function () {
-      let timer: ReturnType<typeof setTimeout> = setTimeout(() => {
-        const chatImg = chat.firstChild?.childNodes[1] as HTMLElement;
-        if (chat.firstChild?.childNodes.length == 0) return;
-        if (window.innerWidth <= 767) {
-          chatImg.style.display = 'block';
-        } else {
-          chatImg.style.display = 'none';
-        }
-      }, 50);
-
-      if (user) {
-        if (window.innerWidth > 767) {
-          sideBar.style.display = 'block';
-          chat.style.display = 'flex';
-          chat.style.flex = '.6';
-          sideBar.style.flex = '.4';
-        } else {
-          chat.style.display = 'none';
-          chat.style.flex = '0';
-          sideBar.style.flex = '1';
-        }
-      }
-    });
-  }
+    this.router.navigateByUrl('/messaging')
+}
 
   ngOnInit(): void {
     this.currentUser();
+    this.route.queryParamMap.subscribe(params => {
+      const contact = params.get('contact');
+      if (contact) {
+        this.contact = true;
+        this.userService.profileById(contact).subscribe({
+          next: (res: any) => {
+            this.toUser = res;
+          },
+          error: (err: any) => {
+            console.log(err);
+          },
+        });
+        this.getMsgs(contact);
+        this.userService.contactChatRoom(this.user._id, contact);
+      }else{
+        this.contact = false;
+      }
+    })
     this.userService.getNewMessage().subscribe((message: any) => {
       this.msgs.push({
         message: message.msg,

@@ -88,18 +88,18 @@ export class HomeComponent implements OnInit {
   }
 
   // observe(){
-  //   // const tabBtns = document.querySelector('.mat-tab-labels') as HTMLElement;
+  // const tabBtns = document.querySelector('.mat-tab-labels') as HTMLElement;
   //   setTimeout(() => {
-  //     // const jobDetails = document.querySelector('.content__details') as HTMLElement;
-  //     // const observer = new IntersectionObserver((entries) => {
-  //     //   entries.forEach((e) =>{
-  //     //     jobDetails.classList.toggle("sticky-position", !e.isIntersecting)
-  //     //   })
-  //     // },
-  //     // {
-  //     //   threshold:0,
-  //     // });
-  //     // observer.observe(tabBtns)
+  // const jobDetails = document.querySelector('.content__details') as HTMLElement;
+  // const observer = new IntersectionObserver((entries) => {
+  //   entries.forEach((e) =>{
+  //     jobDetails.classList.toggle("sticky-position", !e.isIntersecting)
+  //   })
+  // },
+  // {
+  //   threshold:0,
+  // });
+  // observer.observe(tabBtns)
   //   }, 500);
   //   const jobPost = document.querySelectorAll('.card');
   //   jobPost[0]?.classList.add('selected');

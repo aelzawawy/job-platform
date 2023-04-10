@@ -46,7 +46,7 @@ export class AppNavigationComponent implements OnInit {
     .pipe(
       map((result) => result.matches),
       shareReplay()
-    );
+  );
 
   prepareRoute(outlet: RouterOutlet) {
     return (

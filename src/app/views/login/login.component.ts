@@ -26,7 +26,8 @@ export class LoginComponent implements OnInit {
     this.authService.login(data).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
-        this.router.navigateByUrl('profile');
+        localStorage.setItem('id', res.user._id);
+        this.router.navigateByUrl(`/profile/${res.user._id}`);
       },
       error: (err: any) => {
         if (err) this.invalidLogin = true;
