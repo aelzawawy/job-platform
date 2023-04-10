@@ -50,7 +50,7 @@ export class JobPostsFormComponent implements OnInit {
 
   formControl = this.fb.group({
     title: ['', [Validators.required]],
-    description: ['<h1></h1>', [Validators.required]],
+    description: ['', [Validators.required]],
     location: ['', [Validators.required]],
     salary: [''],
     company: ['', [Validators.required]],
@@ -60,15 +60,15 @@ export class JobPostsFormComponent implements OnInit {
 
   checkTouched(e: any) {
     this.blue_underline =
-      Boolean(e.target.closest('.form-field')) &&
+      Boolean(e.target.closest('.field')) &&
       !this.formControl.controls.description.touched &&
       Boolean(this.formControl.value.description == '');
     this.orange_underline =
-      !Boolean(e.target.closest('.form-field')) &&
+      !Boolean(e.target.closest('.field')) &&
       this.formControl.controls.description.touched &&
       Boolean(this.formControl.value.description == '');
     this.success_value =
-      !Boolean(e.target.closest('.form-field')) && this.valid_value;
+      !Boolean(e.target.closest('.field')) && this.valid_value;
   }
   checkValid(e: any) {
     this.invalid_value =
@@ -109,8 +109,6 @@ export class JobPostsFormComponent implements OnInit {
           },
         });
       }
-    } else {
-      throw new Error('Invalid');
     }
     this.invalid_value = Boolean(this.formControl.value.description == '');
   }

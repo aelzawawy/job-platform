@@ -1,40 +1,38 @@
 <div class="container" (click)="checkTouched($event)">
-    <div class="wrapper">
-        <form id="form" class="hidden" [formGroup]='formControl' (ngSubmit)="newPost(formControl.value)">
-            <mat-form-field appearance="fill">
-                <mat-label>Title</mat-label>
-                <input required formControlName="title" matInput>
-            </mat-form-field>
-            <div class="form-field" [ngClass]="{'invalid': invalid_value, 'no-underline': success_value, 'valid': valid_value,'invalidFirst': orange_underline ,'valid-underline': blue_underline }">
-                <ckeditor matInput id="description" [editor]="Editor" [config]="config" (ngModelChange)="checkValid($event)" name="description"
-                    formControlName="description" required>
-                </ckeditor>
-                <div class="form-field--underline"></div>
-            </div>
-            <mat-form-field appearance="fill">
-                <mat-label>Location</mat-label>
-                <input required formControlName="location" matInput>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Company</mat-label>
-                <input required formControlName="company" matInput>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Job type</mat-label>
-                <mat-select formControlName="type" required>
-                    <mat-option value="Full Time">Full Time</mat-option>
-                    <mat-option value="Part Time">Part Time</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="fill" floatLabel="always">
-                <mat-label>Salary</mat-label>
-                <span matTextPrefix>$&nbsp;</span>
-                <input matInput type="number" formControlName="salary" placeholder="00">
-            </mat-form-field>
-            <mat-checkbox color="primary" formControlName="remote" labelPosition="before">
-                Remote?
-            </mat-checkbox>
-            <button mat-raised-button color="primary" type="submit" class="btn btn-success btn-lg">Submit</button>
-        </form>
-    </div>
+    <form id="form" class="hidden" [formGroup]='formControl' (ngSubmit)="newPost(formControl.value)">
+        <mat-form-field appearance="fill">
+            <mat-label>Title</mat-label>
+            <input required formControlName="title" matInput>
+        </mat-form-field>
+        <div class="field" [ngClass]="{'invalid': invalid_value, 'no-underline': success_value, 'valid': valid_value,'invalidFirst': orange_underline ,'valid-underline': blue_underline }">
+            <ckeditor matInput id="description" [editor]="Editor" [config]="config" (ngModelChange)="checkValid($event)" name="description"
+                formControlName="description" required>
+            </ckeditor>
+            <div class="field--underline"></div>
+        </div>
+        <mat-form-field appearance="fill">
+            <mat-label>Location</mat-label>
+            <input required formControlName="location" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Company</mat-label>
+            <input required formControlName="company" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Job type</mat-label>
+            <mat-select formControlName="type" required>
+                <mat-option value="Full Time">Full Time</mat-option>
+                <mat-option value="Part Time">Part Time</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" floatLabel="always">
+            <mat-label>Salary</mat-label>
+            <span matTextPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="salary" placeholder="00">
+        </mat-form-field>
+        <mat-checkbox color="primary" formControlName="remote" labelPosition="before">
+            Remote?
+        </mat-checkbox>
+        <button mat-raised-button color="primary" type="submit" class="btn btn-success btn-lg">Submit</button>
+    </form>
 </div>
