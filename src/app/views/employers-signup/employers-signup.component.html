@@ -11,7 +11,7 @@
                             <form [formGroup]='signupForm' (ngSubmit)="signup(signupForm.value)">
 
                                 <div class="form-outline mb-4">
-                                    <input type="text" (keyup)="effect($event)" class="form-control form-control-lg"
+                                    <input type="text" [class.active]="signupForm.value.name != ''" class="form-control form-control-lg"
                                         formControlName="name" required minlength="3" type="text" id="name" />
                                     <label class="form-label" for="name">Your Name</label>
                                     <div class="message d-flex">
@@ -23,7 +23,7 @@
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input (keyup)="effect($event)" class="form-control form-control-lg"
+                                    <input [class.active]="signupForm.value.email != ''" class="form-control form-control-lg"
                                         formControlName="email" required email type="email" id="email" />
                                     <label class="form-label" for="email">Your Email</label>
                                     <div class="message d-flex">
@@ -33,12 +33,11 @@
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input (keyup)="effect($event)" type="password" id="password"
+                                    <input [class.active]="signupForm.value.password != ''" [type]="pass_type" id="password"
                                         class="form-control form-control-lg" formControlName="password" required
                                         minlength="10" />
                                     <label class="form-label" for="password">Password</label>
-                                    <a class="showPass fw-bold text-body" clicked="false"
-                                        (click)="showPass($event)">Show</a>
+                                    <a *ngIf="signupForm.value.password != ''" class="showPass fw-bold text-body" [innerHTML]="pass_state" (click)="showPass($event)" style="user-select: none;"></a>
                                     <div class="message d-flex">
                                         <p
                                             *ngIf="signupForm.controls.password.errors?.['minlength'] && !signupForm.controls.password.untouched">

@@ -8,7 +8,7 @@
         <div class="card-head--right">
             <!-- <button class="btn apply" (click)="applyJob(job._id)">Apply</button> -->
             <button class="apply" title="Apply to job" mat-flat-button color="accent" (click)="applyJob(job._id)">Apply</button>
-            <button title="{{job.checkSaved? 'Remove from favorites' : 'Add to favorites'}}" mat-stroked-button color="accent" (click)="saveJob(job._id)">
+            <button title="{{job.checkSaved? 'Remove!' : 'Save for later'}}" mat-stroked-button color="accent" (click)="saveJob(job._id)">
                 <mat-icon>{{job.checkSaved? 'favorite' : 'favorite_border'}}</mat-icon>
             </button>
         </div>

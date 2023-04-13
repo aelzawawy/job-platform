@@ -29,7 +29,7 @@
 
       <button [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" mat-button routerLink="/">JobsFeed</button>
       <button mat-button *ngIf="loggedIn()" routerLinkActive="active" class="profile-box" [matMenuTriggerFor]="menu">
-        <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+        <img *ngIf="loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
         <span>Me</span>
       </button>
 

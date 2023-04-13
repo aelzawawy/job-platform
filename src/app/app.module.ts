@@ -37,6 +37,7 @@ import { MatListModule } from '@angular/material/list';
 import { JobsComponent } from './views/jobs/jobs.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
+import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.com
     AppNavigationComponent,
     JobsComponent,
     JobPostsFormComponent,
+    ResetPasswordComponent,
   ],
   // entryComponents: [MessagingComponent],
   imports: [

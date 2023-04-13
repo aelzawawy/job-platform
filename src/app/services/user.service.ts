@@ -18,7 +18,12 @@ export class UserService {
   profile(){
     return this.http.get(this.url + 'profile')
   };
-
+  forgotPassword(email:string){
+    return this.http.post(this.url + 'forgotPassword', {email})
+  }
+  resetPassword(token:string, password:string){
+    return this.http.patch(this.url + 'resetPassword/' + token, {password})
+  }
   getContacts(){
     return this.http.get(this.url + 'contacts')
   };

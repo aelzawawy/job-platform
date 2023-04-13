@@ -29,9 +29,13 @@ export class JobsComponent implements OnInit{
       this.search_Warning = false;
       this.jobsService.searchApi(this.search).subscribe({
         next: async (res: any) => {
-          this.posts = res;
-          this.job = res[0]
-          await this.updateJobPosts();
+          if (res.length != 0) {
+            this.posts = res;
+            this.job = res[0];
+            this.isSaved(res[0]._id);
+          }else{
+            this.posts = []
+          }
         },
         error: (e: any) => {
           console.log(e);
@@ -50,29 +54,13 @@ export class JobsComponent implements OnInit{
     location: '',
     sort: '',
   };
-  async updateJobPosts() {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        this.job_Posts = document.querySelectorAll('.card');
-        if (this.job_Posts.length > 0) {
-          this.job_Posts[0].classList.add('selected');
-        }
-        resolve();
-      }, 0);
-    });
-  }
 
   sort(e:any){
     this.router.navigate(['/jobs'], {queryParams: {q: this.search.search_terms, i: this.search.location, sort: 'date'}});
   }
-
+  index = 0
   showDetails(e: any, id: any, i: number) {
-    const posts = document.querySelectorAll('.card');
-    const current = e.target.closest('.card');
-
-    posts.forEach((post) => post.classList.remove('selected'));
-    current.classList.add('selected');
-
+    this.index = i
     this.getJob(id);
   }
 
@@ -129,11 +117,6 @@ export class JobsComponent implements OnInit{
         hour: 'numeric',
         minute: '2-digit',
       }).format(date)}`;
-    // if (PassedDays <= 7) return `${PassedDays} days ago`;
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'numeric',
-      day: 'numeric',
-      weekday: 'short',
-    }).format(date);
+    return `${PassedDays} days ago`;
   };
 }

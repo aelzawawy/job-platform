@@ -27,6 +27,9 @@ export class EmployersSignupComponent implements OnInit {
 
   passMsg = '';
   emailMsg = '';
+  show_Pass = false;
+  pass_type = 'password';
+  pass_state = '<span class="material-symbols-outlined">visibility</span>'
   signup(data: any) {
     this.authService.signUP(data).subscribe({
       next: (res: any) => {
@@ -49,24 +52,14 @@ export class EmployersSignupComponent implements OnInit {
     });
   }
 
-  effect(event: any) {
-    if (event.target.value != '') {
-      event.target.classList.add('active');
-    } else {
-      event.target.classList.remove('active');
-    }
-  }
-
   showPass(event:any){
-    const passInput = document.querySelector('#password') as HTMLFormElement;
-    if(event.target.getAttribute('clicked') == 'false'){
-      event.target.setAttribute('clicked', 'true');
-      passInput.setAttribute('type', 'text');
-      event.target.textContent = 'Hide';
-    } else{
-      event.target.setAttribute('clicked', 'false');
-      passInput.setAttribute('type', 'password');
-      event.target.textContent = 'Show';
+    this.show_Pass = !this.show_Pass;
+    if(this.show_Pass == true){
+      this.pass_type = 'text';
+      this.pass_state = '<span class="material-symbols-outlined">visibility_off</span>';
+    }else{
+      this.pass_type = 'password';
+      this.pass_state = '<span class="material-symbols-outlined">visibility</span>';
     }
   }
   ngOnInit(): void {}

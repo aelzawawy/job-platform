@@ -1,42 +1,50 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from 'src/app/services/user.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { User } from 'src/app/interfaces/user';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { Message } from 'src/app/interfaces/message';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { Message } from 'src/app/interfaces/message';
+import { User } from 'src/app/interfaces/user';
+import { ObserverService } from 'src/app/services/observer.service';
+import { UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'app-messaging',
   templateUrl: './messaging.component.html',
   styleUrls: ['./messaging.component.scss'],
 })
-export class MessagingComponent implements OnInit {
+export class MessagingComponent implements OnInit, AfterViewInit {
   constructor(
     private userService: UserService,
+    private observer: ObserverService,
     private router: Router,
-    private route: ActivatedRoute,
-    private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver,
-  ) {}
-
+    private route: ActivatedRoute
+  ) {
+    this.isHandset$ = this.observer.isHandset$;
+  }
+  @ViewChildren('topMsg', {read: ElementRef})
+  topMsg!: QueryList<ElementRef>
+  @ViewChild('chat', {read: ElementRef})
+  chat!:ElementRef
+  isHandset$!: Observable<boolean>;
+  intersectionObserver:any
   users: User[] = [];
   contacts: User[] = [];
   user: User = {};
   toUser: User = {};
-  contact:boolean = false;
+  contact: boolean = false;
   newMessage: string = '';
-  messageList: string[] = [];
   msgs: Message[] = [];
-  loading: boolean = false;
   loadingContacts: boolean = false;
-
+  
   message: string = '';
   file: any;
   sent: boolean = false;
-
-  // context_menu:any = {}
+  
+  ngAfterViewInit(): void {
+    this.topMsg.changes.subscribe(msgs => {
+      if(msgs.last) this.intersectionObserver.observe(msgs.last.nativeElement)
+    })
+  }
+  
+  // context_menu:any = {}.nativeElement
   // Context menu
   // openContext(e:any, msg:any, i:number){
   //   if(e.which == 3){
@@ -50,20 +58,13 @@ export class MessagingComponent implements OnInit {
   // }
 
   // closeMenu(){
-    
+
   //   console.log('outside')
   //   this.context_menu = {
   //     'display': 'none'
   //   }
-    
+
   // }
-  
-  isHandset$: Observable<boolean> = this.breakpointObserver
-    .observe([Breakpoints.XSmall, Breakpoints.Small])
-    .pipe(
-      map((result) => result.matches),
-      shareReplay()
-  );
 
   search(event: any) {
     const input = event.target.value;
@@ -82,59 +83,53 @@ export class MessagingComponent implements OnInit {
   }
 
   //! Getting selected user's id
+  search_value = '';
   profileBiId(e: any, id: any) {
-    this.router.navigateByUrl('/messaging')
-    this.router.navigate([`/messaging`], {queryParams: {contact: id}})
-    const searchInput = document.querySelector(
-      '.searchInput'
-    ) as HTMLInputElement;
-
-    searchInput.value = '';
+    this.router.navigate([`/messaging`], { queryParams: { contact: id } });
     this.users = [];
   }
 
   //! Sending message to selected user
   sendMsg() {
-    const msg = document.querySelector('#msg') as HTMLInputElement;
-    const chatMsgs = document.querySelector('.chat-messages') as HTMLElement;
-
-    if ((this.message == '' || msg.value == '') && !this.file) return;
+    if (this.message == '' && !this.file) return;
     this.userService
       .message(this.toUser._id, this.message, this.file)
       .subscribe({
-        next: (res: any) => {
-          this.msgs.unshift({
-            id: res.id,
-            message: res.message,
-            time: res.time,
-            file: res.file,
-            sent: res.sent,
-            file_name: res.file_name,
-            file_size: res.file_size,
+        next: async (res: any) => {
+          await new Promise<void>((resolve) => {
+            this.msgs.unshift({ 
+              id: res.id,
+              message: res.message,
+              time: res.time,
+              file: res.file,
+              sent: res.sent,
+              file_name: res.file_name,
+              file_size: res.file_size,
+            });
+            resolve();
           });
+          setTimeout(() => {
+            this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+          }, 0)
         },
         error: (e: any) => {
           console.log(e);
         },
       });
     this.message = '';
-    msg.value = '';
     this.file = null;
-    setTimeout(() => {
-      chatMsgs.scrollTop = chatMsgs.scrollHeight;
-    }, 100);
   }
   getFile(e: any) {
     this.file = e.target.files[0];
   }
-
+  page = 0
   getMsgs(id: any) {
-    this.loading = true;
     this.message = '';
+    this.msgs = [];
+    this.page = 0
     this.userService.getMsgs(id).subscribe({
       next: (res: any) => {
-        this.msgs = res.reverse();
-        this.loading = false;
+        this.msgs = this.msgs.concat(res.reverse().splice(30*this.page, 30))
       },
       error: (err: any) => {
         console.log(err);
@@ -201,18 +196,38 @@ export class MessagingComponent implements OnInit {
   }
 
   backButton(e: any) {
-    this.router.navigateByUrl('/messaging')
-}
+    this.router.navigateByUrl('/messaging');
+  }
 
   ngOnInit(): void {
     this.currentUser();
-    this.route.queryParamMap.subscribe(params => {
-      const contact = params.get('contact');
+    let contact:string
+    this.intersectionObserver = new IntersectionObserver((enteries) => {
+      enteries.forEach((e) => {
+        if(e.isIntersecting){
+          this.userService.getMsgs(contact).subscribe({
+            next: (res: any) => {
+              this.msgs = this.msgs.concat(res.reverse().splice(15*this.page, 15))
+              this.page++
+            },
+            error: (err: any) => {
+              console.log(err);
+            },
+          });
+        }
+      })
+    },
+    {
+      threshold:0
+    })
+    this.route.queryParamMap.subscribe((params) => {
+      contact = params.get('contact') || '';
       if (contact) {
         this.contact = true;
         this.userService.profileById(contact).subscribe({
           next: (res: any) => {
             this.toUser = res;
+            document.getElementById("msg")?.focus();
           },
           error: (err: any) => {
             console.log(err);
@@ -220,11 +235,12 @@ export class MessagingComponent implements OnInit {
         });
         this.getMsgs(contact);
         this.userService.contactChatRoom(this.user._id, contact);
-      }else{
+      } else {
         this.contact = false;
       }
-    })
+    });
     this.userService.getNewMessage().subscribe((message: any) => {
+      if(message == '') return;
       this.msgs.push({
         message: message.msg,
         time: message.time,

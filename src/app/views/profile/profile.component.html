@@ -49,13 +49,13 @@
 
         </div>
         <div *ngIf="toView" class="uploadResume">
-            <input style="display:none" accept="file/*" type="file" name="resume" id="upload-resume"
+            <input style="display:none" accept=".pdf" type="file" name="resume" id="upload-resume"
                 (change)="uploadResume($event)">
             <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
                 <b>Upload Resume</b>
                 <span class="material-symbols-outlined">check</span>
             </label>
         </div>
-        <a id="resume" href="data:application/pdf;base64,{{user.resume}}" download="resume">Resume</a>
+        <a *ngIf="user.resume" id="resume" href="data:application/pdf;base64,{{user.resume}}" download="resume">Resume</a>
     </div>
 </mat-drawer-container>

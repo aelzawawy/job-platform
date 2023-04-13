@@ -4,7 +4,6 @@ import { User } from 'src/app/interfaces/user';
 import { JobPost } from 'src/app/interfaces/job-post';
 import {MatDialog} from '@angular/material/dialog';
 import { JobApplicationsComponent } from 'src/app/job-applications/job-applications.component';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Router, ActivatedRoute} from '@angular/router';
 @Component({
   selector: 'app-job-posts',
@@ -23,7 +22,6 @@ export class JobPostsComponent implements OnInit {
   posts: JobPost[] = [];
   user:User = {};
   details = ''
-  public Editor = ClassicEditor;
   public config = {
     placeholder: 'Job description',
   }
@@ -93,12 +91,7 @@ export class JobPostsComponent implements OnInit {
       minute: '2-digit'
     }).format(date)}`;
     
-    if (PassedDays <= 7) return `${PassedDays} days ago`;
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'numeric', 
-      day: 'numeric',
-      weekday: 'short',
-    }).format(date);
+   return `${PassedDays} days ago`;
   };
 
   // Display posts
@@ -113,12 +106,9 @@ export class JobPostsComponent implements OnInit {
   }
 
   // Details function
+  index = 0
   showDetails(e: any, i: number) {
-    if(e.target.closest('.card--options')) return;
-    const posts = document.querySelectorAll(".card");
-    const current = e.target.closest('.card');
-    posts.forEach(post => post.classList.remove('selected'))
-    current.classList.add('selected');
+    this.index = i;
     const remote = this.posts[i].remote? '<p><span class="detail-row--item">Remote</span> YAY, you can work from home🎉.</p>': ''
     const details = `
     <div class="card">
@@ -142,23 +132,6 @@ export class JobPostsComponent implements OnInit {
     this.details = details;
   }
 
-  // Close form on outside click 
-  formClose(e:any){
-    const form = document.querySelector('#form') as HTMLFormElement;
-    if(!e.target.closest('.form') && !form.classList.contains('hidden') && !e.target.classList.contains('control')){
-      form.classList.toggle('hidden')
-      const posts = document.querySelector('.content__posts') as HTMLFormElement;
-      const formcontrols = document.querySelectorAll('.control') ;
-      formcontrols.forEach( btn => {
-        if(btn.classList.contains('btn-danger'))
-        btn.classList.add('btn-success');
-        btn.classList.remove('btn-danger');
-      })
-      posts?.classList.toggle('slide-down');
-    }
-    this.openMenu(e)
-  }
-
   // Input Fields animations
   effect(event: any) {
     if (event.target.value != '') {
@@ -167,28 +140,6 @@ export class JobPostsComponent implements OnInit {
       event.target.classList.remove('active');
     }
   }
-
-  openMenu(e:any){
-    const menus = document.querySelectorAll('.card--options-menu')
-    const btns = document.querySelectorAll(".card--options-toggle");
-    btns.forEach(btn => btn.classList.remove('showMenu'))
-    menus.forEach(menu => menu.classList.remove('show'))
-    btns.forEach(btn => {
-      const currMenu = btn.nextSibling as HTMLElement
-      if(e.target == btn){
-        if(btn.getAttribute('aria-expanded') == 'false' ){
-          btn.classList.add('showMenu');
-          currMenu.classList.add('show');
-          btn.setAttribute('aria-expanded', 'true')
-        }else{
-          btn.classList.remove('showMenu');
-          currMenu.classList.remove('show');
-          btn.setAttribute('aria-expanded', 'false')
-        }
-      }
-    })
-  }
-
   ngOnInit(): void {
     this.jobPosts();
   }

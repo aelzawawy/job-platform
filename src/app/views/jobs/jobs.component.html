@@ -30,7 +30,6 @@
 
     <div class="content">
         <ul class="content__posts">
-            <p style="margin-left: 10px;">jobs in {{search.location}}</p>
             <div class="sortBox">
                 <p>Sort by:</p>
                 <a routerLink="/jobs" [ngClass]="{'active': !sortByDate}" [queryParams]="{q: search.search_terms, i:search.location}">relevance</a>
@@ -38,7 +37,7 @@
                 <a routerLink="/jobs" [ngClass]="{'active': sortByDate}" (click)="sort($event)"> date</a>
             </div>
             <li *ngFor="let post of posts; let i = index">
-                <div (click)="showDetails($event,post._id, i)" class="card">
+                <div (click)="showDetails($event,post._id, i)" class="card" [class.selected]="index == i">
                     <div class="card-body">
                         <h5 class="title">{{post.title}}</h5>
                         <p>{{post.company}}</p>

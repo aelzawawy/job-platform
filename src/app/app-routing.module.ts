@@ -9,10 +9,10 @@ import { EmployersComponent } from './views/employers/employers.component';
 import { EmployersSignupComponent } from './views/employers-signup/employers-signup.component';
 import { JobPostsComponent } from './views/job-posts/job-posts.component';
 import { MessagingComponent } from './views/messaging/messaging.component';
-// import { UserProfileComponent } from './views/user-profile/user-profile.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
 import { JobsComponent } from './views/jobs/jobs.component';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
+import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 
 const routes: Routes = [
   {path:'', component:HomeComponent, data:{animation:'isHome'}},
@@ -26,6 +26,7 @@ const routes: Routes = [
   {path: 'messaging', component:MessagingComponent, data:{animation:'isMsg'}, canActivate:[AuthGuardService]},
   {path: 'saved-jobs', component:SavedJobsComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path: 'jobs-form', component:JobPostsFormComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
+  {path: 'resetPassword/:token', component:ResetPasswordComponent, data:{animation:'isLeft'}},
 ];
 
 @NgModule({

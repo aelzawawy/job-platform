@@ -1,17 +1,19 @@
 import {
+  AfterViewInit,
   Component,
-  OnInit,
-  Input,
-  Output,
+  ElementRef,
   EventEmitter,
-  ViewChild,
-  ViewContainerRef,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
-import { JobsService } from 'src/app/services/jobs.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { JobPost } from 'src/app/interfaces/job-post';
-import { ApiJob } from 'src/app/interfaces/api-job';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as e from 'express';
+import { ApiJob } from 'src/app/interfaces/api-job';
+import { JobPost } from 'src/app/interfaces/job-post';
+import { JobsService } from 'src/app/services/jobs.service';
 // import { last } from 'rxjs';
 
 @Component({
@@ -19,14 +21,16 @@ import * as e from 'express';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
   constructor(
     private jobsService: JobsService,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
-
+  @ViewChildren('lastElement', { read: ElementRef })
+  lastElement!: QueryList<ElementRef>;
+  observer:any;
   posts: JobPost[] = [];
   apiPosts: ApiJob[] = [];
   job: JobPost = {};
@@ -34,10 +38,9 @@ export class HomeComponent implements OnInit {
   checkSaved: boolean = false;
   loading: boolean = false;
   job_Posts!: NodeListOf<HTMLElement>;
-  
-  searching:boolean = false;
-  search_Warning:boolean = false;
-  totalPages!:number;
+
+  search_Warning: boolean = false;
+  totalPages!: number;
   pages!: number[];
 
   search = {
@@ -50,79 +53,36 @@ export class HomeComponent implements OnInit {
     order: -1,
   };
 
-  
-
   ngOnInit(): void {
     this.jobPosts();
-  
-    setTimeout(() => {
-      // const jobPosts = document.querySelector('.content__posts') as HTMLElement;
-      // const jobDetails = document.querySelector('.content__details') as HTMLElement;
-      // const observer = new IntersectionObserver((entries) => {
-
-      //   entries.forEach((e) =>{
-      //     jobDetails.classList.toggle("sticky-position", !e.isIntersecting);
-      //   })
-      // },
-      // {
-      //   threshold:0,
-      // });
-      // observer.observe(tabBtns)
-
-    }, 500);
-
-    setTimeout(async () => {
-      await this.updateJobPosts();
-    }, 200);
-
-    // this.route.queryParamMap.subscribe((param) => {
-    //   if(param.get('search')){
-    //     this.searching = true;
-    //   }else{
-    //     this.searching = false;
-    //     this.router.navigate(['/'])
-    //   }
-    // })
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            if (this.queryBody.page <= this.totalPages) {
+              this.jobPosts();
+              this.queryBody.page++;
+            }
+          }
+        });
+      },
+      {
+        threshold: 1,
+      }
+    );
 
     // console.log(JSON.parse(localStorage['apiRes'] || '[]'));
   }
 
-  // observe(){
-  // const tabBtns = document.querySelector('.mat-tab-labels') as HTMLElement;
-  //   setTimeout(() => {
-  // const jobDetails = document.querySelector('.content__details') as HTMLElement;
-  // const observer = new IntersectionObserver((entries) => {
-  //   entries.forEach((e) =>{
-  //     jobDetails.classList.toggle("sticky-position", !e.isIntersecting)
-  //   })
-  // },
-  // {
-  //   threshold:0,
-  // });
-  // observer.observe(tabBtns)
-  //   }, 500);
-  //   const jobPost = document.querySelectorAll('.card');
-  //   jobPost[0]?.classList.add('selected');
-  // }
+  ngAfterViewInit(): void {
+    this.lastElement.changes.subscribe((list) => {
+      if(list.last) this.observer.observe(list.last.nativeElement);
+    });
+  }
 
-  async pageUp(page:any){
+  async pageUp(page: any) {
     this.queryBody.page = page;
     this.jobPosts();
-    setTimeout(async () => {
-      await this.updateJobPosts();
-    }, 50);
-  }
-  
-  async updateJobPosts() {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        this.job_Posts = document.querySelectorAll('.card');
-        if (this.job_Posts.length > 0) {
-          this.job_Posts[0].classList.add('selected');
-        }
-        resolve();
-      }, 0);
-    });
   }
 
   loggedIn(): boolean {
@@ -132,7 +92,7 @@ export class HomeComponent implements OnInit {
     return false;
   }
 
-  isSaved(id:any){
+  isSaved(id: any) {
     this.jobsService.checkSaved(id).subscribe({
       next: (res: any) => {
         this.job.checkSaved = res;
@@ -145,26 +105,25 @@ export class HomeComponent implements OnInit {
 
   // Search api
   jobSearch() {
-    if(this.search.search_terms == '' && this.search.location == ''){
+    if (this.search.search_terms == '' && this.search.location == '') {
       this.search_Warning = true;
       return;
     }
-    this.router.navigate(['/jobs'], {queryParams: {q: this.search.search_terms, i: this.search.location}})
+    this.router.navigate(['/jobs'], {
+      queryParams: { q: this.search.search_terms, i: this.search.location },
+    });
     this.jobsService.searchApi(this.search).subscribe({
       next: async (res: any) => {
-        if(res.length == 0){
+        if (res.length == 0) {
           this.loading = false;
-          this.searching = false;
           return;
+        }else{
+          this.job = res[0];
+          this.isSaved(res[0]._id);
+          this.posts = res;
         }
-        
-        // this.apiPosts = res;
-        // this.response = res;
-        this.posts = res;
-        this.loading = false;
-        this.job = res[0]
-        this.isSaved(res[0]._id);
-        await this.updateJobPosts();
+
+        // this.loading = false;
         // localStorage.setItem('apiRes', JSON.stringify(res));
       },
       error: (e: any) => {
@@ -175,25 +134,23 @@ export class HomeComponent implements OnInit {
 
   // Display posts
   jobPosts() {
-    this.jobsService.getJobs(this.queryBody).subscribe({
-      next: (res: any) => {
-        // if(this.posts.length == 0){
-        //   this.posts = res.posts
-        // }else{
-        // }
-        this.posts = res.posts
-        // this.posts = this.posts.concat(res.posts)
-        this.totalPages = res.totalPages;
-        this.pages = Array(this.totalPages).fill(0).map((x,i)=>i+1)
-        this.job = res.posts[0];
-        if (this.loggedIn()) {
-          this.isSaved(res.posts[0]._id);
-        }
-      },
-      error: (e:any) =>{
-        console.log(e)
-      }
-    });
+    this.loading = true;
+    setTimeout(() => {
+      this.jobsService.getJobs(this.queryBody).subscribe({
+        next: (res: any) => {
+          if(this.queryBody.page == 1) this.job = res.posts[0]
+          if (this.loggedIn() && this.queryBody.page == 1) {
+            this.isSaved(res.posts[0]._id);
+          }
+          this.posts = this.posts.concat(res.posts);
+          this.totalPages = res.totalPages;
+          this.loading = false;
+        },
+        error: (e: any) => {
+          console.log(e);
+        },
+      });
+    }, 500);
   }
 
   getJob(id: any) {
@@ -206,40 +163,11 @@ export class HomeComponent implements OnInit {
       this.isSaved(id);
     }
   }
-  // // post options menu
-  // openMenu(e: any) {
-  //   const menus = document.querySelectorAll('.card--options-menu');
-  //   const btns = document.querySelectorAll('.card--options-toggle');
-  //   btns.forEach((btn) => btn.classList.remove('showMenu'));
-  //   menus.forEach((menu) => menu.classList.remove('show'));
-  //   btns.forEach((btn) => {
-  //     const currMenu = btn.nextSibling as HTMLElement;
-  //     if (e.target == btn) {
-  //       if (btn.getAttribute('aria-expanded') == 'false') {
-  //         btn.classList.add('showMenu');
-  //         currMenu.classList.add('show');
-  //         btn.setAttribute('aria-expanded', 'true');
-  //       } else {
-  //         btn.classList.remove('showMenu');
-  //         currMenu.classList.remove('show');
-  //         btn.setAttribute('aria-expanded', 'false');
-  //       }
-  //     }
-  //   });
-  // }
-
-  // // Save function
-  // saveJob(e: any, id: any) {}
-
+  index: number = 0;
   // Details function
-  showDetails(e: any, id: any, i: number) {
-    const posts = document.querySelectorAll('.card');
-    const current = e.target.closest('.card');
-
-    posts.forEach((post) => post.classList.remove('selected'));
-    current.classList.add('selected');
-
+  showDetails(id: any, i: number) {
     this.getJob(id);
+    this.index = i;
   }
 
   // Salary formatting
@@ -266,11 +194,6 @@ export class HomeComponent implements OnInit {
         hour: 'numeric',
         minute: '2-digit',
       }).format(date)}`;
-    // if (PassedDays <= 7) return `${PassedDays} days ago`;
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'numeric',
-      day: 'numeric',
-      weekday: 'short',
-    }).format(date);
+    return `${PassedDays} days ago`;
   };
 }

@@ -25,33 +25,12 @@ export class SavedJobsComponent implements OnInit {
         console.log(e);
       },
     });
-    setTimeout(async () => {
-      await this.updateJobPosts();
-    }, 50);
   }
 
   posts = new Array();
   job: JobPost = {};
   jobPosts!: NodeListOf<HTMLElement>;
 
-  // updateJobPosts() {
-  //   this.jobPosts = document.querySelectorAll('.card');
-  //   if (this.jobPosts.length > 0) {
-  //     this.jobPosts[0].classList.add('selected');
-  //   }
-  // }
-
-  async updateJobPosts() {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        this.jobPosts = document.querySelectorAll('.card');
-        if (this.jobPosts.length > 0) {
-          this.jobPosts[0].classList.add('selected');
-        }
-        resolve();
-      }, 0);
-    });
-  }
   
   async unSave(id: string) {
     const index = this.posts.indexOf(this.posts.find((el) => el._id == id));
@@ -59,15 +38,13 @@ export class SavedJobsComponent implements OnInit {
       this.posts.splice(index, 1);
       this.job = this.posts[0];
       this.job.checkSaved = true;
-      await this.updateJobPosts();
     }
   }
 
   // Details function
+  index = 0
   showDetails(e: any, id: any, i: number) {
-    const current = e.target.closest('.card');
-    this.jobPosts.forEach((post) => post.classList.remove('selected'));
-    current.classList.add('selected');
+    this.index = i;
     this.job = this.posts[i];
     this.job.checkSaved = true;
   }

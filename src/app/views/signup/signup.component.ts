@@ -50,24 +50,17 @@ export class SignupComponent implements OnInit {
     });
   }
 
-  effect(event: any) {
-    if (event.target.value != '') {
-      event.target.classList.add('active');
-    } else {
-      event.target.classList.remove('active');
-    }
-  }
-
+  show_pass:boolean = false
+  pass_state = '<span class="material-symbols-outlined">visibility</span>'
+  pass_type = 'password'
   showPass(event:any){
-    const passInput = document.querySelector('#password') as HTMLFormElement;
-    if(event.target.getAttribute('clicked') == 'false'){
-      event.target.setAttribute('clicked', 'true');
-      passInput.setAttribute('type', 'text');
-      event.target.textContent = 'Hide';
-    } else{
-      event.target.setAttribute('clicked', 'false');
-      passInput.setAttribute('type', 'password');
-      event.target.textContent = 'Show';
+    this.show_pass = !this.show_pass;
+    if(this.show_pass == true){
+      this.pass_type = 'text';
+      this.pass_state = '<span class="material-symbols-outlined">visibility_off</span>';
+    }else{
+      this.pass_type = 'password';
+      this.pass_state = '<span class="material-symbols-outlined">visibility</span>';
     }
   }
 

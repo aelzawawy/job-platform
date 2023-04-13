@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { fader, slider } from '../route-animations';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/interfaces/user';
 
@@ -18,18 +17,23 @@ import { User } from 'src/app/interfaces/user';
 })
 export class AppNavigationComponent implements OnInit {
   constructor(
-    private breakpointObserver: BreakpointObserver,
+    private observer: ObserverService,
     private userService: UserService
-  ) {}
+  ) {
+    this.isHandset$ = this.observer.isHandset$
+  }
+  isHandset$!: Observable<boolean>
   users: User[] = [];
   user: User = {};
   role?: string;
+  loading:boolean = false;
 
   ngOnInit(): void {
     if (this.loggedIn()) {
       this.userService.profile().subscribe({
         next: (res: any) => {
           this.user = res;
+          this.loading = true;
         },
         error: (err: any) => {
           console.log(err);
@@ -40,13 +44,6 @@ export class AppNavigationComponent implements OnInit {
       this.role = role || localStorage['role'];
     });
   }
-
-  isHandset$: Observable<boolean> = this.breakpointObserver
-    .observe([Breakpoints.XSmall, Breakpoints.Small])
-    .pipe(
-      map((result) => result.matches),
-      shareReplay()
-  );
 
   prepareRoute(outlet: RouterOutlet) {
     return (

@@ -36,11 +36,9 @@ export class ProfileComponent implements OnInit {
     this.userService.profile().subscribe({
       next: (res: any) => {
         if(res._id === this.user_toView_id) {
-          const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
           this.user = res;
           this.role = res.roles;
           this.userService.emitRole(res.roles);
-          image[0].src = `data:image/png;base64,${res.image}`;
         }else{
           this.userService.profileById(this.user_toView_id).subscribe({
             next: (res: any) => {
@@ -113,80 +111,8 @@ export class ProfileComponent implements OnInit {
   }
 
   openEdit(){
-    this.router.navigate([`/profile/${this.user._id}`], {queryParams: {edit: true}})
+    this.router.navigate([`/profile/${localStorage['id']}`], {queryParams: {edit: true}})
   }
-  
-  // search(event: any) {
-  //   const input = event.target.value;
-  //   if (input.length == 0) this.users = [];
-  //   this.userService.search(input?.trim()).subscribe({
-  //     next: (res: any) => {
-  //       this.users = res.filter((user: any) => user._id !== this.user._id);
-  //     },
-  //     error: (err: any) => {
-  //       console.log(err);
-  //     },
-  //   });
-  // }
-
-  // Hide users list when selecting one
-  // usersList(e: any) {
-  //   const user = e.target.closest('.user');
-  //   const siblings = user.closest('.users').querySelectorAll('.user');
-  //   const searchInput = document.querySelector(
-  //     '.searchInput'
-  //   ) as HTMLInputElement;
-  //   siblings.forEach((el: any) => {
-  //     if (el !== user) el.classList.add('slide-out');
-  //   });
-  //   searchInput.value = '';
-  // }
-
-  // Gettig selected user's id
-  // profileBiId(id: any) {
-  //   this.userService.profileById(id).subscribe({
-  //     next: (res: any) => {
-  //       this.toUser = res._id;
-  //     },
-  //     error: (err: any) => {
-  //       console.log(err);
-  //     },
-  //   });
-  // }
-
-  // toUser = '';
-  // msgForm = this.fb.group({
-  //   message: [],
-  //   search: [],
-  // });
-  // // Sending message to selected user
-  // message(data: any) {
-  //   this.userService.message(this.toUser, data).subscribe({
-  //     next: (res: any) => {
-  //       console.log(res);
-  //     },
-  //     error: (err: any) => {
-  //       console.log(err);
-  //     },
-  //   });
-  //   const msg = document.querySelector('.msgInput') as HTMLInputElement;
-  //   msg.value = '';
-  // }
-
-  // Default profile pic
-  // profilePic(image: any): boolean {
-  //   if (image) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  // bgPic(image: any): boolean {
-  //   if (image) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
   
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -201,38 +127,14 @@ export class ProfileComponent implements OnInit {
       this.user.email = body.email;
     })
 
-    // const image = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
-    // imageOut.forEach(el => el.src = URL.createObjectURL(this.profileImg))
-    //   function getBase64(file:any) {
-    //     var reader = new FileReader();
-    //     reader.readAsDataURL(file);
-    //     reader.onload = function () {
-    //       console.log(reader.result);
-    //     };
-    //     reader.onerror = function (error) {
-    //       console.log('Error: ', error);
-    //     };
-    //  }
-    //  getBase64(this.user.image)
-    // image[0].src = URL.createObjectURL(this.user.image);
-
-    // window.addEventListener('resize', () => {
-    //   if(window.innerWidth < 700){
-    //     this.expanded = false;
-    //   }else{
-    //     this.expanded = true;
-    //   }
-    // })
-
-    
     this.route.queryParamMap.subscribe((param) => {
-      if (param.get('edit') == 'true') {
+      if ((param.get('edit') == 'true')) {
         const dialogRef = this.dialog.open(EditProfileComponent, {
           width: '40%',
           height: '80%',
         });
         dialogRef.afterClosed().subscribe(result => {
-          this.router.navigateByUrl(`/profile/${this.user._id}`)
+          this.router.navigateByUrl(`/profile/${localStorage['id']}`)
         });
       }
       
