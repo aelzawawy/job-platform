@@ -3,7 +3,8 @@ const validator = require("validator");
 const { isValidPassword } = require("mongoose-custom-validators");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const fs = require('fs');
+const crypto = require("crypto");
+const fs = require("fs");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -32,27 +33,37 @@ const userSchema = new mongoose.Schema({
         "Passwords must have upper and lower case letters, at least 1 number and special character, not match or contain email, and be at least 8 characters long.",
     },
   },
+  // passwordConfirm: {
+  //   type: String,
+  //   required: true,
+  //   validate: {
+  //     validator: function(value){
+  //       return value === this.password;
+  //     },
+  //     message: "Passwords are not the same"
+  //   },
+  // },
   job_title: {
     type: String,
     trim: true,
     lowercase: true,
   },
-  Employment_type:{
+  Employment_type: {
     type: String,
     trim: true,
     lowercase: true,
   },
-  Company_name:{
+  Company_name: {
     type: String,
     trim: true,
     lowercase: true,
   },
-  job_Location:{
+  job_Location: {
     type: String,
     trim: true,
     lowercase: true,
   },
-  industry:{
+  industry: {
     type: String,
     trim: true,
     lowercase: true,
@@ -60,12 +71,20 @@ const userSchema = new mongoose.Schema({
   headline: {
     type: String,
     lowercase: true,
-    default: '--'
+  },
+  skills: [
+    {
+      type: String,
+      lowercase: true,
+    },
+  ],
+  experience: {
+    type: String,
+    lowercase: true,
   },
   location: {
     type: String,
     lowercase: true,
-    default: 'Egypt',
   },
   phone: {
     type: String,
@@ -93,9 +112,9 @@ const userSchema = new mongoose.Schema({
   ],
   messages: [
     {
-      id:String,
-      from:mongoose.Schema.Types.ObjectId,
-      to:mongoose.Schema.Types.ObjectId,
+      id: String,
+      from: mongoose.Schema.Types.ObjectId,
+      to: mongoose.Schema.Types.ObjectId,
       name: String,
       time: String,
       file: String,
@@ -106,7 +125,7 @@ const userSchema = new mongoose.Schema({
       },
       sent: {
         type: Boolean,
-        default: false
+        default: false,
       },
       message: {
         type: String,
@@ -116,7 +135,7 @@ const userSchema = new mongoose.Schema({
   ],
   contactList: [
     {
-      contact:mongoose.Schema.Types.ObjectId,
+      contact: mongoose.Schema.Types.ObjectId,
     },
   ],
   savedJobs: [
@@ -128,15 +147,18 @@ const userSchema = new mongoose.Schema({
   ],
   image: {
     type: Buffer,
-    default: fs.readFileSync('assets/34AD2.png'),
+    default: fs.readFileSync("assets/34AD2.png"),
   },
   backgoroundImage: {
     type: Buffer,
-    default: fs.readFileSync('assets/bg.jpg'),
+    default: fs.readFileSync("assets/bg.jpg"),
   },
   resume: {
     type: Buffer,
   },
+  passwordChanedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // user(Employer)-jobPosts relation
@@ -168,6 +190,26 @@ userSchema.methods.generateToken = function () {
   const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_WORD);
   return token;
 };
+
+// Password Reset Token
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
+
+// Update passwordChanedAt property
+userSchema.pre('save', function(next){
+  //! Exit if modified or when new document is created
+  if(!this.isModified('password') || this.isNew) return next();
+  //! To ensure tat the token is created after the password has been changed
+  this.passwordChanedAt = Date.now() - 1000; 
+  next();
+})
 
 // Not sending passwords to frontEnd
 userSchema.methods.toJSON = function () {

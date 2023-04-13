@@ -4,6 +4,7 @@ const JobPost = require("../models/jobPost");
 const auth = require("../middleware/auth");
 const User = require("../models/user");
 const axios = require("axios");
+const searchAPI = require("../api/jobs-api");
 const { Configuration, OpenAIApi } = require("openai");
 const natural = require("natural");
 const fs = require("fs");
@@ -28,10 +29,13 @@ router.post("/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
 router.post("/jobs-feed", async (req, res) => {
   try {
     const { page, limit, order } = req.body;
-    const posts = await JobPost.find({}).limit(limit * 1).skip((page - 1) * limit).sort({date: order});
+    const posts = await JobPost.find({})
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ date: order });
     const count = await JobPost.count();
     const totalPages = Math.ceil(count / limit);
-    res.status(200).send({posts, totalPages});
+    res.status(200).send({ posts, totalPages });
   } catch (e) {
     res.status(400).send(e.message);
   }
@@ -75,7 +79,7 @@ router.patch(
         new: true,
         runValidators: true,
       });
-      res.status(200).send({message: "success"});
+      res.status(200).send({ message: "success" });
     } catch (e) {
       res.status(400).send(e);
     }
@@ -106,8 +110,9 @@ router.get("/apply/:id", auth.userAuth, async (req, res) => {
     const jobPost = await JobPost.findById(_id);
 
     if (req.user._id.toString() == jobPost.employer.toString())
-      return res.send({message: "You posted this one, so you can't apply!!"});
-    if (!jobPost.available) return res.send({message: "job is not available anymore."});
+      return res.send({ message: "You posted this one, so you can't apply!!" });
+    if (!jobPost.available)
+      return res.send({ message: "job is not available anymore." });
 
     exists = function () {
       if (jobPost.applictions.length != 0) {
@@ -134,9 +139,9 @@ router.get("/apply/:id", auth.userAuth, async (req, res) => {
         notification: `${req.user.name} has applied for the ${jobPost.title} position. please update him on ${req.user.phone} ASAP!`,
       });
       await employer.save();
-      res.status(200).send({message: "Applied successfully✅"});
+      res.status(200).send({ message: "Applied successfully✅" });
     } else {
-      res.send({message: "Applied already!"});
+      res.send({ message: "Applied already!" });
     }
   } catch (err) {
     res.status(400).send(err.message);
@@ -284,11 +289,13 @@ router.get(
 // Save a job
 router.get("/save/:id", auth.userAuth, async (req, res) => {
   try {
-    const job = await JobPost.findById(req.params.id)
-    
+    const job = await JobPost.findById(req.params.id);
+
     const exists = function () {
       if (req.user.savedJobs.length != 0) {
-        return req.user.savedJobs.some(el => el._id.toString() == req.params.id);
+        return req.user.savedJobs.some(
+          (el) => el._id.toString() == req.params.id
+        );
       } else {
         return false;
       }
@@ -296,9 +303,9 @@ router.get("/save/:id", auth.userAuth, async (req, res) => {
     if (!exists()) {
       req.user.savedJobs.push(job);
       await req.user.save();
-      res.send({message: "Added to favourites✅"});
+      res.send({ message: "Added to favourites✅" });
     } else {
-      res.send({message: "Post Was already saved!"});
+      res.send({ message: "Post Was already saved!" });
     }
   } catch (err) {
     res.status(400).send(err.message);
@@ -310,7 +317,9 @@ router.get("/check_saved/:id", auth.userAuth, async (req, res) => {
   try {
     const exists = function () {
       if (req.user.savedJobs.length != 0) {
-        return req.user.savedJobs.some(el => el._id.toString() == req.params.id);
+        return req.user.savedJobs.some(
+          (el) => el._id.toString() == req.params.id
+        );
       } else {
         return false;
       }
@@ -328,14 +337,16 @@ router.get("/check_saved/:id", auth.userAuth, async (req, res) => {
 // Unsave a job
 router.get("/unSave/:id", auth.userAuth, async (req, res) => {
   try {
-    const index = req.user.savedJobs.indexOf(req.user.savedJobs.find(el => el._id.toString() == req.params.id));
-    
+    const index = req.user.savedJobs.indexOf(
+      req.user.savedJobs.find((el) => el._id.toString() == req.params.id)
+    );
+
     if (index == -1) {
       res.send("Was not saved to begin with!");
     } else {
       req.user.savedJobs.splice(index, 1);
       await req.user.save();
-      res.status(200).send({message: "Removed from favourites✅"});
+      res.status(200).send({ message: "Removed from favourites✅" });
     }
   } catch (err) {
     res.status(400).send(err.message);
@@ -343,93 +354,68 @@ router.get("/unSave/:id", auth.userAuth, async (req, res) => {
 });
 
 router.post("/api-search", async (req, res) => {
-  // try {
-  //   const { search_terms, location, country = "gb" } = req.body;
-  //   // const options = {
-  //   //   method: "POST",
-  //   //   url: "https://linkedin-jobs-search.p.rapidapi.com/",
-  //   //   headers: {
-  //   //     "content-type": "application/json",
-  //   //     "X-RapidAPI-Key": "96148c67fdmshce77d5c2d96ee31p14f301jsnc3ed3a645ded",
-  //   //     "X-RapidAPI-Host": "linkedin-jobs-search.p.rapidapi.com",
-  //   //   },
-  //   //   data: `{"search_terms":"${search_terms}","location":"${location}","page":"1"}`,
-  //   //   limit: 10
-  //   // };
-
-  //   // axios.request(options).then(function (response) {
-  //   //   res.status(200).send(response.data);
-  //   // })
-  //   // .catch(function (error) {
-  //   //   res.status(400).send(error);
-  //   // });
-
-
-  try{
+  try {
     const { search_terms, location, sort, country = "gb" } = req.body;
-    if(sort){
-      if(location == ''){
+    if (sort) {
+      if (location == "") {
         const posts = await JobPost.find({
           $or: [
-            { title: { $regex: `\\b${search_terms}\\b`} },
+            { title: { $regex: `\\b${search_terms}\\b` } },
             { description: { $regex: `\\b${search_terms}\\b` } },
-          ]
-        }).sort({date: -1});
+          ],
+        }).sort({ date: -1 });
         res.status(200).send(posts);
-      }else if(search_terms == ''){
+      } else if (search_terms == "") {
+        const posts = await JobPost.find({
+          $or: [{ location: { $regex: `\\b${location}\\b` } }],
+        }).sort({ date: -1 });
+        res.status(200).send(posts);
+      } else {
         const posts = await JobPost.find({
           $or: [
+            { title: { $regex: `\\b${search_terms}\\b` } },
+            { description: { $regex: `\\b${search_terms}\\b` } },
             { location: { $regex: `\\b${location}\\b` } },
           ],
-        }).sort({date: -1});
-        res.status(200).send(posts);
-      }else{
-        const posts = await JobPost.find({
-          $or: [
-            { title: { $regex: `\\b${search_terms}\\b`} },
-            { description: { $regex: `\\b${search_terms}\\b` } },
-            { location: { $regex: `\\b${location}\\b` } },
-          ]
-        }).sort({date: -1});
+        }).sort({ date: -1 });
         res.status(200).send(posts);
       }
-    }else{
-      if(location == ''){
+    } else {
+      if (location == "") {
         const posts = await JobPost.find({
           $or: [
-            { title: { $regex: `\\b${search_terms}\\b`} },
+            { title: { $regex: `\\b${search_terms}\\b` } },
             { description: { $regex: `\\b${search_terms}\\b` } },
-          ]
-        });
-        const sorted = await sortByRelevance(posts, search_terms);
-        res.status(200).send(sorted);
-      }else if(search_terms == ''){
-        const posts = await JobPost.find({
-          $or: [
-            { location: { $regex: `\\b${location}\\b` } },
           ],
         });
         const sorted = await sortByRelevance(posts, search_terms);
         res.status(200).send(sorted);
-      }else{
+      } else if (search_terms == "") {
+        const posts = await JobPost.find({
+          $or: [{ location: { $regex: `\\b${location}\\b` } }],
+        });
+        const sorted = await sortByRelevance(posts, search_terms);
+        res.status(200).send(sorted);
+      } else {
         const posts = await JobPost.find({
           $or: [
-            { title: { $regex: `\\b${search_terms}\\b`} },
+            { title: { $regex: `\\b${search_terms}\\b` } },
             { description: { $regex: `\\b${search_terms}\\b` } },
             { location: { $regex: `\\b${location}\\b` } },
-          ]
+          ],
         });
         const sorted = await sortByRelevance(posts, search_terms);
         res.status(200).send(sorted);
       }
     }
-  } catch (e){
+  } catch (e) {
     res.status(400).send(e.message);
   }
-  //   //////////////// ADZONA
+
+  //=>  ADZONA
   // const targetURL = `${process.env.BASE_URL}/${country.toLowerCase()}/${process.env.BASE_PARAMS}&app_id=${process.env.APP_ID}&app_key=${ process.env.API_KEY}&what=${search_terms}&where=${location}`;
   // axios.get(targetURL).then(async (response) => {
-  //     // const recommendedJobs = await getRecommendations(search_terms, location, response);
+  // const recommendedJobs = await getRecommendations(search_terms, location, response);
   //     res.send(response.data.results);
   //   }).catch((e) => {
   //     res.send(e);
@@ -437,18 +423,23 @@ router.post("/api-search", async (req, res) => {
 });
 
 async function sortByRelevance(jobs, keyword) {
+  const queryWords = keyword.toLowerCase().split(/\W+/);
   return jobs.sort((job1, job2) => {
-    // count the number of times the keyword appears in each job's title and description
-    const job1Matches = ((job1.title + ' ' + job1.description).match(new RegExp(keyword, 'gi')) || []).length;
-    const job2Matches = ((job2.title + ' ' + job2.description).match(new RegExp(keyword, 'gi')) || []).length;
-    
-    // sort the jobs by the number of matches, with the most matches first
+    let job1Matches = 0
+    let job2Matches = 0
+    queryWords.forEach((word) => {
+      job1Matches = (
+        (job1.title + " " + job1.description).match(new RegExp(word, "gi")) ||
+        []
+      ).length;
+      job2Matches = (
+        (job2.title + " " + job2.description).match(new RegExp(word, "gi")) ||
+        []
+      ).length;
+    });
     return job2Matches - job1Matches;
   });
 }
-
-
-
 
 // Define a function to match a job title or description to a list of keywords
 // function matchKeywords(text, keywords) {
@@ -471,7 +462,7 @@ async function sortByRelevance(jobs, keyword) {
 
 // Define a function to preprocess the job data
 // function preprocessJobData(jobs) {
-//   // Extract the relevant features from the job data
+// Extract the relevant features from the job data
 //   const features = jobs.map((job) => ({
 //     title: job.title,
 //     description: job.description,
@@ -480,7 +471,7 @@ async function sortByRelevance(jobs, keyword) {
 //     url:job.redirect_url,
 //   }));
 
-//   // Match each job to a category based on keywords in the title or description
+// Match each job to a category based on keywords in the title or description
 //   features.forEach((job) => {
 //     for (const [category, keywords] of Object.entries(categoryKeywords)) {
 //       if (matchKeywords(job.title, keywords) || matchKeywords(job.description, keywords)) {
@@ -518,21 +509,21 @@ async function sortByRelevance(jobs, keyword) {
 // }
 
 // async function getRecommendations(search_terms, location, response) {
-//  // Extract the search keywords from the query
+// Extract the search keywords from the query
 //  const keywords = `${search_terms} ${location}`;
 
-//  // Load the job data
+// Load the job data
 //  const jobData = await preprocessJobData(response.data.results);
- 
-//  // Filter the job data based on the keywords
+
+//Filter the job data based on the keywords
 //  const filteredJobs = filterJobsByKeywords(jobData, [search_terms, location]);
 
-//  // Sort the filtered jobs by relevance
+// Sort the filtered jobs by relevance
 //  const sortedJobs = sortJobsByRelevance(filteredJobs, keywords);
 
-//  // Return the top 10 recommended jobs
+// Return the top 10 recommended jobs
 //  const recommendedJobs = sortedJobs.slice(0, 10);
- 
+
 //  return recommendedJobs;
 // }
 

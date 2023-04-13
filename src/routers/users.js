@@ -5,13 +5,15 @@ const User = require("../models/user");
 const auth = require("../middleware/auth");
 const { set } = require("mongoose");
 const sharp = require("sharp");
-const { v4: uuidv4 } = require('uuid');
-
+const { v4: uuidv4 } = require("uuid");
+const sendEmail = require("../utils/email");
+const crypto = require("crypto");
 
 // profile image
 const upload = multer({
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|jfif)$/)) return cb(new Error({message: "Please upload an image."}));
+    if (!file.originalname.match(/\.(jpg|jpeg|png|jfif)$/))
+      return cb(new Error({ message: "Please upload an image." }));
     cb(null, true); // accept file
   },
 });
@@ -19,7 +21,9 @@ const upload = multer({
 const fileUpload = multer({
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\..+$/)) {
-      return cb(new Error({message: "Please upload a file with a valid extension."}));
+      return cb(
+        new Error({ message: "Please upload a file with a valid extension." })
+      );
     }
     cb(null, true); // accept file
   },
@@ -33,7 +37,7 @@ router.post(
     try {
       req.user.resume = req.file.buffer;
       await req.user.save();
-      res.status(200).send({message: "Success"})
+      res.status(200).send({ message: "Success" });
     } catch (e) {
       res.status(500).send(e.message);
     }
@@ -47,7 +51,9 @@ router.post(
   async (req, res) => {
     try {
       // To JPEG of 80%
-      const convertedImageBuffer = await sharp(req.file.buffer).jpeg({ quality: 80 }).toBuffer();
+      const convertedImageBuffer = await sharp(req.file.buffer)
+        .jpeg({ quality: 80 })
+        .toBuffer();
       req.user.image = convertedImageBuffer;
       await req.user.save();
       res.status(200).send();
@@ -75,7 +81,9 @@ router.post(
   async (req, res) => {
     try {
       // Convert the image to JPEG format with a quality of 40%
-      const convertedImageBuffer = await sharp(req.file.buffer).jpeg({ quality: 80 }).toBuffer();
+      const convertedImageBuffer = await sharp(req.file.buffer)
+        .jpeg({ quality: 80 })
+        .toBuffer();
       req.user.backgoroundImage = convertedImageBuffer;
       await req.user.save();
       res.status(200).send();
@@ -119,7 +127,62 @@ router.post("/login", async (req, res) => {
     const token = user.generateToken();
     res.status(200).send({ user, token });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send(e.message);
+  }
+});
+
+//! Forgot Password
+router.post("/forgotPassword", async (req, res) => {
+  try {
+    //todo 1: Get user bu his email address
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) return res.status(404).send("User not found");
+    // Generate token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // Send email
+    //* ${req.get("host")} (in Anguular) = http://localhost:4200
+    const resetURL = `${req.protocol}://localhost:4200/resetPassword/${resetToken}`;
+    await sendEmail({
+      email: user.email,
+      subject: "Password reset token",
+      message: `Your token is valid for 10 minutes only!\nClick the link to reset your password.\n${resetURL}\nIf you haven't forgotten your password, please ignore this email.`,
+    });
+    res.status(200).send({ message: "Email sent successfully" });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
+//! Reset Password
+router.patch("/resetPassword/:token", async (req, res) => {
+  try {
+    //todo 1: Get user based on token
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }, // Check if token isn't expired
+    });
+
+    //todo 2: Set a new password if token isn't expired and the user exists
+    if(!user){
+      return res.status(400).send("Invalid token or expired");
+    }
+    user.password = req.body.password;
+    user.passwordResetToken = undefined; // Reset
+    user.passwordResetExpires = undefined; // Reset
+    await user.save();
+
+    //todo 3: Update the passwordChanedAt porperty
+    //todo 4: redirect user to login
+    const token = user.generateToken();
+    res.status(200).send({message: 'Password has been changed successfully, you\'ll be redirected to login'});
+  } catch (e) {
+    res.status(400).send(e.message);
   }
 });
 
@@ -154,10 +217,12 @@ router.get("/profile", auth.userAuth, async (req, res) => {
 // Get cotacts
 router.get("/contacts", auth.userAuth, async (req, res) => {
   try {
-    const ids = req.user.contactList.map(el => el.contact.toString())
-    const contacts = await Promise.all(ids.map(async (id) => {
-      return await User.findById(id)
-    }))
+    const ids = req.user.contactList.map((el) => el.contact.toString());
+    const contacts = await Promise.all(
+      ids.map(async (id) => {
+        return await User.findById(id);
+      })
+    );
     res.status(200).send(contacts);
   } catch (err) {
     res.status(400).send(err.message);
@@ -192,101 +257,106 @@ router.get("/profile/:key", auth.userAuth, async (req, res) => {
 });
 
 // Sending messages
-router.post("/message/:id", auth.userAuth, fileUpload.single("file"), async (req, res) => {
-  try {
-    if (req.body.message == "" && !req.file) return;
-    const user = await User.findById(req.params.id);
-    const messageId = uuidv4();
-    const fileName = decodeURIComponent(req.body.encodedFileName);
-    let message = {};
-    
-    if(req.file){
-      file = Buffer.from(req.file.buffer).toString('base64');
-      message = {
-        id: messageId,
-        from: req.user._id,
-        to: req.params.id,
-        sent: true,
-        name: req.user.name,
-        time: Date.now(),
-        file: file,
-        file_size: `${bytesToSize(req.file.size)}`,
-        file_name: fileName,
-        message: req.body.message,
-      };
-      req.user.messages.push(message)
-      user.messages.push({
-        id: messageId,
-        from: req.user._id,
-        to: req.params.id,
-        name: req.user.name,
-        time: Date.now(),
-        file: file,
-        file_size: `${bytesToSize(req.file.size)}`,
-        file_name: fileName,
-        message: req.body.message,
-      });
-    }else{
-      message = {
-        id: messageId,
-        from: req.user._id,
-        to: req.params.id,
-        sent: true,
-        name: req.user.name,
-        time: Date.now(),
-        message: req.body.message,
+router.post(
+  "/message/:id",
+  auth.userAuth,
+  fileUpload.single("file"),
+  async (req, res) => {
+    try {
+      if (req.body.message == "" && !req.file) return;
+      const user = await User.findById(req.params.id);
+      const messageId = uuidv4();
+      const fileName = decodeURIComponent(req.body.encodedFileName);
+      let message = {};
+
+      if (req.file) {
+        file = Buffer.from(req.file.buffer).toString("base64");
+        message = {
+          id: messageId,
+          from: req.user._id,
+          to: req.params.id,
+          sent: true,
+          name: req.user.name,
+          time: Date.now(),
+          file: file,
+          file_size: `${bytesToSize(req.file.size)}`,
+          file_name: fileName,
+          message: req.body.message,
+        };
+        req.user.messages.push(message);
+        user.messages.push({
+          id: messageId,
+          from: req.user._id,
+          to: req.params.id,
+          name: req.user.name,
+          time: Date.now(),
+          file: file,
+          file_size: `${bytesToSize(req.file.size)}`,
+          file_name: fileName,
+          message: req.body.message,
+        });
+      } else {
+        message = {
+          id: messageId,
+          from: req.user._id,
+          to: req.params.id,
+          sent: true,
+          name: req.user.name,
+          time: Date.now(),
+          message: req.body.message,
+        };
+        req.user.messages.push(message);
+        user.messages.push({
+          id: messageId,
+          from: req.user._id,
+          to: req.params.id,
+          name: req.user.name,
+          time: Date.now(),
+          message: req.body.message,
+        });
       }
-      req.user.messages.push(message)
-      user.messages.push({
-        id: messageId,
-        from: req.user._id,
-        to: req.params.id,
-        name: req.user.name,
-        time: Date.now(),
-        message: req.body.message,
-      });
-    }
-    
-    const exists = function () {
-      if (user.contactList.length != 0 || req.user.contactList.length != 0) {
-        for (let other of user.contactList) {
-          for (let mine of req.user.contactList) {
-            if (
-              other.contact.toString() == req.user._id.toString() &&
-              mine.contact.toString() == req.params.id
-            ) {
-              return true;
+
+      const exists = function () {
+        if (user.contactList.length != 0 || req.user.contactList.length != 0) {
+          for (let other of user.contactList) {
+            for (let mine of req.user.contactList) {
+              if (
+                other.contact.toString() == req.user._id.toString() &&
+                mine.contact.toString() == req.params.id
+              ) {
+                return true;
+              }
             }
           }
+        } else {
+          return false;
         }
-      } else {
-        return false;
+      };
+
+      if (exists() != true) {
+        user.contactList.push({
+          contact: req.user._id,
+        });
+        req.user.contactList.push({
+          contact: req.params.id,
+        });
       }
-    };
 
-    if (exists() != true) {
-      user.contactList.push({
-        contact: req.user._id,
-      });
-      req.user.contactList.push({
-        contact: req.params.id,
-      });
+      await user.save();
+      await req.user.save();
+      res.status(200).send(message);
+    } catch (err) {
+      res.status(400).send(err.message);
     }
-
-    await user.save();
-    await req.user.save();
-    res.status(200).send(message);
-  } catch (err) {
-    res.status(400).send(err.message);
   }
-});
+);
 function bytesToSize(bytes) {
-  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes == 0) return 'n/a';
+  var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  if (bytes == 0) return "n/a";
   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  if (i == 0) return bytes + ' ' + sizes[i];
-  return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-};
+  if (i == 0) return bytes + " " + sizes[i];
+  return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
+}
 
 // delete messages
 router.get("/delMessage/:id", auth.userAuth, async (req, res) => {
@@ -294,7 +364,7 @@ router.get("/delMessage/:id", auth.userAuth, async (req, res) => {
     const msg = req.user.messages.find((msg) => msg.id == req.params.id);
     const user = await User.findById(msg.to.toString());
     const user_msg = user.messages.find((msg) => msg.id == req.params.id);
-    
+
     req.user.messages.splice(req.user.messages.indexOf(msg), 1);
     user.messages.splice(user.messages.indexOf(user_msg), 1);
     await req.user.save();

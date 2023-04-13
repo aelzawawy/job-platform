@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const jobSearch = (search_terms, location) => {
+const searchAPI = async (search_terms, location) => {
   const options = {
     method: "POST",
     url: "https://linkedin-jobs-search.p.rapidapi.com/",
@@ -9,7 +9,7 @@ const jobSearch = (search_terms, location) => {
       "X-RapidAPI-Key": "96148c67fdmshce77d5c2d96ee31p14f301jsnc3ed3a645ded",
       "X-RapidAPI-Host": "linkedin-jobs-search.p.rapidapi.com",
     },
-    data: `{"search_terms":"${search_terms}","location":"${location}","page":"2"}`,
+    data: `{"search_terms":"${search_terms}","location":"${location}","page":"1"}`,
   };
 
   axios
@@ -22,4 +22,4 @@ const jobSearch = (search_terms, location) => {
     });
 };
 
-module.exports = jobSearch;
+module.exports = searchAPI;
