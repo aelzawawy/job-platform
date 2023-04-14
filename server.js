@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
     //! [6] Checking if that contact is (online && opened my chat)
     //!     < online &&  his current contact is me >
     if(sendUserSocket && (user.currUser == toUser?.contact)){
-      socket.to(sendUserSocket).emit('message', {msg:message.msg, sent:false, time:Date.now()});
+      socket.to(sendUserSocket).emit('message', {msg:message.msg, sent:false, time:Date.now(), file: message.file, fileName: message.fileName, fileSize: message.fileSize});
     }
   });
   //! [1] Map all connected users to a "socket id"
