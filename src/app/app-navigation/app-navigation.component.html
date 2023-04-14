@@ -11,7 +11,7 @@
         <mat-icon mat-list-icon>favorite_border</mat-icon>
         <span>Saved Jobs</span>
       </mat-list-item>
-      <mat-list-item routerLinkActive="active" title="Post a job" class="employer" routerLink="/jobs-form">
+      <mat-list-item *ngIf="role == 'employer'" routerLinkActive="active" title="Post a job" class="employer" routerLink="/jobs-form">
         <mat-icon mat-list-icon>post_add</mat-icon>
         <span>Post a job</span>
       </mat-list-item>
@@ -19,7 +19,7 @@
   </mat-sidenav>
 
 
-  <mat-sidenav-content>
+  <mat-sidenav-content class="appContainer">
     <mat-toolbar>
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
         *ngIf="(isHandset$ | async) && loggedIn()">
@@ -29,13 +29,14 @@
 
       <button [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" mat-button routerLink="/">JobsFeed</button>
       <button mat-button *ngIf="loggedIn()" routerLinkActive="active" class="profile-box" [matMenuTriggerFor]="menu">
-        <img *ngIf="loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+        <img *ngIf="!loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
         <span>Me</span>
       </button>
-
-      <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/login">Login</button>
+      
       <button *ngIf="loggedIn()" routerLinkActive="active" mat-button title="Messaging" routerLink="/messaging"><mat-icon>mail</mat-icon></button>
+      <div style="flex:.97"></div>
       <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/employers">For Employers</button>
+      <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/login">Login</button>
 
       <mat-menu #menu="matMenu" [overlapTrigger]="false">
         <a mat-menu-item *ngIf="loggedIn()" routerLink="/profile/{{user._id}}">Profile</a>

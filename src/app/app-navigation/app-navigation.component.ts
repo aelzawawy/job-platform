@@ -23,25 +23,25 @@ export class AppNavigationComponent implements OnInit {
     this.isHandset$ = this.observer.isHandset$
   }
   isHandset$!: Observable<boolean>
-  users: User[] = [];
+  // users: User[] = [];
   user: User = {};
   role?: string;
   loading:boolean = false;
 
   ngOnInit(): void {
-    if (this.loggedIn()) {
+    this.loading = true;
+    this.userService.getRole().subscribe((role) => {
+      this.role = role || localStorage['role'];
       this.userService.profile().subscribe({
         next: (res: any) => {
           this.user = res;
-          this.loading = true;
+          // this.role = res.roles;
+          this.loading = false;
         },
         error: (err: any) => {
           console.log(err);
         },
       });
-    }
-    this.userService.getRole().subscribe((role) => {
-      this.role = role || localStorage['role'];
     });
   }
 
@@ -55,6 +55,8 @@ export class AppNavigationComponent implements OnInit {
 
   logOut() {
     localStorage.removeItem('token');
+    localStorage.removeItem('id');
+    localStorage.removeItem('role');
     this.loggedIn();
   }
   loggedIn(): boolean {

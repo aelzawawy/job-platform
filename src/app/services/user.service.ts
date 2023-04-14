@@ -11,7 +11,7 @@ export class UserService {
   constructor(private http:HttpClient) { }
   url:string= 'http://localhost:3000/';
   socket = io('http://localhost:3000/');
-  public message$: BehaviorSubject<string> = new BehaviorSubject('');
+  public message$: BehaviorSubject<any> = new BehaviorSubject('');
   public role$: BehaviorSubject<string> = new BehaviorSubject('');
   public body$: BehaviorSubject<any> = new BehaviorSubject('');
 
@@ -77,9 +77,12 @@ export class UserService {
     formData.append('message', message);
     formData.append('encodedFileName', encodedFileName);
     formData.append('file', file);
-    this.socket.emit('message', {msg: message, to: id});
+    
     return this.http.post(this.url + 'message/' + id, formData);
   }
+  emitMsg(id: any, message: any,file:any, file_name:any, file_size:any){
+    this.socket.emit('message', {msg: message, to: id, file: file, fileName: file_name, fileSize: file_size});
+  };
   
   getMsgs(id:any){
     return this.http.get(this.url + 'message/' + id);

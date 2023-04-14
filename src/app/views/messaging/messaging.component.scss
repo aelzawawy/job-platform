@@ -51,12 +51,24 @@ p{
 }
 
 .chat-sidebar {
+    position: relative;
     flex: .4;
 	background: #7386ff;
 	color: #fff;
 	overflow-y: auto;
     transition: all .3s;
-    
+    &-loading{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -70%);
+        padding: 5px 15px;
+        border-radius: 20px;
+        background-color: #474747;
+        color: #e6e9ff;
+        white-space: nowrap;
+        font-weight: 500;
+    }
     & h2 {
         font-size: 20px;
         background: rgba(0, 0, 0, 0.1);

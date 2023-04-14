@@ -19,8 +19,8 @@
                     <div class="userSearch--border"></div>
                 </div>
 
+                <div *ngIf="loadingContacts" class="chat-sidebar-loading">loading...</div>
                 <ul class="contacts">
-                    <div *ngIf="loadingContacts" class="chat-guideMsg">loading...</div>
                     <li [class.chat-hidden]="loadingContacts" *ngFor="let contact of contacts; let i=index"
                         class="contact" (click)="profileBiId($event,contact._id)">
                         <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{contact.image}}"

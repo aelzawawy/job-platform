@@ -10,7 +10,6 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as e from 'express';
 import { ApiJob } from 'src/app/interfaces/api-job';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { JobsService } from 'src/app/services/jobs.service';

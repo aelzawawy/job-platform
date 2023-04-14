@@ -35,7 +35,9 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         localStorage.setItem('token', res.token);
         localStorage.setItem('id', res.user._id);
-        this.router.navigateByUrl(`/profile/${res.user._id}`);
+        localStorage.setItem('role', res.user.roles);
+        this.userService.emitRole(res.user.roles);
+        this.router.navigateByUrl(`/`);
       },
       error: (err: any) => {
         if (err) this.invalidLogin = true;

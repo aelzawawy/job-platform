@@ -25,20 +25,17 @@ export class ProfileComponent implements OnInit {
   users: User[] = [];
   user: User = {};
   user_toView_id!:string;
-  role = '';
   profileImg: any;
   backgoroundImg: any;
   resume: any;
   expanded:boolean = true;
   toView:boolean = false;
-
+    
   profile() {
     this.userService.profile().subscribe({
       next: (res: any) => {
         if(res._id === this.user_toView_id) {
           this.user = res;
-          this.role = res.roles;
-          this.userService.emitRole(res.roles);
         }else{
           this.userService.profileById(this.user_toView_id).subscribe({
             next: (res: any) => {
@@ -118,15 +115,14 @@ export class ProfileComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.user_toView_id = params['id'];
       this.toView = localStorage['id'] == params['id']
+      this.profile();
     })
-    this.profile();
     this.userService.updatedProfile().subscribe((body) => {
       this.user.name = body.name;
       this.user.location = body.location;
       this.user.headline = body.headline;
       this.user.email = body.email;
     })
-
     this.route.queryParamMap.subscribe((param) => {
       if ((param.get('edit') == 'true')) {
         const dialogRef = this.dialog.open(EditProfileComponent, {

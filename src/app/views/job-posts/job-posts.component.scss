@@ -39,13 +39,11 @@
         }
     }
     &__details{
-        max-height: 40rem;
         position:  sticky;
         top: 6rem;
        
         flex: .6;
         & .card{
-            max-height: 40rem;
             overflow-y: auto;
             overscroll-behavior-y: auto;
             animation: fadeIn .5s ease-in-out;
