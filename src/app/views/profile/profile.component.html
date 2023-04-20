@@ -1,61 +1,59 @@
-<mat-drawer-container>
-    <div class="container">
-        <div class="bgPic">
-            <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
-                alt="backgoround picture">
+<div class="container">
+    <div class="bgPic">
+        <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
+            alt="backgoround picture">
 
-            <input accept="image/*" type="file" name="backgoroundImage" id="bgupload" (change)="uploadBgImg($event)">
-            <div *ngIf="toView" class="imgOptions">
-                <div title="Change_backgroung" class="imgOptions__icon" [matMenuTriggerFor]="menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
-                        fill="currentColor" class="mercado-match" width="30" height="30" focusable="false">
-                        <path
-                            d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
-                        </path>
-                    </svg>
-                </div>
-
-                <mat-menu #menu="matMenu">
-                    <label mat-menu-item for="bgupload">Change</label>
-                    <button mat-menu-item (click)="delBg()">Remove!</button>
-                </mat-menu>
+        <input accept="image/*" type="file" name="backgoroundImage" id="bgupload" (change)="uploadBgImg($event)">
+        <div *ngIf="toView" class="imgOptions">
+            <div title="Change_backgroung" class="imgOptions__icon" [matMenuTriggerFor]="menu">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                    fill="currentColor" class="mercado-match" width="30" height="30" focusable="false">
+                    <path
+                        d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                    </path>
+                </svg>
             </div>
 
+            <mat-menu #menu="matMenu">
+                <label mat-menu-item for="bgupload">Change</label>
+                <button mat-menu-item (click)="delBg()">Remove!</button>
+            </mat-menu>
         </div>
-        <div class="head">
-            <div class="pic">
-                <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
 
-                <input *ngIf="toView" accept="image/*" type="file" name="image" id="upload" (change)="uploadImg($event)">
-                <label *ngIf="toView" title="Change_picture" id="uploadImg" (click)="openDialog()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
-                        fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
-                        <path
-                            d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
-                        </path>
-                    </svg>
-                </label>
-            </div>
-            <button *ngIf="toView" title="Edit_Info!" mat-fab color="primary" aria-label="Edit profile" class="editProfile"
-                (click)="openEdit()">
-                <mat-icon>edit</mat-icon>
-            </button>
-        </div>
-        <div class="body">
-            <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
-            <p>{{user.headline}}</p>
-            <p>{{user.email}}</p>
-            <p style="text-transform: capitalize;">{{user.location}}</p>
+    </div>
+    <div class="head">
+        <div class="pic">
+            <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
 
-        </div>
-        <div *ngIf="toView" class="uploadResume">
-            <input style="display:none" accept=".pdf" type="file" name="resume" id="upload-resume"
-                (change)="uploadResume($event)">
-            <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
-                <b>Upload Resume</b>
-                <span class="material-symbols-outlined">check</span>
+            <input *ngIf="toView" accept="image/*" type="file" name="image" id="upload" (change)="uploadImg($event)">
+            <label *ngIf="toView" title="Change_picture" id="uploadImg" (click)="openDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                    fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
+                    <path
+                        d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                    </path>
+                </svg>
             </label>
         </div>
-        <a *ngIf="user.resume" id="resume" href="data:application/pdf;base64,{{user.resume}}" download="resume">Resume</a>
+        <button *ngIf="toView" title="Edit_Info!" mat-fab color="primary" aria-label="Edit profile" class="editProfile"
+            (click)="openEdit()">
+            <mat-icon>edit</mat-icon>
+        </button>
     </div>
-</mat-drawer-container>
+    <div class="body">
+        <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
+        <p>{{user.headline}}</p>
+        <p>{{user.email}}</p>
+        <p style="text-transform: capitalize;">{{user.location?.address}}</p>
+
+    </div>
+    <div *ngIf="toView" class="uploadResume">
+        <input style="display:none" accept=".pdf" type="file" name="resume" id="upload-resume"
+            (change)="uploadResume($event)">
+        <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
+            <b>Upload Resume</b>
+            <span class="material-symbols-outlined">check</span>
+        </label>
+    </div>
+    <a *ngIf="user.resume" id="resume" href="data:application/pdf;base64,{{user.resume}}" download="resume">Resume</a>
+</div>

@@ -1,5 +1,5 @@
-<div class="container h-100">
-    <div class="head">
+<div class="container h-100" [class.container-max-width]="(isHandsetMd$ | async)">
+    <div class="home_header">
         <div *ngIf="search_Warning" class="inputsEmpty">
             <p><svg xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" fill="currentColor"
                     viewBox="0 0 24 24" aria-hidden="true" class="css-1xqhio eac13zx0">
@@ -9,51 +9,69 @@
                 </svg>Enter a job title or location to start a search</p>
         </div>
         <form (submit)="jobSearch()" class="search-form">
-            <mat-form-field appearance="outline" class="form-field">
-                <span matPrefix><label for="what" class="search-form-label">What</label></span>
-                <input name="search_terms" id="what" placeholder="job title, keyword" matInput type="text"
-                    [(ngModel)]="search.search_terms">
-                <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
+            <div class="search-form--main">
+                <mat-form-field appearance="outline" class="form-field">
+                    <span matPrefix><label for="what" class="search-form-label">What</label></span>
+                    <input name="search_terms" id="what" placeholder="job title, keywords" matInput type="text"
+                        [(ngModel)]="search.search_terms" (ngModelChange)="search_Warning = false">
+                    <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field">
+                    <span matPrefix><label for="where" class="search-form-label">Where</label></span>
+                    <input name="Location" id="where" placeholder="Country or City" type="text" matInput
+                        [(ngModel)]="search.location" (ngModelChange)="search_Warning = false">
+                    <mat-icon matSuffix>map</mat-icon>
+                </mat-form-field>
+            </div>
 
-            <mat-form-field appearance="outline" class="form-field">
-                <span matPrefix><label for="where" class="search-form-label">Where</label></span>
-                <input name="Location" id="where" placeholder="Country or City" type="text" matInput
-                    [(ngModel)]="search.location">
-                <mat-icon matSuffix>map</mat-icon>
-            </mat-form-field>
+            <!-- <div class="search-form--feature">
+                <h1>Find jobs within an approximate radius from your current set location.</h1>
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Search radius</mat-label>
+                    <input matInput type="number" name="Radius" [(ngModel)]="search.radius" placeholder="o.o" [disabled]="!loggedIn()">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Unit</mat-label>
+                    <mat-select name="unit" [(ngModel)]="search.unit" [disabled]="!loggedIn()">
+                        <mat-option value="kilometre">kilometre</mat-option>
+                        <mat-option value="mile">mile</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
 
-            <button type="submit" mat-raised-button color="primary" class="search-form-submit">Find Jobs</button>
+            <button type="submit" mat-raised-button class="search-form-submit">Find Jobs</button>
         </form>
     </div>
 
     <div class="content">
-        <ul class="content__posts">
+        <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <li *ngFor="let post of posts; let i = index">
-                <div *ngIf="i != posts.length-1" (click)="showDetails(post._id, i)" class="card" [class.selected]="index == i">
+                <div *ngIf="i != posts.length-1" (click)="showDetails(post._id, i)" class="card"
+                    [class.selected]="index == i && !(isHandset$ | async)">
                     <div class="card-body">
                         <h5 class="title">{{post.title}}</h5>
                         <p>{{post.company}}</p>
-                        <p>{{post.location}}</p>
+                        <p>{{post.location?.address}}</p>
                         <div class="detail-row">
                             <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
                             <p class="detail-row--item">{{post.type}}</p>
                             <p class="detail-row--item" *ngIf="post.remote">Remote</p>
                         </div>
-                        <p class="post-date">Posted {{formatDate(post.date)}}</p>
+                        <p class="post-date">Posted {{post.date | date:'short'}}</p>
                     </div>
                 </div>
-                <div *ngIf="i == posts.length-1" (click)="showDetails(post._id, i)" class="card" #lastElement>
+                <div *ngIf="i == posts.length-1" (click)="showDetails(post._id, i)" class="card" #lastElement
+                    [class.selected]="index == i">
                     <div class="card-body">
                         <h5 class="title">{{post.title}}</h5>
                         <p>{{post.company}}</p>
-                        <p>{{post.location}}</p>
+                        <p>{{post.location?.address}}</p>
                         <div class="detail-row">
                             <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
                             <p class="detail-row--item">{{post.type}}</p>
                             <p class="detail-row--item" *ngIf="post.remote">Remote</p>
                         </div>
-                        <p class="post-date">Posted {{formatDate(post.date)}}</p>
+                        <p class="post-date">Posted {{post.date | date:'short'}}</p>
                     </div>
                 </div>
             </li>
@@ -63,7 +81,7 @@
             </div>
         </ul>
 
-        <div *ngIf="posts.length != 0" class="content__details">
+        <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
             <app-job-details [job]="job"></app-job-details>
         </div>
     </div>

@@ -1,17 +1,23 @@
 .sidenav-container {
-  height: 100%;
+  height: 100vh;
 }
 
 .sidenav {
   width: 200px;
-  background-color: rgb(228, 228, 228); ;
+  background-color: rgb(48, 120, 122);
+  color: white;
   box-shadow: 0px 0px 5px #525252fd;
+  .active {
+    color: white;
+  }
 }
 
-.sidenav .mat-toolbar {
+.sidenav .sidenav-logo {
+  width: 100%;
+  height: 64px;
+  line-height: 3;
+  text-align: center;
   background: inherit;
-  display: flex;
-  justify-content: center;
   font-weight: 500;
   font-size: 1.3rem;
   letter-spacing: 3px;
@@ -19,31 +25,46 @@
 .mat-drawer-side {
   border-right: none;
 }
-.mat-toolbar{
-  position: sticky;
+.mat-toolbar {
+  position: fixed;
   top: 0;
   z-index: 100;
-  margin-bottom: 2rem;
+  // margin-bottom: 1rem;
+  padding: 0;
   box-shadow: 0 2px 5px #00000038;
-  & > button{
+  & > button {
     font-size: 1.2rem;
   }
 }
-.spread{
+#logout{
+  padding-left: 5px;
+  padding-right: 3px;
+}
+.center {
+  width: 100%;
+  text-align: center;
+}
+.spread {
   padding-inline: 2rem;
   font-weight: 500;
   font-size: 1.3rem;
   letter-spacing: 3px;
 }
-.profile-box{
+.profile-box {
   display: flex;
   cursor: pointer;
   gap: 5px;
-  & span {
+  & span:first-of-type {
     margin-left: 5px;
   }
+  & span:last-of-type {
+    transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+    &.rotate {
+      transform: rotate(180deg);
+    }
+  }
 }
-.profile-pic{
+.profile-pic {
   width: 35px;
   aspect-ratio: 1/1;
   border-radius: 50%;
@@ -51,33 +72,80 @@
   object-fit: cover;
   object-position: center;
 }
-
-.active{
-  color: #ff4081;
-  // &::before{
-  //   transform: scaleX(1);
-  // }
-}
-
-// ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
-//   color: rgb(121, 214, 218);
-// }
-// ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
-//   color: rgb(68, 152, 155);
-// }
-
-@media (max-width: 320px){
-  .spread{
-    padding-inline: 0rem;
-    font-weight: 500;
-    font-size: 1.3rem;
-    letter-spacing: 1px;
-  }
-  .mat-button{
-    min-width: 0px;
-    padding: 0px 5px;
-  }
-  .profile-box span{
-    display: none;
+.matMenu {
+  width: 180px;
+  & > * {
+    text-align: center;
   }
 }
+
+.active {
+  color: rgb(68, 152, 155);
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: rgb(68, 152, 155);
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  margin: 0;
+  padding: 0;
+}
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-focused
+  .mat-form-field-outline-thick {
+  color: rgb(68, 152, 155);
+}
+
+.dock {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: rgb(48, 120, 122);
+  color: black;
+  gap: 1rem;
+  & > button {
+    height: 60px;
+
+    // text-align: center;
+    // vertical-align: middle;
+    line-height: 1;
+  }
+  .material-symbols-outlined {
+    font-size: 35px;
+  }
+  .active {
+    filter: drop-shadow(0px 0px 5px rgb(255, 255, 255));
+    color: rgb(255, 255, 255);
+  }
+  .active:last-of-type {
+    filter: drop-shadow(0px 0px 10px rgb(255, 255, 255));
+  }
+}
+
+// @media (max-width: 320px) {
+//   .spread {
+//     padding-inline: 0rem;
+//     font-weight: 500;
+//     font-size: 1.3rem;
+//     letter-spacing: 1px;
+//   }
+//   .mat-button {
+//     min-width: 0px;
+//     padding: 0px 5px;
+//   }
+//   .profile-box span {
+//     display: none;
+//   }
+// }
+// @media (min-width: 768px) {
+//   .container,
+//   .container-md,
+//   .container-sm {
+//     max-width: 900px;
+//   }
+// }

@@ -1,8 +1,10 @@
-import { Component, OnInit, AfterContentInit } from '@angular/core';
-import { JobsService } from 'src/app/services/jobs.service';
+import { AfterContentInit, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { JobPost } from 'src/app/interfaces/job-post';
+import { JobsService } from 'src/app/services/jobs.service';
+import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
-
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-saved-jobs',
   templateUrl: './saved-jobs.component.html',
@@ -11,15 +13,30 @@ import { UserService } from 'src/app/services/user.service';
 export class SavedJobsComponent implements OnInit {
   constructor(
     private jobsService: JobsService,
-    private userService: UserService
-  ) {}
-
+    private userService: UserService,
+    private observer: ObserverService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
+    this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
+  }
+  isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
   ngOnInit(): void {
+    this.isHandset$.subscribe((state) => {
+      this.ismobile = state;
+      setTimeout(() => {
+        if (!this.ismobile) {
+          this.showDetails(this.posts[0]._id, 0);
+        }
+      }, 100);
+    });
     this.userService.profile().subscribe({
       next: (res: any) => {
         this.posts = res.savedJobs.reverse();
         this.job = this.posts[0];
-        if (this.posts.length != 0) this.job.checkSaved = true;
+        if (this.posts.length != 0) this.isSaved = true;
       },
       error: (e: any) => {
         console.log(e);
@@ -29,24 +46,33 @@ export class SavedJobsComponent implements OnInit {
 
   posts = new Array();
   job: JobPost = {};
+  isSaved!: boolean;
+  ismobile: boolean = false;
   jobPosts!: NodeListOf<HTMLElement>;
 
-  
   async unSave(id: string) {
     const index = this.posts.indexOf(this.posts.find((el) => el._id == id));
     if (index != -1) {
       this.posts.splice(index, 1);
       this.job = this.posts[0];
-      this.job.checkSaved = true;
+      this.isSaved = true;
     }
   }
 
   // Details function
-  index = 0
-  showDetails(e: any, id: any, i: number) {
-    this.index = i;
-    this.job = this.posts[i];
-    this.job.checkSaved = true;
+  index = 0;
+  showDetails(id: any, i: number) {
+    this.jobsService.jobById(id).subscribe({
+      next: (res: any) => {
+        if (!this.ismobile) {
+          this.job = res;
+          this.index = i;
+        } else {
+          this.router.navigate([`/job/${id}`]);
+          this.jobsService.passJob(res)
+        }
+      },
+    });
   }
 
   // Salary formatting

@@ -1,22 +1,24 @@
 <h4>Edit info...</h4>
-<mat-form-field appearance="outline" class="form-field">
-    <mat-label>Name</mat-label>
-    <input matInput type="text" [(ngModel)]="body.name">
-</mat-form-field>
-<mat-form-field appearance="outline" class="form-field">
-    <mat-label>Email</mat-label>
-    <input type="email" matInput [(ngModel)]="body.email"  placeholder="Ex. pat@example.com">
-</mat-form-field>
-<mat-form-field appearance="outline" class="form-field">
-    <mat-label>Headline</mat-label>
-    <input matInput type="text" [(ngModel)]="body.headline">
-</mat-form-field>
-<mat-form-field appearance="outline" class="form-field">
-    <mat-label>Location</mat-label>
-    <input matInput type="text" [(ngModel)]="body.location">
-</mat-form-field>
-<mat-form-field appearance="outline" class="example-full-width form-field" >
-    <mat-label>Telephone</mat-label>
-    <input type="tel" [(ngModel)]="body.phone" matInput placeholder="5555-555-1234">
-</mat-form-field>
-<button style="float: right;" mat-raised-button color="primary" (click)="save()">Save</button>
+<form>
+    <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Name</mat-label>
+        <input name="name" matInput type="text" [(ngModel)]="body.name">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Email</mat-label>
+        <input name="email" type="email" matInput [(ngModel)]="body.email"  placeholder="Ex. pat@example.com">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Headline</mat-label>
+        <input name="headline" matInput type="text" [(ngModel)]="body.headline">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Location</mat-label>
+        <input name="location" matInput type="text" [(ngModel)]="body.location!.address">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="example-full-width form-field" >
+        <mat-label>Telephone</mat-label>
+        <input name="phone" type="tel" [(ngModel)]="body.phone" matInput placeholder="5555-555-1234">
+    </mat-form-field>
+    <button type="submit" style="float: right;" mat-raised-button color="primary" (click)="save()">Save</button>
+</form>

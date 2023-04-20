@@ -9,7 +9,13 @@ import { map, shareReplay } from 'rxjs/operators';
 export class ObserverService {
 
   isHandset$: Observable<boolean> = this.breakpointObserver
-    .observe([Breakpoints.XSmall, Breakpoints.Small])
+    .observe([Breakpoints.XSmall])
+    .pipe(
+      map((result) => result.matches),
+      shareReplay()
+  );
+  isHandsetMd$: Observable<boolean> = this.breakpointObserver
+    .observe([Breakpoints.Small])
     .pipe(
       map((result) => result.matches),
       shareReplay()

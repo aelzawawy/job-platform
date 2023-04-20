@@ -1,12 +1,13 @@
 .card {
-  min-height: 600px;
-  max-height: 910px;
-  height: 860px;
+  min-height: 550px;
+  max-height: 880px;
+  height: 550px;
   overflow-y: auto;
-  // overscroll-behavior-y: auto;
-  // animation: fadeIn 0.5s ease-in-out;
   flex: .6;
-  background-color: transparent;
+  &.no_backgound_border{
+    background-color: transparent;
+    border: none;
+  }
   &-head {
     padding: 1rem;
     padding-block: 1.5rem;
@@ -15,6 +16,15 @@
       display: flex;
       gap: 10px;
       padding-top: 10px;
+      & > button:first-of-type{
+        background-color: rgb(68, 152, 155);
+        color: white;
+      }
+      & > button:nth-of-type(2){
+        color: rgb(68, 152, 155);
+        border:solid 1px rgb(68, 152, 155);
+
+      }
       // & .save{
       //   background-color: rgb(230, 230, 230);
       //   border: none;
@@ -40,25 +50,28 @@
 
     }
   }
-  & .detail-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 0.5px solid #e4e2e0;
-    &--item {
-      background-color: transparent;
-      font-weight: 400;
-      margin: 0;
-      border-radius: 3px;
-      padding: 1px 10px;
-      background-color: rgb(235, 235, 235);
+  &-body{
+    height: 500px;
+    & .detail-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 0.5px solid #e4e2e0;
+      &--item {
+        background-color: transparent;
+        font-weight: 400;
+        margin: 0;
+        border-radius: 3px;
+        padding: 1px 10px;
+        background-color: rgb(235, 235, 235);
+      }
     }
-  }
-  & p {
-    margin-bottom: 0%;
+    & p {
+      margin-bottom: 0%;
+    }
   }
 }
 .job-location{

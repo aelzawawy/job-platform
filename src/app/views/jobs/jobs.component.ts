@@ -1,67 +1,103 @@
 import { Component, OnInit } from '@angular/core';
-import { JobsService } from 'src/app/services/jobs.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { JobPost } from 'src/app/interfaces/job-post';
+import { JobsService } from 'src/app/services/jobs.service';
+import { ObserverService } from 'src/app/services/observer.service';
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
-  styleUrls: ['./jobs.component.scss']
+  styleUrls: ['./jobs.component.scss'],
 })
-export class JobsComponent implements OnInit{
+export class JobsComponent implements OnInit {
   constructor(
     private jobsService: JobsService,
     private router: Router,
     private route: ActivatedRoute,
-  ){}
-  ngOnInit():void{
+    private observer: ObserverService
+  ) {
+    this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
+  }
+  isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
+  ngOnInit(): void {
+    this.isHandset$.subscribe((state) => {
+      this.ismobile = state;
+      setTimeout(() => {
+        if (!this.ismobile) {
+          this.showDetails(this.posts[0]._id, 0);
+        }
+      }, 100);
+    });
     this.route.queryParams.subscribe((params) => {
       this.search = {
         search_terms: params['q'],
         location: params['i'],
+        radius: params['radius'],
+        unit: params['unit'],
         sort: params['sort'],
       };
       this.sortByDate = Boolean(params['sort']);
-      if(this.search.search_terms == '' && this.search.location == ''){
+      if (this.search.search_terms == '' && this.search.location == '') {
         this.search_Warning = true;
         return;
       }
-  
+
       this.search_Warning = false;
       this.jobsService.searchApi(this.search).subscribe({
         next: async (res: any) => {
           if (res.length != 0) {
             this.posts = res;
             this.job = res[0];
-            this.isSaved(res[0]._id);
-          }else{
-            this.posts = []
+          } else {
+            this.posts = [];
           }
         },
         error: (e: any) => {
           console.log(e);
         },
       });
-    })
+    });
   }
 
   posts: JobPost[] = [];
   job: JobPost = {};
   job_Posts!: NodeListOf<HTMLElement>;
-  search_Warning!:boolean;
-  sortByDate:boolean = false
+  search_Warning!: boolean;
+  sortByDate: boolean = false;
   search = {
     search_terms: '',
     location: '',
+    radius: 0,
+    unit: '',
     sort: '',
   };
-
-  sort(e:any){
-    this.router.navigate(['/jobs'], {queryParams: {q: this.search.search_terms, i: this.search.location, sort: 'date'}});
+  ismobile: boolean = false;
+  sort(e: any) {
+    this.router.navigate(['/jobs'], {
+      queryParams: {
+        q: this.search.search_terms,
+        i: this.search.location,
+        radius: this.search.radius,
+        unit: this.search.unit,
+        sort: 'date',
+      },
+    });
   }
-  index = 0
-  showDetails(e: any, id: any, i: number) {
-    this.index = i
-    this.getJob(id);
+  index = 0;
+  showDetails(id: any, i: number) {
+    this.jobsService.jobById(id).subscribe({
+      next: (res: any) => {
+        if (!this.ismobile) {
+          this.job = res;
+          this.index = i;
+        } else {
+          this.router.navigate([`/job/${id}`]);
+          this.jobsService.passJob(res);
+        }
+      },
+    });
   }
 
   loggedIn(): boolean {
@@ -75,20 +111,6 @@ export class JobsComponent implements OnInit{
     this.jobsService.jobById(id).subscribe({
       next: (res: any) => {
         this.job = res;
-      },
-    });
-    if (this.loggedIn()) {
-      this.isSaved(id);
-    }
-  }
-
-  isSaved(id:any){
-    this.jobsService.checkSaved(id).subscribe({
-      next: (res: any) => {
-        this.job.checkSaved = res;
-      },
-      error: (e: any) => {
-        console.log(e);
       },
     });
   }

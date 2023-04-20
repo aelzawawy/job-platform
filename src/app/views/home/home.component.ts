@@ -10,10 +10,12 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { ApiJob } from 'src/app/interfaces/api-job';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { JobsService } from 'src/app/services/jobs.service';
-// import { last } from 'rxjs';
+import { ObserverService } from 'src/app/services/observer.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -22,14 +24,20 @@ import { JobsService } from 'src/app/services/jobs.service';
 })
 export class HomeComponent implements OnInit, AfterViewInit {
   constructor(
+    private observer: ObserverService,
     private jobsService: JobsService,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
-
+    private route: ActivatedRoute,
+    private userService: UserService
+  ) {
+    this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
+  }
+  isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
   @ViewChildren('lastElement', { read: ElementRef })
   lastElement!: QueryList<ElementRef>;
-  observer:any;
+  observeIntersection: any;
   posts: JobPost[] = [];
   apiPosts: ApiJob[] = [];
   job: JobPost = {};
@@ -41,10 +49,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
   search_Warning: boolean = false;
   totalPages!: number;
   pages!: number[];
+  ismobile: boolean = false;
 
   search = {
     search_terms: '',
     location: '',
+    radius: undefined,
+    unit: '',
   };
   queryBody = {
     page: 1,
@@ -53,16 +64,36 @@ export class HomeComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
+    this.isHandset$.subscribe((state) => {
+      this.ismobile = state;
+      setTimeout(() => {
+        if(!this.ismobile){
+          this.showDetails(this.posts[0]._id, 0)
+        }
+      }, 100);
+    });
+    this.route.params.subscribe((params) => {
+      if (params['id'] && params['token']) {
+        this.userService.verify(params['id'], params['token']).subscribe({
+          next: (res: any) => {
+            alert(`${res.message}`);
+            // this.state = res.message
+          },
+          error: (e: any) => {
+            alert(`${e.error.message}`);
+          },
+        });
+      }
+    });
     this.jobPosts();
-    this.observer = new IntersectionObserver(
+    this.observeIntersection = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            if (this.queryBody.page <= this.totalPages) {
-              this.jobPosts();
-              this.queryBody.page++;
-            }
+          if (e.isIntersecting && this.queryBody.page <= this.totalPages) {
+            this.queryBody.page++;
+            this.jobPosts();
           }
+          if (!this.observe) this.observeIntersection.unobserve(e.target);
         });
       },
       {
@@ -75,7 +106,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.lastElement.changes.subscribe((list) => {
-      if(list.last) this.observer.observe(list.last.nativeElement);
+      if (list.last && this.posts.length >= this.queryBody.limit)
+        this.observeIntersection.observe(list.last.nativeElement);
     });
   }
 
@@ -91,17 +123,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  isSaved(id: any) {
-    this.jobsService.checkSaved(id).subscribe({
-      next: (res: any) => {
-        this.job.checkSaved = res;
-      },
-      error: (e: any) => {
-        console.log(e);
-      },
-    });
-  }
-
   // Search api
   jobSearch() {
     if (this.search.search_terms == '' && this.search.location == '') {
@@ -109,21 +130,49 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return;
     }
     this.router.navigate(['/jobs'], {
-      queryParams: { q: this.search.search_terms, i: this.search.location },
+      queryParams: {
+        q: this.search.search_terms.trim(),
+        i: this.search.location.trim(),
+        radius: this.search.radius,
+        unit: this.search.unit,
+      },
     });
-    this.jobsService.searchApi(this.search).subscribe({
-      next: async (res: any) => {
-        if (res.length == 0) {
+    // this.jobsService.searchApi(this.search).subscribe({
+    //   next: async (res: any) => {
+    //     if (res.length == 0) {
+    //       this.loading = false;
+    //       return;
+    //     }else{
+    //       this.job = res[0];
+    //       this.isSaved(res[0]._id);
+    //       this.posts = res;
+    //     }
+
+    //     // this.loading = false;
+    //     // localStorage.setItem('apiRes', JSON.stringify(res));
+    //   },
+    //   error: (e: any) => {
+    //     console.log(e);
+    //   },
+    // });
+  }
+  observe: boolean = true;
+  // Display posts
+  jobPosts() {
+    this.loading = true;
+    this.jobsService.getJobs(this.queryBody).subscribe({
+      next: (res: any) => {
+        if (res.posts.length < this.queryBody.limit) this.observe = false;
+        if (res.posts.length == 0) {
           this.loading = false;
           return;
-        }else{
-          this.job = res[0];
-          this.isSaved(res[0]._id);
-          this.posts = res;
         }
-
-        // this.loading = false;
-        // localStorage.setItem('apiRes', JSON.stringify(res));
+        if (this.queryBody.page == 1 && !this.ismobile) {
+          this.showDetails(res.posts[0]._id, 0);
+        }
+        this.posts = this.posts.concat(res.posts);
+        this.totalPages = res.totalPages;
+        this.loading = false;
       },
       error: (e: any) => {
         console.log(e);
@@ -131,42 +180,20 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Display posts
-  jobPosts() {
-    this.loading = true;
-    setTimeout(() => {
-      this.jobsService.getJobs(this.queryBody).subscribe({
-        next: (res: any) => {
-          if(this.queryBody.page == 1) this.job = res.posts[0]
-          if (this.loggedIn() && this.queryBody.page == 1) {
-            this.isSaved(res.posts[0]._id);
-          }
-          this.posts = this.posts.concat(res.posts);
-          this.totalPages = res.totalPages;
-          this.loading = false;
-        },
-        error: (e: any) => {
-          console.log(e);
-        },
-      });
-    }, 500);
-  }
-
-  getJob(id: any) {
-    this.jobsService.jobById(id).subscribe({
-      next: (res: any) => {
-        this.job = res;
-      },
-    });
-    if (this.loggedIn()) {
-      this.isSaved(id);
-    }
-  }
   index: number = 0;
   // Details function
   showDetails(id: any, i: number) {
-    this.getJob(id);
-    this.index = i;
+    this.jobsService.jobById(id).subscribe({
+      next: (res: any) => {
+        if (!this.ismobile) {
+          this.job = res;
+          this.index = i;
+        } else {
+          this.router.navigate([`/job/${id}`]);
+          this.jobsService.passJob(res)
+        }
+      },
+    });
   }
 
   // Salary formatting

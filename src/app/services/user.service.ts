@@ -24,6 +24,11 @@ export class UserService {
   resetPassword(token:string, password:string){
     return this.http.patch(this.url + 'resetPassword/' + token, {password})
   }
+
+  verify(id:string, token:string){
+    return this.http.get(`${this.url}verify/${id}/${token}`)
+  }
+
   getContacts(){
     return this.http.get(this.url + 'contacts')
   };

@@ -8,16 +8,22 @@ import { JobPost } from 'src/app/interfaces/job-post';
   providedIn: 'root'
 })
 export class JobsService {
-
   constructor(private http:HttpClient) { }
   url:string= 'http://localhost:3000/';
   socket = io('http://localhost:3000/');
   public saveRm$: BehaviorSubject<string> = new BehaviorSubject('');
+  public job$: BehaviorSubject<JobPost> = new BehaviorSubject({});
 
   getJobs(body:any){
     return this.http.post(this.url + 'jobs-feed', body)
   };
 
+  public passJob = (res:any) => {
+    this.job$.next(res);
+  }
+  getPassedJob = () => {
+    return this.job$.asObservable();
+  }
   jobById(id:any){
     return this.http.get(this.url + 'jobs-feed/' + id)
   }
@@ -78,5 +84,8 @@ export class JobsService {
 
   searchApi(body:any){
     return this.http.post(`${this.url}api-search`, body)
+  }
+  geoSearch(body:any){
+    return this.http.get(`${this.url}api-search/search_terms/${body.search_terms}/location/${body.location}/radius/${body.radius}/unit/${body.unit}/sort/${body.sort}`)
   }
 }

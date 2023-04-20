@@ -13,9 +13,11 @@ import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
 import { JobsComponent } from './views/jobs/jobs.component';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
+import { JobDetailsComponent } from './views/job-details/job-details.component';
 
 const routes: Routes = [
   {path:'', component:HomeComponent, data:{animation:'isHome'}},
+  {path:'verify/:id/:token', component:HomeComponent, data:{animation:'isHome'}},
   {path:'jobs', component:JobsComponent, data:{animation:'jobs'}},
   {path:'signup', component:SignupComponent, data:{animation:'isSignup'}, canActivate:[AuthGuardService]},
   {path:'login', component:LoginComponent, data:{animation:'isLogin'}, canActivate:[AuthGuardService]},
@@ -27,6 +29,7 @@ const routes: Routes = [
   {path: 'saved-jobs', component:SavedJobsComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path: 'jobs-form', component:JobPostsFormComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
   {path: 'resetPassword/:token', component:ResetPasswordComponent, data:{animation:'isLeft'}},
+  {path: 'job/:id', component:JobDetailsComponent, data:{animation:'isTop'}},
 ];
 
 @NgModule({

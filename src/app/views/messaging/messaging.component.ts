@@ -26,12 +26,14 @@ export class MessagingComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute
   ) {
     this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
   }
   @ViewChildren('topMsg', { read: ElementRef })
   topMsg!: QueryList<ElementRef>;
   @ViewChild('chat', { read: ElementRef })
   chat!: ElementRef;
   isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
   intersectionObserver: any;
   users: User[] = [];
   contacts: User[] = [];
@@ -94,6 +96,7 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   search_value = '';
   profileBiId(e: any, id: any) {
     this.router.navigate([`/messaging`], { queryParams: { contact: id } });
+    this.search_value = ''
     this.users = [];
   }
 
@@ -101,14 +104,14 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   sendMsg() {
     if (this.message == '' && !this.file) return;
     this.userService
-      .message(this.toUser._id, this.message, this.file)
-      .subscribe({
-        next: async (res: any) => {
-          this.userService.emitMsg(this.toUser._id, res.message, res.file, res.file_name, res.file_size)
-          await new Promise<void>((resolve) => {
-            this.msgs.unshift({
-              id: res.id,
-              message: res.message,
+    .message(this.toUser._id, this.message, this.file)
+    .subscribe({
+      next: async (res: any) => {
+        this.userService.emitMsg(this.toUser._id, res.message, res.file, res.file_name, res.file_size)
+        await new Promise<void>((resolve) => {
+          this.msgs.unshift({
+            id: res.id,
+            message: res.message,
               time: res.time,
               file: res.file,
               sent: res.sent,
@@ -218,10 +221,10 @@ export class MessagingComponent implements OnInit, AfterViewInit {
           if (e.isIntersecting) {
             this.userService.getMsgs(contact).subscribe({
               next: (res: any) => {
+                this.page++;
                 this.msgs = this.msgs.concat(
                   res.reverse().splice(15 * this.page, 15)
                 );
-                this.page++;
               },
               error: (err: any) => {
                 console.log(err);

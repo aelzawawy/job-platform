@@ -23,7 +23,9 @@ p{
 	border: 0;
 }
 
-
+.container-max-width{
+    max-width: calc(100vw - 10px);
+}
 .chat-container {
 	max-width: 1100px;
 	background: #fff;
@@ -44,8 +46,10 @@ p{
 
 .chat-main {
     position: relative;
-    min-height: min(650px, 100vh - 182px);
+    min-height: min(640px, 100vh - 182px);
     max-height: min(650px, 100vh - 182px);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 	display: flex;
     background-color: #a9b4fc;
 }
@@ -54,6 +58,8 @@ p{
     position: relative;
     flex: .4;
 	background: #7386ff;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 	color: #fff;
 	overflow-y: auto;
     transition: all .3s;

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, NavigationError, NavigationStart, RouterOutlet } from '@angular/router';
 import { fader, slider } from '../route-animations';
 import { Observable } from 'rxjs';
 import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/interfaces/user';
-
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-app-navigation',
   templateUrl: './app-navigation.component.html',
@@ -18,30 +18,51 @@ import { User } from 'src/app/interfaces/user';
 export class AppNavigationComponent implements OnInit {
   constructor(
     private observer: ObserverService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-    this.isHandset$ = this.observer.isHandset$
+    this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
   }
-  isHandset$!: Observable<boolean>
-  // users: User[] = [];
+  isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
   user: User = {};
   role?: string;
-  loading:boolean = false;
-
+  loading: boolean = false;
+  expanded:boolean = false
   ngOnInit(): void {
+  //   this.router.events.subscribe((event) => {
+  //     if (event instanceof NavigationStart) {
+  //         // Show progress spinner or progress bar
+  //         console.log(event.url.includes);
+  //     }
+
+  //     if (event instanceof NavigationEnd) {
+  //         // Hide progress spinner or progress bar      
+  //         console.log(event);
+  //     }
+
+  //     if (event instanceof NavigationError) {
+  //         // Hide progress spinner or progress bar
+  //         // Present error to user
+  //         console.log(event.error);
+  //     }
+  // });
     this.loading = true;
     this.userService.getRole().subscribe((role) => {
       this.role = role || localStorage['role'];
-      this.userService.profile().subscribe({
-        next: (res: any) => {
-          this.user = res;
-          // this.role = res.roles;
-          this.loading = false;
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      });
+      if (this.loggedIn()) {
+        this.userService.profile().subscribe({
+          next: (res: any) => {
+            this.user = res;
+            this.loading = false;
+          },
+          error: (err: any) => {
+            console.log(err);
+          },
+        });
+      }
     });
   }
 
@@ -54,9 +75,8 @@ export class AppNavigationComponent implements OnInit {
   }
 
   logOut() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('id');
-    localStorage.removeItem('role');
+    localStorage.clear()
+    this.router.navigateByUrl(`/`);
     this.loggedIn();
   }
   loggedIn(): boolean {

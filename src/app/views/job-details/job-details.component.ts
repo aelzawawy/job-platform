@@ -16,7 +16,10 @@ import {
 } from '@angular/material/snack-bar';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { JobsService } from 'src/app/services/jobs.service';
-
+import { ObserverService } from 'src/app/services/observer.service';
+import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { json } from 'express';
 @Component({
   selector: 'app-job-details',
   templateUrl: './job-details.component.html',
@@ -25,42 +28,67 @@ import { JobsService } from 'src/app/services/jobs.service';
 export class JobDetailsComponent implements OnInit, OnChanges {
   constructor(
     private jobsService: JobsService,
-    private _snackBar: MatSnackBar
-  ) {}
-  @HostListener('window:resize', ['$event'])
-  onWindowResize() {
-    const headHeight = (
-      document.querySelector('.head') as HTMLElement
-    ).getBoundingClientRect().height;
-    let height = window.innerHeight - headHeight + 96;
-    this.container_style = { height: `${height}px` };
+    private _snackBar: MatSnackBar,
+    private observer: ObserverService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
+    this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
   }
+ 
+  isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
   ngOnInit(): void {
-    // let height = 660
-    document.querySelector('.appContainer')?.addEventListener('scroll', (e) => {
-      const headHeight = (
-        document.querySelector('.head') as HTMLElement
-      ).getBoundingClientRect().height;
-      const detailsHeight = (
-        document.querySelector('.content__details') as HTMLElement
-      ).getBoundingClientRect();
-      // const scrollPosition = (e.target as Element).scrollTop
-      // if(detailsHeight.top < 90){
-      //   // height = window.innerHeight - headHeight + 96
-      //   this.container_style = { height: `${window.innerHeight - headHeight + 96}px` };
-      // }
-    });
+    this.route.paramMap.subscribe((params)=>{
+      if(params.get('id')){
+        this.isHandset$.subscribe((state) => {
+          this.ismobile = state;
+          setTimeout(() => {
+            if(!this.ismobile && params.get('id')){
+              this.router.navigate([`/`]);
+            }
+          }, 0);
+        });
+        this.jobsService.getPassedJob().subscribe(async (res) => {
+          if(Object.keys(res).length == 0) this.router.navigate([`/`]);
+          localStorage.setItem('currPost', JSON.stringify(res)) 
+          await this.checkSaved(res._id)
+          this.job = res 
+        })
+      }
+    })
   }
-  container_style = {};
-  posts: JobPost[] = [];
+  isSaved!:boolean
+  ismobile!:boolean
+  myId = localStorage['id']
   @Input() job: JobPost = {};
 
   ngOnChanges(changes: SimpleChanges) {
-    // if (changes['job']) {
+    if (changes['job'] && localStorage['token']) {
     //*    The ngOnChanges() hook is a good choice for this, since it is called whenever an @Input property changes.
-    // }
+    this.checkSaved(this.job._id)
+    }
   }
 
+  async checkSaved(id:any){
+    if (this.loggedIn()){
+      this.jobsService.checkSaved(id).subscribe({
+        next: (res: any) => {
+          this.isSaved = res;
+        },
+        error: (e: any) => {
+          console.log(e);
+        },
+      });
+    }
+  }
+  loggedIn(): boolean {
+    if (localStorage['token']) {
+      return true;
+    }
+    return false;
+  }
   @Output() unSave = new EventEmitter<string>();
   durationInSeconds = 5;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -90,7 +118,7 @@ export class JobDetailsComponent implements OnInit, OnChanges {
   }
 
   saveJob(id: any) {
-    if (!this.job.checkSaved) {
+    if (!this.isSaved) {
       this.jobsService.saveJob(id).subscribe({
         next: (res: any) => {
           setTimeout(() => {
@@ -113,7 +141,7 @@ export class JobDetailsComponent implements OnInit, OnChanges {
         },
       });
       setTimeout(() => {
-        this.job.checkSaved = !this.job.checkSaved;
+        this.isSaved = !this.isSaved;
       }, 800);
     } else {
       this.jobsService.unSaveJob(id).subscribe({
@@ -138,7 +166,7 @@ export class JobDetailsComponent implements OnInit, OnChanges {
         },
       });
       setTimeout(() => {
-        this.job.checkSaved = !this.job.checkSaved;
+        this.isSaved = !this.isSaved;
       }, 800);
     }
   }

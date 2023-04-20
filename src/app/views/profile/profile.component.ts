@@ -5,7 +5,8 @@ import { User } from 'src/app/interfaces/user';
 import { FormBuilder, FormControl } from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import { EditProfileComponent } from 'src/app/edit-profile/edit-profile.component';
-import { Location } from '@angular/common';
+import { Observable } from 'rxjs';
+import { ObserverService } from 'src/app/services/observer.service';
 // import {Subscription} from 'rxjs';
 @Component({
   selector: 'app-profile',
@@ -17,10 +18,15 @@ export class ProfileComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location,
     private fb: FormBuilder,
-    public dialog: MatDialog
-  ) {}
+    public dialog: MatDialog,
+    private observer: ObserverService,
+  ) {
+    this.isHandset$ = this.observer.isHandset$;
+    this.isHandsetMd$ = this.observer.isHandsetMd$;
+  }
+  isHandset$!: Observable<boolean>;
+  isHandsetMd$!: Observable<boolean>;
   // routeQueryParams$: Subscription;
   users: User[] = [];
   user: User = {};
@@ -40,6 +46,7 @@ export class ProfileComponent implements OnInit {
           this.userService.profileById(this.user_toView_id).subscribe({
             next: (res: any) => {
               this.user = res;
+              console.log(res)
             },
             error: (err: any) => {
               console.log(err);
@@ -118,15 +125,17 @@ export class ProfileComponent implements OnInit {
       this.profile();
     })
     this.userService.updatedProfile().subscribe((body) => {
+      if(body == '') return;
+      this.dialog.closeAll()
       this.user.name = body.name;
-      this.user.location = body.location;
+      this.user.location!.address = body.location.address;
       this.user.headline = body.headline;
       this.user.email = body.email;
     })
     this.route.queryParamMap.subscribe((param) => {
       if ((param.get('edit') == 'true')) {
         const dialogRef = this.dialog.open(EditProfileComponent, {
-          width: '40%',
+          width: '100%',
           height: '80%',
         });
         dialogRef.afterClosed().subscribe(result => {
