@@ -1,6 +1,6 @@
 <div class="container" [class.container-max-width]="(isHandsetMd$ | async)">
     <h3 *ngIf="posts.length == 0">You haven't posted any jobs yet!</h3>
-    <div class="content" *ngIf="posts.length != 0">
+    <div class="content" *ngIf="posts.length != 0"  style="opacity: 1; transform: translateY(0px);">
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <li *ngFor="let post of posts; let i = index">
                 <div (click)="showDetails($event, i)" class="card" [class.selected]="index == i && !(isHandset$ | async)">

@@ -3,7 +3,7 @@
     [attr.role]="(isHandsetMd$ | async) ? 'dialog' : 'navigation'" [mode]="((isHandset$ | async) || (isHandsetMd$ | async)) ? 'over' : 'side'"
     [opened]="(isHandset$ | async) === false && (isHandsetMd$ | async) === false && loggedIn()">
     <div class="sidenav-logo" *ngIf="(isHandsetMd$ | async) || !loggedIn() || (!(isHandsetMd$ | async) && !(isHandset$ | async) && loggedIn())">inREACH</div>
-    <mat-nav-list>
+    <mat-nav-list style="margin-top: 50px;">
       <mat-list-item routerLinkActive="active" title="Job Posts"
         *ngIf="user.roles == 'employer' && ((isHandset$ | async) || (isHandsetMd$ | async))" routerLink="/jobPosts" (click)="drawer.toggle()">
         <mat-icon mat-list-icon>folder</mat-icon>
@@ -48,8 +48,7 @@
 
   </mat-sidenav>
 
-
-  <mat-sidenav-content class="appContainer">
+  <mat-sidenav-content class="appContainer" (scroll)="isScrolling($event)" style="scroll-behavior: smooth;">
     <mat-toolbar>
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
         *ngIf="((isHandset$ | async) || (isHandsetMd$ | async)) && loggedIn()">

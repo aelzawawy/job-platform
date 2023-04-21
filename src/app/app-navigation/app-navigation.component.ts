@@ -31,6 +31,7 @@ export class AppNavigationComponent implements OnInit {
   role?: string;
   loading: boolean = false;
   expanded:boolean = false
+  fadeUpClass:boolean = false
   ngOnInit(): void {
   //   this.router.events.subscribe((event) => {
   //     if (event instanceof NavigationStart) {
@@ -65,7 +66,9 @@ export class AppNavigationComponent implements OnInit {
       }
     });
   }
-
+  isScrolling(e:any){
+    this.fadeUpClass = true
+  }
   prepareRoute(outlet: RouterOutlet) {
     return (
       outlet &&

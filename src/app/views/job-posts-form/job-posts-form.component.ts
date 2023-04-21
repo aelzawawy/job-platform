@@ -38,7 +38,7 @@ export class JobPostsFormComponent implements OnInit {
         this.formControl.patchValue({
           title: `${body.title}`,
           description: `${body.description}`,
-          location: `${body.location}`,
+          location: `${body.location?.address}`,
           salary: `${body.salary || 0}`,
           company: `${body.company}`,
           remote: body.remote,
@@ -91,7 +91,6 @@ export class JobPostsFormComponent implements OnInit {
       if (this.edit) {
         this.jobsService.updateJOb(this.id, body).subscribe({
           next: (res: any) => {
-            // console.log(res.message);
             this.router.navigateByUrl('/jobPosts');
           },
           error: (err: any) => {
