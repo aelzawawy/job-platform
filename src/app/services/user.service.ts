@@ -9,8 +9,8 @@ import { io } from "socket.io-client";
 export class UserService {
 
   constructor(private http:HttpClient) { }
-  url:string= 'http://localhost:3000/';
-  socket = io('http://localhost:3000/');
+  url:string= 'https://inreach-api.onrender.com/';
+  socket = io('https://inreach-api.onrender.com/');
   public message$: BehaviorSubject<any> = new BehaviorSubject('');
   public role$: BehaviorSubject<string> = new BehaviorSubject('');
   public body$: BehaviorSubject<any> = new BehaviorSubject('');

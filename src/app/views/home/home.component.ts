@@ -67,7 +67,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
       setTimeout(() => {
-        if(!this.ismobile){
+        if(!this.ismobile && this.posts.length !=0){
           this.showDetails(this.posts[0]._id, 0)
         }
         this.loadingSvg = true;
