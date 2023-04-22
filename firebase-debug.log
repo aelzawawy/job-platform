@@ -1,65 +1,13 @@
-[debug] [2023-04-22T06:24:38.285Z] ----------------------------------------------------------------------
-[debug] [2023-04-22T06:24:38.289Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\AhmedElzawawy\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
-[debug] [2023-04-22T06:24:38.290Z] CLI Version:   11.28.0
-[debug] [2023-04-22T06:24:38.291Z] Platform:      win32
-[debug] [2023-04-22T06:24:38.291Z] Node Version:  v18.14.2
-[debug] [2023-04-22T06:24:38.293Z] Time:          Sat Apr 22 2023 08:24:38 GMT+0200 (Eastern European Standard Time)
-[debug] [2023-04-22T06:24:38.294Z] ----------------------------------------------------------------------
+[debug] [2023-04-22T07:56:39.260Z] ----------------------------------------------------------------------
+[debug] [2023-04-22T07:56:39.264Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\AhmedElzawawy\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2023-04-22T07:56:39.265Z] CLI Version:   11.28.0
+[debug] [2023-04-22T07:56:39.265Z] Platform:      win32
+[debug] [2023-04-22T07:56:39.265Z] Node Version:  v18.14.2
+[debug] [2023-04-22T07:56:39.266Z] Time:          Sat Apr 22 2023 09:56:39 GMT+0200 (Eastern European Standard Time)
+[debug] [2023-04-22T07:56:39.267Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2023-04-22T06:24:38.384Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2023-04-22T06:24:38.385Z] > authorizing via signed-in user (aelzawawy45@gmail.com)
-[debug] [2023-04-22T06:24:38.385Z] [iam] checking project inreach-2ddfe for permissions ["firebase.projects.get","firebasehosting.sites.update"]
-[debug] [2023-04-22T06:24:38.387Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/inreach-2ddfe:testIamPermissions [none]
-[debug] [2023-04-22T06:24:38.388Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/inreach-2ddfe:testIamPermissions x-goog-quota-user=projects/inreach-2ddfe
-[debug] [2023-04-22T06:24:38.388Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/inreach-2ddfe:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2023-04-22T06:24:39.319Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/inreach-2ddfe:testIamPermissions 200
-[debug] [2023-04-22T06:24:39.320Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/inreach-2ddfe:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
-[debug] [2023-04-22T06:24:39.321Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe [none]
-[debug] [2023-04-22T06:24:39.685Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe 200
-[debug] [2023-04-22T06:24:39.686Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe {"projectId":"inreach-2ddfe","projectNumber":"901469643846","displayName":"inReach","name":"projects/inreach-2ddfe","resources":{"hostingSite":"inreach-2ddfe"},"state":"ACTIVE","etag":"1_3f4c528c-6b57-4129-91d5-0a5b7159c03b"}
-[info] 
-[info] === Deploying to 'inreach-2ddfe'...
-[info] 
-[info] i  deploying hosting 
-[debug] [2023-04-22T06:24:39.694Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/inreach-2ddfe/versions [none]
-[debug] [2023-04-22T06:24:39.694Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/inreach-2ddfe/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
-[debug] [2023-04-22T06:24:41.038Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/inreach-2ddfe/versions 200
-[debug] [2023-04-22T06:24:41.038Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/inreach-2ddfe/versions {"name":"projects/901469643846/sites/inreach-2ddfe/versions/87b5ddac935f654d","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
-[info] i  hosting[inreach-2ddfe]: beginning deploy... 
-[info] i  hosting[inreach-2ddfe]: found 28 files in dist/in_reach 
-[debug] [2023-04-22T06:24:41.058Z] [hosting] uploading with 200 concurrency
-[debug] [2023-04-22T06:24:41.070Z] [hosting] hash cache [ZGlzdFxpbl9yZWFjaA] stored for 28 files
-[debug] [2023-04-22T06:24:41.070Z] [hosting][hash queue][FINAL] {"max":4,"min":1,"avg":1,"active":0,"complete":28,"success":28,"errored":0,"retried":0,"total":28,"elapsed":8}
-[debug] [2023-04-22T06:24:41.071Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/901469643846/sites/inreach-2ddfe/versions/87b5ddac935f654d:populateFiles [none]
-[debug] [2023-04-22T06:24:41.071Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/901469643846/sites/inreach-2ddfe/versions/87b5ddac935f654d:populateFiles {"files":{"/3rdpartylicenses.txt":"fab5d7951ff0255480557036b5c474052a2e271eeda59669edea04ff7b5400c5","/favicon.ico":"2c19690e9587bae12f419b34d2edeecc76808099540a9c9f4ea6194116cfc8f7","/index.html":"3d4b6c475d731b5e923f5823744cce4b9f94e6e8c1eaf6bee492a9b7801ac3cb","/main.cbe6a3d6fdcfb902.js":"62daa086971c5e0c69c82e5c84e45ff7f89f9c387391182d119779870a378ee3","/manifest.webmanifest":"bd82b2c9093cdaacf5e67d9d66202ba5a3b64caf2e766b5124deef9f80cb39e8","/ngsw-worker.js":"58af08f7c7a96ed5b4686c4bdc5bbf1bc0ea814b46b01bb0e6bbd4944b373185","/ngsw.json":"9bb3eedd1b820a67651884ac3da448bd3aa8a5fb4dc2d0a7c4ad1ebd674385eb","/polyfills.8648c55acdfe15da.js":"7f8257e100fbc42f9f03611ee051e7c1227827b32166fc476128e911b7cfa4d3","/runtime.cf649258c91c802d.js":"6c6bf5898d29e20e98d47a57e19c69a274d60308ed5b310d9c3f07410e1c489f","/safety-worker.js":"c6b39c5706f2a5d51e9a5de484c7aa0fdb06444572c7544f92a21fd16620ebf7","/scripts.c91eedceb4883133.js":"7aafdb0695fa7e1f431ced35ebd10c0e29768154f97439700d3784db520b6070","/styles.3db6c3009b98930a.css":"8abe019459817924080c4084478136ba12b3b43ddb76266239fdb1f6d3c5e02b","/worker-basic.min.js":"c6b39c5706f2a5d51e9a5de484c7aa0fdb06444572c7544f92a21fd16620ebf7","/assets/icons/34AD2.png":"2c87741e58ea105ecdc4dc9096c020a137d9fc6452a35e7681fc04a6bb012fbc","/assets/icons/Aglaonema.jpg":"defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4","/assets/icons/bg.jpg":"ebe2d65409d251f3d9bbc39ab043bae333ab621745166bed9c3890ccb812b7be","/assets/icons/icon-128x128.png":"1331bbcee85eb4c732d2b2468c0118ead141aa56c741dc1a93a54d4812e79d4d","/assets/icons/icon-144x144.png":"ab4052ca6640d9378a090b7a6825df604c939ec738dae88d89500aee8eb7087f","/assets/icons/icon-152x152.png":"b1cb2eb328c9eedac5eb3994d04c73040c462a73cf7254c38eafa2d582a078d6","/assets/icons/icon-192x192.png":"5b2471e9386f4fe3dcf1d2151c7048c3cc22d3c504161debeca3af3a2efd0a04","/assets/icons/icon-384x384.png":"e28ae36bf6b6f9c9a5eb8716806f3077d2932c9723f89d0c0275fbde43dcdce9","/assets/icons/icon-512x512.png":"cb62ee904d0aa462c04667e945abbefe928c1c874d9a919ec237f3ebc1822dc9","/assets/icons/icon-72x72.png":"215a8d62891dff36be3e0a554c28e627bbd34dea95aca21b718414452b581dce","/assets/icons/icon-96x96.png":"5dbec692238f9b1305461df3fe87c910306d95db26941804b8929cd0d99bd508","/assets/icons/icons8-edit-64.png":"7a45c5a728f68ac74cdff219835acb8fffe97030a32dc8e229bf4e1554618f4f","/assets/icons/icons8-pencil-64.png":"6a3815125ed4ec4c6f1f70bf7346af9578a96b468fb24630c1f86d1a264db25a","/assets/icons/icons8-remove-60.png":"4ddf00037bd687bb316ff837f599d875061add59dea8dfe95c31f2d80a76b348","/assets/icons/mail-svgrepo-com.svg":"ad9f9b4b9344cdb748ceacc99e489295a227a9046b0b6282f58a4c4ad7421f02"}}
-[debug] [2023-04-22T06:24:42.177Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/901469643846/sites/inreach-2ddfe/versions/87b5ddac935f654d:populateFiles 200
-[debug] [2023-04-22T06:24:42.177Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/901469643846/sites/inreach-2ddfe/versions/87b5ddac935f654d:populateFiles {"uploadRequiredHashes":["defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files"}
-[debug] [2023-04-22T06:24:42.180Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [none]
-[debug] [2023-04-22T06:24:42.180Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [stream]
-[debug] [2023-04-22T06:24:42.183Z] [hosting][populate queue][FINAL] {"max":1113,"min":1113,"avg":1113,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1116}
-[debug] [2023-04-22T06:24:42.184Z] [hosting] uploads queued: 1
-[debug] [2023-04-22T06:25:12.594Z] [uploadQueue] Retrying task defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4
-[debug] [2023-04-22T06:25:12.595Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [none]
-[debug] [2023-04-22T06:25:12.595Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [stream]
-[debug] [2023-04-22T06:25:43.418Z] [uploadQueue] Retrying task defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4
-[debug] [2023-04-22T06:25:43.421Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [none]
-[debug] [2023-04-22T06:25:43.421Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [stream]
-[debug] [2023-04-22T06:26:15.037Z] [uploadQueue] Retrying task defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4
-[debug] [2023-04-22T06:26:15.038Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [none]
-[debug] [2023-04-22T06:26:15.038Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [stream]
-[debug] [2023-04-22T06:26:48.257Z] [uploadQueue] Retrying task defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4
-[debug] [2023-04-22T06:26:48.260Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [none]
-[debug] [2023-04-22T06:26:48.260Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/inreach-2ddfe/versions/87b5ddac935f654d/files/defe98a53cb9c29a6849b16e60f37d8c04a095a31d8ffd257eaacfaf980481c4 [stream]
-[debug] [2023-04-22T06:34:05.921Z] ----------------------------------------------------------------------
-[debug] [2023-04-22T06:34:05.924Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\AhmedElzawawy\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init hosting
-[debug] [2023-04-22T06:34:05.925Z] CLI Version:   11.28.0
-[debug] [2023-04-22T06:34:05.925Z] Platform:      win32
-[debug] [2023-04-22T06:34:05.925Z] Node Version:  v18.14.2
-[debug] [2023-04-22T06:34:05.926Z] Time:          Sat Apr 22 2023 08:34:05 GMT+0200 (Eastern European Standard Time)
-[debug] [2023-04-22T06:34:05.926Z] ----------------------------------------------------------------------
-[debug] 
-[debug] [2023-04-22T06:34:06.007Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2023-04-22T06:34:06.007Z] > authorizing via signed-in user (aelzawawy45@gmail.com)
+[debug] [2023-04-22T07:56:39.386Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-04-22T07:56:39.387Z] > authorizing via signed-in user (aelzawawy45@gmail.com)
 [info] 
      ######## #### ########  ######## ########     ###     ######  ########
      ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
@@ -69,9 +17,116 @@
 
 You're about to initialize a Firebase project in this directory:
 
-  E:\VS-Code\inReach-API\inReach
+  E:\vs-Code\inReach-API\inReach
 
 Before we get started, keep in mind:
 
   * You are initializing within an existing Firebase project directory
 
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2023-04-22T07:56:50.979Z] Using project from CLI flag: inreach-2ddfe
+[debug] [2023-04-22T07:56:50.982Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe [none]
+[debug] [2023-04-22T07:56:51.413Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe 200
+[debug] [2023-04-22T07:56:51.414Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe {"projectId":"inreach-2ddfe","projectNumber":"901469643846","displayName":"inReach","name":"projects/inreach-2ddfe","resources":{"hostingSite":"inreach-2ddfe"},"state":"ACTIVE","etag":"1_e53e322c-743d-45da-8055-7381d9a4d270"}
+[info] i  Using project inreach-2ddfe (inReach) 
+[info] 
+=== Hosting Setup
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[debug] [2023-04-22T07:57:23.184Z] >>> [apiv2][query] GET https://www.gstatic.com/firebasejs/releases.json [none]
+[debug] [2023-04-22T07:57:23.372Z] <<< [apiv2][status] GET https://www.gstatic.com/firebasejs/releases.json 200
+[debug] [2023-04-22T07:57:23.373Z] <<< [apiv2][body] GET https://www.gstatic.com/firebasejs/releases.json {"current":{"version":"9.20.0","browserURL":"https://www.gstatic.com/firebasejs/9.20.0/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/9.20.0/firebase.tgz"},"live":{"version":"9.20","browserURL":"https://www.gstatic.com/firebasejs/live/9.20/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/live/9.20/firebase.tgz"},"components":{"analytics":"https://www.gstatic.com/firebasejs/9.20.0/firebase-analytics.js","app":"https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js","app-check":"https://www.gstatic.com/firebasejs/9.20.0/firebase-app-check.js","auth":"https://www.gstatic.com/firebasejs/9.20.0/firebase-auth.js","auth/cordova":"https://www.gstatic.com/firebasejs/9.20.0/firebase-auth/cordova.js","auth/react-native":"https://www.gstatic.com/firebasejs/9.20.0/firebase-auth/react-native.js","functions":"https://www.gstatic.com/firebasejs/9.20.0/firebase-functions.js","firestore":"https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.js","firestore/lite":"https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore/lite.js","installations":"https://www.gstatic.com/firebasejs/9.20.0/firebase-installations.js","storage":"https://www.gstatic.com/firebasejs/9.20.0/firebase-storage.js","performance":"https://www.gstatic.com/firebasejs/9.20.0/firebase-performance.js","remote-config":"https://www.gstatic.com/firebasejs/9.20.0/firebase-remote-config.js","messaging":"https://www.gstatic.com/firebasejs/9.20.0/firebase-messaging.js","messaging/sw":"https://www.gstatic.com/firebasejs/9.20.0/firebase-messaging/sw.js","database":"https://www.gstatic.com/firebasejs/9.20.0/firebase-database.js","firestore.memory":"https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.memory.js"}}
+[info] +  Wrote dist/in_reach/index.html 
+[info] 
+[info] i  Detected a .git folder at E:\vs-Code\inReach-API\inReach 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=136570381&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2023-04-22T07:57:24.272Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2023-04-22T07:57:24.272Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2023-04-22T07:57:24.712Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2023-04-22T07:57:24.712Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2023-04-22T07:57:24.723Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2023-04-22T07:57:25.158Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2023-04-22T07:57:25.158Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"aelzawawy","id":58807444,"node_id":"MDQ6VXNlcjU4ODA3NDQ0","avatar_url":"https://avatars.githubusercontent.com/u/58807444?v=4","gravatar_id":"","url":"https://api.github.com/users/aelzawawy","html_url":"https://github.com/aelzawawy","followers_url":"https://api.github.com/users/aelzawawy/followers","following_url":"https://api.github.com/users/aelzawawy/following{/other_user}","gists_url":"https://api.github.com/users/aelzawawy/gists{/gist_id}","starred_url":"https://api.github.com/users/aelzawawy/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/aelzawawy/subscriptions","organizations_url":"https://api.github.com/users/aelzawawy/orgs","repos_url":"https://api.github.com/users/aelzawawy/repos","events_url":"https://api.github.com/users/aelzawawy/events{/privacy}","received_events_url":"https://api.github.com/users/aelzawawy/received_events","type":"User","site_admin":false,"name":"Ahmed Ali","company":null,"blog":"","location":null,"email":null,"hireable":null,"bio":null,"twitter_username":null,"public_repos":8,"public_gists":0,"followers":0,"following":0,"created_at":"2019-12-12T08:42:58Z","updated_at":"2023-04-22T05:40:02Z","private_gists":0,"total_private_repos":2,"owned_private_repos":2,"disk_usage":28943,"collaborators":0,"two_factor_authentication":false,"plan":{"name":"free","space":976562499,"collaborators":0,"private_repos":10000}}
+[info] 
+[info] +  Success! Logged into GitHub as aelzawawy 
+[info] 
+[debug] [2023-04-22T07:59:51.988Z] ----------------------------------------------------------------------
+[debug] [2023-04-22T07:59:51.991Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\AhmedElzawawy\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2023-04-22T07:59:51.992Z] CLI Version:   11.28.0
+[debug] [2023-04-22T07:59:51.992Z] Platform:      win32
+[debug] [2023-04-22T07:59:51.993Z] Node Version:  v18.14.2
+[debug] [2023-04-22T07:59:51.994Z] Time:          Sat Apr 22 2023 09:59:51 GMT+0200 (Eastern European Standard Time)
+[debug] [2023-04-22T07:59:51.994Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-04-22T07:59:52.100Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-04-22T07:59:52.101Z] > authorizing via signed-in user (aelzawawy45@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  E:\vs-Code\inReach-API\inReach
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2023-04-22T07:59:57.528Z] Using project from CLI flag: inreach-2ddfe
+[debug] [2023-04-22T07:59:57.532Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe [none]
+[debug] [2023-04-22T07:59:57.984Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe 200
+[debug] [2023-04-22T07:59:57.984Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/inreach-2ddfe {"projectId":"inreach-2ddfe","projectNumber":"901469643846","displayName":"inReach","name":"projects/inreach-2ddfe","resources":{"hostingSite":"inreach-2ddfe"},"state":"ACTIVE","etag":"1_e53e322c-743d-45da-8055-7381d9a4d270"}
+[info] i  Using project inreach-2ddfe (inReach) 
+[info] 
+=== Hosting Setup
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[debug] [2023-04-22T08:00:13.960Z] >>> [apiv2][query] GET https://www.gstatic.com/firebasejs/releases.json [none]
+[debug] [2023-04-22T08:00:14.133Z] <<< [apiv2][status] GET https://www.gstatic.com/firebasejs/releases.json 200
+[debug] [2023-04-22T08:00:14.133Z] <<< [apiv2][body] GET https://www.gstatic.com/firebasejs/releases.json {"current":{"version":"9.20.0","browserURL":"https://www.gstatic.com/firebasejs/9.20.0/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/9.20.0/firebase.tgz"},"live":{"version":"9.20","browserURL":"https://www.gstatic.com/firebasejs/live/9.20/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/live/9.20/firebase.tgz"},"components":{"analytics":"https://www.gstatic.com/firebasejs/9.20.0/firebase-analytics.js","app":"https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js","app-check":"https://www.gstatic.com/firebasejs/9.20.0/firebase-app-check.js","auth":"https://www.gstatic.com/firebasejs/9.20.0/firebase-auth.js","auth/cordova":"https://www.gstatic.com/firebasejs/9.20.0/firebase-auth/cordova.js","auth/react-native":"https://www.gstatic.com/firebasejs/9.20.0/firebase-auth/react-native.js","functions":"https://www.gstatic.com/firebasejs/9.20.0/firebase-functions.js","firestore":"https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.js","firestore/lite":"https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore/lite.js","installations":"https://www.gstatic.com/firebasejs/9.20.0/firebase-installations.js","storage":"https://www.gstatic.com/firebasejs/9.20.0/firebase-storage.js","performance":"https://www.gstatic.com/firebasejs/9.20.0/firebase-performance.js","remote-config":"https://www.gstatic.com/firebasejs/9.20.0/firebase-remote-config.js","messaging":"https://www.gstatic.com/firebasejs/9.20.0/firebase-messaging.js","messaging/sw":"https://www.gstatic.com/firebasejs/9.20.0/firebase-messaging/sw.js","database":"https://www.gstatic.com/firebasejs/9.20.0/firebase-database.js","firestore.memory":"https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.memory.js"}}
+[info] +  Wrote dist/in_reach/index.html 
+[info] 
+[info] i  Detected a .git folder at E:\vs-Code\inReach-API\inReach 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=710396891&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2023-04-22T08:00:15.061Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2023-04-22T08:00:15.062Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2023-04-22T08:00:15.493Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2023-04-22T08:00:15.494Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2023-04-22T08:00:15.505Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2023-04-22T08:00:15.918Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2023-04-22T08:00:15.919Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"aelzawawy","id":58807444,"node_id":"MDQ6VXNlcjU4ODA3NDQ0","avatar_url":"https://avatars.githubusercontent.com/u/58807444?v=4","gravatar_id":"","url":"https://api.github.com/users/aelzawawy","html_url":"https://github.com/aelzawawy","followers_url":"https://api.github.com/users/aelzawawy/followers","following_url":"https://api.github.com/users/aelzawawy/following{/other_user}","gists_url":"https://api.github.com/users/aelzawawy/gists{/gist_id}","starred_url":"https://api.github.com/users/aelzawawy/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/aelzawawy/subscriptions","organizations_url":"https://api.github.com/users/aelzawawy/orgs","repos_url":"https://api.github.com/users/aelzawawy/repos","events_url":"https://api.github.com/users/aelzawawy/events{/privacy}","received_events_url":"https://api.github.com/users/aelzawawy/received_events","type":"User","site_admin":false,"name":"Ahmed Ali","company":null,"blog":"","location":null,"email":null,"hireable":null,"bio":null,"twitter_username":null,"public_repos":8,"public_gists":0,"followers":0,"following":0,"created_at":"2019-12-12T08:42:58Z","updated_at":"2023-04-22T05:40:02Z","private_gists":0,"total_private_repos":2,"owned_private_repos":2,"disk_usage":28943,"collaborators":0,"two_factor_authentication":false,"plan":{"name":"free","space":976562499,"collaborators":0,"private_repos":10000}}
+[info] 
+[info] +  Success! Logged into GitHub as aelzawawy 
+[info] 
