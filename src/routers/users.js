@@ -121,7 +121,7 @@ router.post("/signup", async (req, res) => {
     });
     res.status(200).send({ user, token });
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send(e.message);
   }
 });
 
