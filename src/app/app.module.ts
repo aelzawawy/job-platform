@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './layout/header/header.component';
-import { FooterComponent } from './layout/footer/footer.component';
 import { HomeComponent } from './views/home/home.component';
 import { SignupComponent } from './views/signup/signup.component';
 import { LoginComponent } from './views/login/login.component';
@@ -42,8 +40,6 @@ import { ResetPasswordComponent } from './views/reset-password/reset-password.co
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
-    FooterComponent,
     HomeComponent,
     SignupComponent,
     LoginComponent,
