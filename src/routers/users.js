@@ -7,6 +7,7 @@ const { set } = require("mongoose");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/email");
+const getLocation = require("../utils/locationApi");
 const crypto = require("crypto");
 
 // profile image
@@ -108,14 +109,45 @@ router.delete("/backgoroundImage", auth.userAuth, async (req, res) => {
 router.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-    await user.save();
     // generate token on our document(input data)
     const token = user.generateToken();
+    const verifyToken = user.createVerifyToken();
+    await user.save();
+    const url = `${req.protocol}://${req.get("host")}/verify/${user.id}/${verifyToken}`;
+    sendEmail({
+      email: user.email,
+      subject: "Welcome",
+      message: `We're lucky to have you with us, please verify your email address by clicking the link below.\n${url}`,
+    });
     res.status(200).send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
 });
+
+// Verify account
+router.get('/verify/:id/:token', async(req, res)=> {
+  try{
+    const {id, token} = req.params;
+    const hashedToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+    const user = await User.findOne({
+      _id: id,
+      verifyToken: hashedToken
+    });
+    if(!user){
+      return res.status(400).send({message: 'User not found!'})
+    }
+    user.verified = true;
+    user.verifyToken = undefined
+    await user.save({ validateBeforeSave: false });
+    res.status(200).send({messages: "You're verified now!"})
+  }catch(e){
+    res.status(400).send(e.message)
+  }
+})
 
 // Login
 router.post("/login", async (req, res) => {
@@ -131,6 +163,16 @@ router.post("/login", async (req, res) => {
   }
 });
 
+//! Deactivate account
+router.delete("/deactivate", async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user._id, { active: false });
+    req.status(204).send();
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
 //! Forgot Password
 router.post("/forgotPassword", async (req, res) => {
   try {
@@ -140,10 +182,8 @@ router.post("/forgotPassword", async (req, res) => {
     // Generate token
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-
     // Send email
-    //* ${req.get("host")} (in Anguular) = http://localhost:4200
-    const resetURL = `${req.protocol}://localhost:4200/resetPassword/${resetToken}`;
+    const resetURL = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
     await sendEmail({
       email: user.email,
       subject: "Password reset token",
@@ -167,20 +207,22 @@ router.patch("/resetPassword/:token", async (req, res) => {
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() }, // Check if token isn't expired
     });
-
+    console.log(user)
     //todo 2: Set a new password if token isn't expired and the user exists
-    if(!user){
+    if (!user) {
       return res.status(400).send("Invalid token or expired");
     }
     user.password = req.body.password;
     user.passwordResetToken = undefined; // Reset
     user.passwordResetExpires = undefined; // Reset
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
     //todo 3: Update the passwordChanedAt porperty
     //todo 4: redirect user to login
     const token = user.generateToken();
-    res.status(200).send({message: 'Password has been changed successfully, you\'ll be redirected to login'});
+    res.status(200).send({
+      message: "Password has been changed successfully",
+    });
   } catch (e) {
     res.status(400).send(e.message);
   }
@@ -199,7 +241,7 @@ router.get("/users", auth.userAuth, async (req, res) => {
 // Get by id
 router.get("/users/:id", auth.userAuth, (req, res) => {
   const _id = req.params.id; // get user id
-  User.findById(_id)
+  User.findById(_id).select('-messages -notifications -contactList -savedJobs')
     .then((user) => {
       if (!user) return res.status(404).send("User not found");
       res.status(200).send(user);
@@ -231,11 +273,22 @@ router.get("/contacts", auth.userAuth, async (req, res) => {
 
 // Updating profile data
 router.patch("/profile", auth.userAuth, async (req, res) => {
-  const updates = Object.keys(req.body);
   try {
-    updates.forEach((el) => (req.user[el] = req.body[el]));
-    await req.user.save();
-    res.status(200).send(req.user);
+    getLocation(req.body.location.address, async (locationErr, data) => {
+      // if (locationErr) console.log(locationErr);
+      await User.findByIdAndUpdate(req.user._id, {
+        name: req.body.name,
+        email: req.body.email,
+        location: {
+          address: req.body.location.address&&data.name,
+          coordinates: req.body.location.address&&data.coords,
+        },
+        headline: req.body.headline,
+        phone: req.body.phone,
+      });
+    });
+    // await req.user.save();
+    // res.status(200).send(req.user);
   } catch (err) {
     res.status(400).send(err);
   }

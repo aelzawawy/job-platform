@@ -9,6 +9,8 @@ const fs = require("fs");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
+    unique: true,
     lowercase: true,
     trim: true,
   },
@@ -30,19 +32,18 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: isValidPassword,
       message:
-        "Passwords must have upper and lower case letters, at least 1 number and special character, not match or contain email, and be at least 8 characters long.",
+        "Passwords must have upper and lower case letters, at least 1 number and special character, not match or contain email, and be at least 10 characters long.",
     },
   },
-  // passwordConfirm: {
-  //   type: String,
-  //   required: true,
-  //   validate: {
-  //     validator: function(value){
-  //       return value === this.password;
-  //     },
-  //     message: "Passwords are not the same"
-  //   },
-  // },
+  confirm_password: {
+    type: String,
+    validate: {
+      validator: function (value) {
+        return value === this.password;
+      },
+      message: "Passwords are not the same",
+    },
+  },
   job_title: {
     type: String,
     trim: true,
@@ -72,19 +73,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
   },
-  skills: [
-    {
-      type: String,
-      lowercase: true,
-    },
-  ],
+  // skills: {
+  //   type: String,
+  //   lowercase: true,
+  // },
   experience: {
     type: String,
     lowercase: true,
   },
   location: {
-    type: String,
-    lowercase: true,
+    type: {
+      type: String,
+      default: "Point",
+    },
+    coordinates: [Number],
+    address: {
+      type: String,
+      lowercase: true,
+      trim: true,
+    },
   },
   phone: {
     type: String,
@@ -156,9 +163,28 @@ const userSchema = new mongoose.Schema({
   resume: {
     type: Buffer,
   },
-  passwordChanedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
+  passwordChanedAt: {
+    type: Date,
+    select: false,
+  },
+  passwordResetToken: {
+    type: String,
+  },
+  passwordResetExpires: {
+    type: Date,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  verifyToken: {
+    type: String,
+  },
 });
 
 // user(Employer)-jobPosts relation
@@ -171,7 +197,8 @@ userSchema.virtual("jobPosts", {
 // Hashing passwords
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  this.password = await bcryptjs.hash(this.password, 8);
+  this.password = await bcryptjs.hash(this.password, 12);
+  this.confirm_password = undefined;
 });
 
 // login data check
@@ -201,15 +228,23 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
+userSchema.methods.createVerifyToken = function () {
+  const token = crypto.randomBytes(32).toString("hex");
+  this.verifyToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+  return token;
+};
 
 // Update passwordChanedAt property
-userSchema.pre('save', function(next){
+userSchema.pre("save", function (next) {
   //! Exit if modified or when new document is created
-  if(!this.isModified('password') || this.isNew) return next();
+  if (!this.isModified("password") || this.isNew) return next();
   //! To ensure tat the token is created after the password has been changed
-  this.passwordChanedAt = Date.now() - 1000; 
+  this.passwordChanedAt = Date.now() - 1000;
   next();
-})
+});
 
 // Not sending passwords to frontEnd
 userSchema.methods.toJSON = function () {
@@ -217,6 +252,12 @@ userSchema.methods.toJSON = function () {
   delete userObj.password;
   return userObj;
 };
+
+//! filtering active users
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } }).select('-__v');
+  next();
+});
 
 const User = mongoose.model("User", userSchema); // Must come last
 module.exports = User;

@@ -39,9 +39,13 @@ global.onlineUsers = new Map();
 
 io.on('connection', (socket) => {
   let user = {}
+  //! [1] Map all connected users to a "socket id"
+  socket.on('addUser', (userrId) => {
+    onlineUsers.set(userrId, socket.id)
+  })
   //! [2] Whenever a user chooses a contact "joins a chat"
   //!     get the "id" for both user && contact using the "socket.id" as a "unique index"
-  //!     => Then Push to the online list 
+  //! [3] Then Push to the online list 
   //!     While assigning the last value to a const "user".
   socket.on('joinChat', ({currUser, contact}) => {
     user = join(socket.id, currUser, contact)
@@ -60,10 +64,6 @@ io.on('connection', (socket) => {
       socket.to(sendUserSocket).emit('message', {msg:message.msg, sent:false, time:Date.now(), file: message.file, fileName: message.fileName, fileSize: message.fileSize});
     }
   });
-  //! [1] Map all connected users to a "socket id"
-  socket.on('addUser', (userrId) => {
-    onlineUsers.set(userrId, socket.id)
-  })
 
   socket.on('editProfile', (body) => {
     socket.emit('updatedProfile', body);

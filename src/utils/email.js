@@ -23,3 +23,52 @@ const sendEmail = async options => {
 }
 
 module.exports = sendEmail;
+
+
+// const pug = require("pug");
+// const htmlToText = require("html-to-text");
+// module.exports = class Email {
+//   constructor(user, url) {
+//     this.to = user.email;
+//     this.name = user.name;
+//     this.url = url;
+//     this.from = `InReach <${process.env.EMAIL}>`;
+//   }
+
+//   newTransport() {
+//     return nodemailer.createTransport({
+//       host: "smtp.gmail.com",
+//       port: 465,
+//       secure: true,
+//       auth: {
+//         user: process.env.EMAIL,
+//         pass: process.env.PASSWORD,
+//       },
+//     });
+//   }
+//   //todo Send actual email
+//   async send(template, subject) {
+//     //! [1] Render HTML based on a pug template
+//     const html = pug.renderFile(`${__dirname}/../emails/${template}.pug`, {
+//       name: this.name,
+//       url: this.url,
+//       subject,
+//     });
+    
+//     //! [2] Define email options
+//     const mailOptions = {
+//       from: this.from,
+//       to: this.to,
+//       subject,
+//       html,
+//       text: htmlToText.fromString(html),
+//     };
+
+//     //! [3] Render HTML based on a pug template
+//     await this.newTransport().sendMail(mailOptions);
+//   }
+
+//   async sendWelcome() {
+//     await this.send('welcome', 'Welcome✨');
+//   }
+// };
