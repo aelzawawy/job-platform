@@ -113,7 +113,7 @@ router.post("/signup", async (req, res) => {
     const token = user.generateToken();
     const verifyToken = user.createVerifyToken();
     await user.save();
-    const url = `${req.protocol}://${req.get("host")}/verify/${user.id}/${verifyToken}`;
+    const url = `${req.protocol}://inreach-af837.web.app/verify/${user.id}/${verifyToken}`;
     sendEmail({
       email: user.email,
       subject: "Welcome",
@@ -183,7 +183,7 @@ router.post("/forgotPassword", async (req, res) => {
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
     // Send email
-    const resetURL = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
+    const resetURL = `${req.protocol}://inreach-af837.web.app/resetPassword/${resetToken}`;
     await sendEmail({
       email: user.email,
       subject: "Password reset token",
