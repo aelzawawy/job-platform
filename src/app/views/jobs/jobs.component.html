@@ -1,5 +1,5 @@
 <div class="container h-100" [class.container-max-width]="(isHandsetMd$ | async)">
-    <div class="home_header">
+    <div class="home_header" style="opacity: 1; transform: translateY(0px);">
         <div *ngIf="search_Warning" class="inputsEmpty">
             <p><svg xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" fill="currentColor"
                     viewBox="0 0 24 24" aria-hidden="true" class="css-1xqhio eac13zx0">
@@ -45,7 +45,7 @@
         </form>
     </div>
 
-    <div class="content">
+    <div class="content" style="opacity: 1; transform: translateY(0px);">
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <div class="sortBox">
                 <p>Sort by:</p>

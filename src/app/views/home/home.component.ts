@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     limit: 10,
     order: -1,
   };
-
+  loadingSvg:boolean = false
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
@@ -70,7 +70,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         if(!this.ismobile){
           this.showDetails(this.posts[0]._id, 0)
         }
-      }, 100);
+        this.loadingSvg = true;
+      }, 200);
     });
     this.route.params.subscribe((params) => {
       if (params['id'] && params['token']) {

@@ -38,24 +38,67 @@
     }
   }
 }
-.home_header {
-  height: 300px;
+.heroSection{
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  // padding-top: 50px;
+  justify-content: space-evenly;
+  &.flexColumn{
+    flex-direction: column-reverse;
+    align-items: center;
+    & > svg#freepik_stories-job-hunt {
+      width: 90%;
+    }
+  }
+  & .what_we_offer{
+    margin: auto;
+    text-align: left;
+    max-width: 410px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transform: translateY(100px);
+    opacity: 0;
+    animation: fadeUp 1s .5s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+    & > h1{
+      user-select: none;
+    }
+    & > p{
+      font-size: large;
+      & > a{
+        text-decoration: none;
+        font-size: larger;
+        color: inherit;
+        filter: drop-shadow(0px 2px 2px rgb(48, 120, 122));
+        user-select: none;
+        &:hover{
+          border-bottom: .5px solid rgb(48, 120, 122);
+        }
+
+      }
+    }
+  }
+}
+.home_header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
   color: rgb(48, 120, 122);
+  transform: translateY(200px);
+  opacity: 0;
+  &.fadeUp{
+    animation-delay: .3s;
+  }
   & .search-form {
     display: flex;
     flex-direction: column;
+    width: 100%;
     justify-content: center;
     align-items: center;
     &--main {
       display: flex;
-      gap: 1rem;
+      width: 100%;
       flex-wrap: wrap;
+      gap: 1rem;
       justify-content: center;
-      width: 80%;
       & > h1 {
         font-size: 2.5rem;
         font-weight: 400;
@@ -102,6 +145,19 @@ button.abs-pos {
 // ::ng-deep .mat-tab-label {
 //     flex: .2 ;
 // }
+.fadeUp{
+  animation: fadeUp 1s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+.animstop{
+  opacity: 1;
+  transform: translate(0px);
+}
+@keyframes fadeUp {
+  to{
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
 
 .content {
   position: relative;
@@ -109,7 +165,11 @@ button.abs-pos {
   gap: 1rem;
   padding-block: 1rem;
   margin-block: 1rem;
-  transition: all 0.3s ease-out;
+  transform: translateY(200px);
+  opacity: 0;
+  &.fadeUp{
+    animation-delay: .6s;
+  }
   &__posts {
     display: flex;
     flex-direction: column;
@@ -243,9 +303,7 @@ button.abs-pos {
 }
 .inputsEmpty {
   position: absolute;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -266,16 +324,142 @@ button.abs-pos {
     }
   }
 }
-@keyframes fadeIn {
-  from {
-    transform: translateY(100px);
+
+svg#freepik_stories-job-hunt{
+  width: 700px;
+  height: 500px;
+}
+
+svg#freepik_stories-job-hunt:not(.animated) .animable {
+  opacity: 0;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Floor--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideLeft;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Shadows--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideRight;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Plants--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideDown;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Device--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideRight;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Newspaper--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideUp;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--speech-bubbles--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideDown;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Icons--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) zoomIn;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--magnifying-glass--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideLeft;
+  animation-delay: 0s;
+}
+
+svg#freepik_stories-job-hunt.animated #freepik--Character--inject-284 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) lightSpeedRight;
+  animation-delay: 0s;
+}
+
+@keyframes slideLeft {
+  0% {
     opacity: 0;
+    transform: translateX(-30px);
   }
-  to {
-    transform: translateY(0px);
+
+  100% {
     opacity: 1;
+    transform: translateX(0);
   }
 }
+
+@keyframes slideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: inherit;
+  }
+}
+
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes lightSpeedRight {
+  from {
+    transform: translate3d(50%, 0, 0) skewX(-20deg);
+    opacity: 0;
+  }
+
+  60% {
+    transform: skewX(10deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: skewX(-2deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes shake {
   0% {
     transform: translateX(3px);
@@ -293,26 +477,11 @@ button.abs-pos {
     transform: translateX(0px);
   }
 }
-// @media (max-width: 766px) {
-//     .content{
-//         gap: 0;
-//         &__posts{
-//             flex: 1;
-//         }
-//         &__details{
-//             right: 0rem;
-//             flex: 0;
-//             width: 0rem;
-//             display: none;
-//         }
-//     }
-
-// }
 .flex1 {
   flex: 1;
 }
-.container-max-width{
-    max-width: calc(100vw - 10px);
+.container-max-width {
+  max-width: calc(100vw - 10px);
 }
 @media (max-width: 992px) {
   .home_header {
