@@ -52,7 +52,6 @@ export class JobDetailsComponent implements OnInit, OnChanges {
         });
         this.jobsService.getPassedJob().subscribe(async (res) => {
           if(Object.keys(res).length == 0) this.router.navigate([`/`]);
-          localStorage.setItem('currPost', JSON.stringify(res)) 
           await this.checkSaved(res._id)
           this.job = res 
         })

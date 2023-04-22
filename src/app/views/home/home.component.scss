@@ -308,7 +308,11 @@ button.abs-pos {
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: 70px;
   animation: shake 0.2s;
+  &.onMaxSize{
+    top: -70px;
+  }
   & > p {
     width: fit-content;
     padding: 15px 20px;

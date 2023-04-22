@@ -182,13 +182,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   index: number = 0;
+  loadingPost: boolean = false
   // Details function
   showDetails(id: any, i: number) {
+    this.index = i;
+    this.loadingPost = true;
     this.jobsService.jobById(id).subscribe({
       next: (res: any) => {
         if (!this.ismobile) {
           this.job = res;
-          this.index = i;
+          this.loadingPost = false;
         } else {
           this.router.navigate([`/job/${id}`]);
           this.jobsService.passJob(res)

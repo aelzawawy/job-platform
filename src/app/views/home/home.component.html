@@ -864,7 +864,7 @@
     </div>
 
     <div class="home_header" [class.fadeUp]="loadingSvg">
-        <div *ngIf="search_Warning" class="inputsEmpty">
+        <div *ngIf="search_Warning" class="inputsEmpty" [class.onMaxSize]="!(isHandset$ | async) && !(isHandsetMd$ | async)">
             <p>
                 <svg xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" fill="currentColor"
                     viewBox="0 0 24 24" aria-hidden="true" class="css-1xqhio eac13zx0">
@@ -948,7 +948,11 @@
         </ul>
 
         <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
-            <app-job-details [job]="job"></app-job-details>
+            <div *ngIf="loadingPost" class="loading">
+                <span class="effect loading__head"></span>
+                <span class="effect loading__body"></span>
+            </div>
+            <app-job-details *ngIf="!loadingPost" [job]="job"></app-job-details>
         </div>
     </div>
 </div>
