@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl(`/`);
       },
       error: (err: any) => {
+        console.log(err)
         if (err) this.invalidLogin = true;
         this.wrongPassText = err.error;
       },

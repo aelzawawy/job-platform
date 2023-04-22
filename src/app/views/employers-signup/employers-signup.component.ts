@@ -46,6 +46,7 @@ export class EmployersSignupComponent implements OnInit {
         this.router.navigateByUrl('/');
       },
       error: (err: any) => {
+        console.log(err)
         if (err.error.errors?.email) {
           this.invalidEmail = true;
           this.emailMsg = "Enter your email";
