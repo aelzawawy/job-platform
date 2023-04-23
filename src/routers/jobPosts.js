@@ -13,13 +13,13 @@ const natural = require("natural");
 router.post("/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
   try {
     getLocation(req.body.location, async (locationErr, data) => {
-      if (locationErr) return res.send(locationErr);
+      // if (locationErr) return res.send(locationErr);
       const jobPost = await JobPost.create({
         title: req.body.title,
         description: req.body.description,
         location: {
-          address: data.name,
-          coordinates: data.coords,
+          address: locationErr? req.body.location : data.name,
+          coordinates: locationErr? [] : data.coords,
         },
         salary: req.body.salary,
         company: req.body.company,
@@ -91,13 +91,13 @@ router.patch(
     try {
       const _id = req.params.id;
       getLocation(req.body.location, async (locationErr, data) => {
-        if (locationErr) return res.send(locationErr);
+        // if (locationErr) return res.send(locationErr);
         const jobPost = await JobPost.findByIdAndUpdate(_id, {
           title: req.body.title,
           description: req.body.description,
           location: {
-            address: data.name,
-            coordinates: data.coords,
+            address: locationErr? req.body.location : data.name,
+            coordinates: locationErr? [] : data.coords,
           },
           salary: req.body.salary,
           company: req.body.company,
