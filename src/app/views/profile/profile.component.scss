@@ -5,7 +5,8 @@ p {
   cursor: pointer;
 }
 .container{
-  height: calc(100vh - 85px);
+  height: calc(100vh - 105px);
+  padding: 0;
 }
 .slide-out {
   transform: translateX(-100%);
@@ -20,14 +21,6 @@ form {
   justify-content: space-between;
   margin-inline: 20px;
   & .editProfile {
-    // width: 50px;
-    // aspect-ratio: 1/1;
-    margin-top: 10px;
-    // border: none;
-    // background-color: rgb(199, 199, 199);
-    // color: rgb(56, 56, 56);
-    // border-radius: 50px;
-    // transition: all 0.3s;
     &:hover {
       background-color: white;
       color: #3f51b5;
@@ -54,6 +47,10 @@ form {
   height: 250px;
   border-top-left-radius: 15px;
   border-top-right-radius:  15px;
+  &.isHandset{
+    border-top-left-radius: 0px;
+    border-top-right-radius:  0px;
+  }
   z-index: 1;
     // &:hover .imgOptions{
     //   transform: translateX(0px);
@@ -92,22 +89,24 @@ form {
   width: 150px;
   height: 150px;
   margin-top: -100px;
-  //   margin-left: 20px;
-  width: 150px;
-  height: 150px;
+  background-size: cover;
   border-radius: 50%;
   overflow: hidden;
   z-index: 50;
   &:hover #uploadImg {
-    transform: translateY(-50px);
+    transform: translateY(2px);
   }
 }
+
 #backgoround-pic {
   width: 100%;
   object-fit: cover;
   object-position: center;
 }
 #uploadImg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 100%;
   font-size: 2rem;
   background-color: rgba(0, 0, 0, 0.616);
@@ -115,6 +114,7 @@ form {
   font-weight: 500;
   text-align: center;
   padding: 0px 40px 5px 40px;
+  transform: translateY(55px);
   transition: all 0.3s;
   cursor: pointer;
   &:hover {
@@ -163,37 +163,37 @@ form {
     }
   }
 }
-
-.example-container {
-  width: 400px;
-  height: 200px;
-  margin: 10px;
-  border: 1px solid #555;
-}
-
-mat-drawer-container{
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   width: 100%;
-  height: 100%;
-
-  mat-drawer{
-    margin: 20px;
-    margin-left: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    background-color: #3f51b559;
-    &.moreWidth{
-      width: 200px;
+  height: 200px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid lightgray;
+  &__head {
+    flex: 0.1;
+  }
+  &__body {
+    flex: 0.7;
+  }
+  & .effect {
+    background-image: linear-gradient(
+      90deg,
+      #d6d6d6 0px,
+      rgb(240, 240, 240),
+      30px,
+      #d6d6d6 90px
+    );
+    border-radius: inherit;
+    background-size: 200%;
+    background-position: 40% 0;
+    animation: loading 0.5s infinite ease-in-out;
+  }
+  @keyframes loading {
+    to {
+      background-position: -100% 0;
     }
-    .navBtn{
-      position: absolute;
-      right: 5px;
-      transform: rotate(0deg);
-      transition: all .5s;
-    }
-
-    .navBtn.rotated{
-      transform: rotate(180deg);
-    }
-    
   }
 }

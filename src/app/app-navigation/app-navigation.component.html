@@ -2,7 +2,7 @@
   <mat-sidenav #drawer class="sidenav mat-app-background" fixedInViewport
     [attr.role]="(isHandsetMd$ | async) ? 'dialog' : 'navigation'" [mode]="((isHandset$ | async) || (isHandsetMd$ | async)) ? 'over' : 'side'"
     [opened]="(isHandset$ | async) === false && (isHandsetMd$ | async) === false && loggedIn()">
-    <div class="sidenav-logo" *ngIf="(isHandsetMd$ | async) || !loggedIn() || (!(isHandsetMd$ | async) && !(isHandset$ | async) && loggedIn())">inREACH</div>
+    <div class="sidenav-logo" *ngIf="(isHandsetMd$ | async) || !loggedIn() || (!(isHandsetMd$ | async) && !(isHandset$ | async) && loggedIn())">REACH</div>
     <mat-nav-list style="margin-top: 50px;">
       <mat-list-item routerLinkActive="active" title="Job Posts"
         *ngIf="user.roles == 'employer' && ((isHandset$ | async) || (isHandsetMd$ | async))" routerLink="/jobPosts" (click)="drawer.toggle()">
@@ -55,7 +55,7 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span class="spread" *ngIf="(isHandset$ | async) || !loggedIn() || ((isHandsetMd$ | async) && loggedIn())"
-        [class.center]="(isHandset$ | async) && loggedIn()">inREACH</span>
+        [class.center]="(isHandset$ | async) && loggedIn()">REACH</span>
 
       <button *ngIf="!(isHandset$ | async)" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active"
         mat-button routerLink="/">JobsFeed</button>
@@ -83,7 +83,7 @@
     </mat-toolbar>
 
 
-    <main [@routeAnimations]='prepareRoute(outlet)' style="margin-block: 70px;">
+    <main [@routeAnimations]='prepareRoute(outlet)' [class.mainSMargin]="(isHandset$ | async)" [class.mainLMargin]="!(isHandset$ | async)">
       <router-outlet #outlet="outlet"></router-outlet>
     </main>
 

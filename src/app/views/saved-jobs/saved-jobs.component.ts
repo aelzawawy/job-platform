@@ -32,11 +32,13 @@ export class SavedJobsComponent implements OnInit {
         }
       }, 100);
     });
+    this.loading = true
     this.userService.profile().subscribe({
       next: (res: any) => {
         this.posts = res.savedJobs.reverse();
         this.job = this.posts[0];
         if (this.posts.length != 0) this.isSaved = true;
+        this.loading = false
       },
       error: (e: any) => {
         console.log(e);
@@ -48,6 +50,8 @@ export class SavedJobsComponent implements OnInit {
   job: JobPost = {};
   isSaved!: boolean;
   ismobile: boolean = false;
+  loading: boolean = false;
+  loadingPost: boolean = false;
   jobPosts!: NodeListOf<HTMLElement>;
 
   async unSave(id: string) {
@@ -62,11 +66,13 @@ export class SavedJobsComponent implements OnInit {
   // Details function
   index = 0;
   showDetails(id: any, i: number) {
+    this.index = i;
+    this.loadingPost = true
     this.jobsService.jobById(id).subscribe({
       next: (res: any) => {
         if (!this.ismobile) {
           this.job = res;
-          this.index = i;
+          this.loadingPost = false
         } else {
           this.router.navigate([`/job/${id}`]);
           this.jobsService.passJob(res)

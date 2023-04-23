@@ -36,17 +36,20 @@ export class ProfileComponent implements OnInit {
   resume: any;
   expanded:boolean = true;
   toView:boolean = false;
+  loading:boolean = false;
     
   profile() {
+    this.loading = true;
     this.userService.profile().subscribe({
       next: (res: any) => {
         if(res._id === this.user_toView_id) {
           this.user = res;
+          this.loading = false;
         }else{
           this.userService.profileById(this.user_toView_id).subscribe({
             next: (res: any) => {
               this.user = res;
-              console.log(res)
+              this.loading = false;
             },
             error: (err: any) => {
               console.log(err);
@@ -101,7 +104,7 @@ export class ProfileComponent implements OnInit {
       'backgoround-pic'
     ) as HTMLImageElement;
     this.userService.removeBg().subscribe({});
-    bgOut.src = '../../../assets/icons/bg.jpg';
+    bgOut.src = '../../../assets/bg.jpg';
   }
 
   openDialog(){
@@ -212,6 +215,6 @@ export class update_profile_image {
   delImg(){
     const imageOut = document.querySelectorAll('.profile-pic') as NodeListOf<HTMLImageElement>;
     this.userService.removeProfileImage().subscribe({});
-    imageOut.forEach(el => el.src = '../../../assets/icons/34AD2.png')
+    imageOut.forEach(el => el.src = '../../../assets/34AD2.png')
   }
 }

@@ -1,12 +1,12 @@
 <div class="container" [class.container-max-width]="(isHandsetMd$ | async)">
     <div class="chat-container">
-        <header class="chat-header">
+        <header class="chat-header" [class.isHandset]="(isHandset$ | async)">
             <h1><i class="fas fa-smile"></i> Messaging</h1>
         </header>
-        <main class="chat-main">
+        <main class="chat-main" [class.isHandset]="(isHandset$ | async)">
             <div class="chat-sidebar" [ngClass]="{
                 'flex1': (isHandset$ | async ) && !contact,
-                'flex0': (isHandset$ | async) && contact}">
+                'flex0': (isHandset$ | async) && contact}" [class.isHandset]="(isHandset$ | async)">
                 <input class="form-control searchInput" [(ngModel)]="search_value" placeholder="Search" (keyup)="search($event)">
                 <div *ngIf="users.length != 0" class="userSearch">
                     <ul class="users">
@@ -20,7 +20,7 @@
                 </div>
 
                 <div *ngIf="loadingContacts" class="chat-sidebar-loading">loading...</div>
-                <ul class="contacts">
+                <ul *ngIf="!loadingContacts" class="contacts">
                     <li [class.chat-hidden]="loadingContacts" *ngFor="let contact of contacts; let i=index"
                         class="contact" (click)="profileBiId($event,contact._id)">
                         <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{contact.image}}"
@@ -33,7 +33,7 @@
                 </ul>
             </div>
 
-            <div *ngIf="contact" class="chat" [ngClass]="{
+            <div *ngIf="contact && !loadingContacts" class="chat" [ngClass]="{
                 'flex1': (isHandset$ | async) && contact,
                 'flex0': ((isHandset$ | async) && !contact) } ">
                 <div class="toUser">
@@ -44,11 +44,11 @@
                                 d="M160,89.75H56l53-53a9.67,9.67,0,0,0,0-14,9.67,9.67,0,0,0-14,0l-56,56a30.18,30.18,0,0,0-8.5,18.5c0,1-.5,1.5-.5,2.5a6.34,6.34,0,0,0,.5,3,31.47,31.47,0,0,0,8.5,18.5l56,56a9.9,9.9,0,0,0,14-14l-52.5-53.5H160a10,10,0,0,0,0-20Z" />
                         </svg>
                     </button>
-                    <a href="/profile/{{toUser._id}}">
+                    <a href="/profile/{{toUser}}">
                         <div class="d-flex w-100">
                             <img *ngIf="(isHandset$ | async) && contact" class="profile-pic" class="profile-pic"
-                                src="data:image/png;base64,{{toUser.image}}" alt="profile picture">
-                            <h5>{{toUser.name}}</h5>
+                                src="data:image/png;base64,{{currContact.image}}" alt="profile picture">
+                            <h5>{{currContact.name}}</h5>
                         </div>
                     </a>
                 </div>

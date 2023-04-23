@@ -37,8 +37,9 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   intersectionObserver: any;
   users: User[] = [];
   contacts: User[] = [];
+  currContact: User = {};
   user: User = {};
-  toUser: User = {};
+  toUser:string = '';
   contact: boolean = false;
   newMessage: string = '';
   msgs: Message[] = [];
@@ -104,26 +105,19 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   sendMsg() {
     if (this.message == '' && !this.file) return;
     this.userService
-    .message(this.toUser._id, this.message, this.file)
+    .message(this.toUser, this.message, this.file)
     .subscribe({
       next: async (res: any) => {
-        this.userService.emitMsg(this.toUser._id, res.message, res.file, res.file_name, res.file_size)
-        await new Promise<void>((resolve) => {
-          this.msgs.unshift({
-            id: res.id,
-            message: res.message,
-              time: res.time,
-              file: res.file,
-              sent: res.sent,
-              file_name: res.file_name,
-              file_size: res.file_size,
-            });
-            resolve();
-          });
-          setTimeout(() => {
-            this.chat.nativeElement.scrollTop =
-              this.chat.nativeElement.scrollHeight;
-          }, 0);
+        this.userService.emitMsg(this.toUser, res.message, res.file, res.file_name, res.file_size)
+        this.msgs.unshift({
+          id: res.id,
+          message: res.message,
+          time: res.time,
+          file: res.file,
+          sent: res.sent,
+          file_name: res.file_name,
+          file_size: res.file_size,
+        });
         },
         error: (e: any) => {
           console.log(e);
@@ -239,21 +233,15 @@ export class MessagingComponent implements OnInit, AfterViewInit {
     );
     this.route.queryParamMap.subscribe((params) => {
       contact = params.get('contact') || '';
-      if (contact) {
+      if (contact && this.contacts.length!=0) {
         this.contact = true;
-        this.userService.profileById(contact).subscribe({
-          next: (res: any) => {
-            this.toUser = res;
-            document.getElementById('msg')?.focus();
-          },
-          error: (err: any) => {
-            console.log(err);
-          },
-        });
+        this.toUser = contact
+        this.currContact = this.contacts.find(el => el._id == contact) || {}
         this.getMsgs(contact);
         this.userService.contactChatRoom(localStorage['id'], contact);
       } else {
         this.contact = false;
+        this.router.navigate(['/messaging'])
       }
     });
     this.userService.getNewMessage().subscribe((message: any) => {

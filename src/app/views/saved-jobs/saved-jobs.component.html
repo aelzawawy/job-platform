@@ -16,10 +16,18 @@
                     </div>
                 </div>
             </li>
+            <div *ngIf="loading" class="loading">
+                <span class="effect loading__head"></span>
+                <span class="effect loading__body"></span>
+            </div>
         </ul>
         
         <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
-            <app-job-details (unSave)="unSave($event)" [job]="job"></app-job-details>
+            <div *ngIf="loadingPost" class="loading">
+                <span class="effect loading__head"></span>
+                <span class="effect loading__body"></span>
+            </div>
+            <app-job-details *ngIf="!loadingPost" (unSave)="unSave($event)" [job]="job"></app-job-details>
         </div>
         
     </div>

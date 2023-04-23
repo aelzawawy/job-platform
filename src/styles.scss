@@ -84,3 +84,9 @@ body {
   box-shadow: none !important;
   border: 1px solid var(--ck-color-base-border) !important;
 }
+@media (max-width: 600px) {   
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+}

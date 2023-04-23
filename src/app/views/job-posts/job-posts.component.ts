@@ -30,6 +30,8 @@ export class JobPostsComponent implements OnInit {
   user:User = {};
   job: JobPost = {};
   ismobile: boolean = false;
+  loading: boolean = false;
+  loadingPost: boolean = false;
   public config = {
     placeholder: 'Job description',
   }
@@ -102,10 +104,12 @@ export class JobPostsComponent implements OnInit {
 
   // Display posts
   jobPosts() {
+    this.loading = true
     if(localStorage['role'] == 'employer'){
       this.jobsService.getPosts().subscribe({
         next: (res: any) => {
           this.posts = res.reverse();
+          this.loading = false
           if(this.posts.length != 0) this.job = this.posts[0]
         }
       });
@@ -116,13 +120,17 @@ export class JobPostsComponent implements OnInit {
   index = 0
   showDetails(e:any, i: number) {
     if(!e) return;
+    this.index = i
+    this.loadingPost = true
     const card = (e.target as HTMLElement).closest('.card')
     if(card != e.target) return;
     if (!this.ismobile) {
       this.job = this.posts[i]
+      this.loadingPost = false
     } else {
       this.router.navigate([`/job/${this.posts[i]._id}`]);
       this.jobsService.passJob(this.posts[i])
+      this.loading = false
     }
     this.job = this.posts[i]
   }
@@ -138,11 +146,11 @@ export class JobPostsComponent implements OnInit {
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
-      setTimeout(() => {
-        if(!this.ismobile){
-          this.showDetails(null,0)
-        }
-      }, 100);
+      
+      if(!this.ismobile){
+        this.showDetails(null,0)
+      }
+      
     });
     this.jobPosts();
   }

@@ -24,11 +24,11 @@ export class JobsComponent implements OnInit {
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
-      setTimeout(() => {
-        if (!this.ismobile) {
-          this.showDetails(this.posts[0]._id, 0);
-        }
-      }, 100);
+      // setTimeout(() => {
+      //   if (!this.ismobile) {
+      //     this.showDetails(this.posts[0]._id, 0);
+      //   }
+      // }, 100);
     });
     this.route.queryParams.subscribe((params) => {
       this.search = {
@@ -45,11 +45,13 @@ export class JobsComponent implements OnInit {
       }
 
       this.search_Warning = false;
+      this.loading = true;
       this.jobsService.searchApi(this.search).subscribe({
         next: async (res: any) => {
           if (res.length != 0) {
             this.posts = res;
             this.job = res[0];
+            this.loading = false;
           } else {
             this.posts = [];
           }
@@ -74,6 +76,8 @@ export class JobsComponent implements OnInit {
     sort: '',
   };
   ismobile: boolean = false;
+  loading: boolean = false;
+  loadingPost: boolean = false;
   sort(e: any) {
     this.router.navigate(['/jobs'], {
       queryParams: {
@@ -87,14 +91,17 @@ export class JobsComponent implements OnInit {
   }
   index = 0;
   showDetails(id: any, i: number) {
+    this.index = i;
+    this.loadingPost = true
     this.jobsService.jobById(id).subscribe({
       next: (res: any) => {
         if (!this.ismobile) {
           this.job = res;
-          this.index = i;
+          this.loadingPost = false
         } else {
           this.router.navigate([`/job/${id}`]);
           this.jobsService.passJob(res);
+          this.loadingPost = false
         }
       },
     });

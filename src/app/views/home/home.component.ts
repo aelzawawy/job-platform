@@ -181,7 +181,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  index: number = 0;
+  index!: number;
   loadingPost: boolean = false
   // Details function
   showDetails(id: any, i: number) {

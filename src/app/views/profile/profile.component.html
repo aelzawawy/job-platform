@@ -1,5 +1,9 @@
 <div class="container">
-    <div class="bgPic">
+    <div *ngIf="loading" class="loading">
+        <span class="effect loading__head"></span>
+        <span class="effect loading__body"></span>
+    </div>
+    <div *ngIf="!loading" class="bgPic" [class.isHandset]="(isHandset$ | async)">
         <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
             alt="backgoround picture">
 
@@ -21,7 +25,7 @@
         </div>
 
     </div>
-    <div class="head">
+    <div *ngIf="!loading" class="head">
         <div class="pic">
             <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
 
@@ -40,14 +44,14 @@
             <mat-icon>edit</mat-icon>
         </button>
     </div>
-    <div class="body">
+    <div *ngIf="!loading" class="body">
         <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
         <p>{{user.headline}}</p>
         <p>{{user.email}}</p>
         <p style="text-transform: capitalize;">{{user.location?.address}}</p>
 
     </div>
-    <div *ngIf="toView" class="uploadResume">
+    <div *ngIf="toView && !loading" class="uploadResume">
         <input style="display:none" accept=".pdf" type="file" name="resume" id="upload-resume"
             (change)="uploadResume($event)">
         <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
@@ -55,5 +59,5 @@
             <span class="material-symbols-outlined">check</span>
         </label>
     </div>
-    <a *ngIf="user.resume" id="resume" href="data:application/pdf;base64,{{user.resume}}" download="resume">Resume</a>
+    <a *ngIf="user.resume && !loading" id="resume" href="data:application/pdf;base64,{{user.resume}}" download="resume">Resume</a>
 </div>

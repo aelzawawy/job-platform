@@ -2,7 +2,7 @@
 
     <div class="heroSection" [class.flexColumn]="(isHandsetMd$ | async) || (isHandset$ | async)">
         <div class="what_we_offer" [class.fadeUp]="loadingSvg">
-            <h1>Find your next job with <u>inReach</u></h1>
+            <h1>Find your next job with <u>Reach</u></h1>
             <p>We use geospatial information for geography and mapping with advanced search techniques to bring you what
                 you need.</p>
             <p *ngIf="!loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for talents nearby, <a
@@ -913,7 +913,7 @@
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <li *ngFor="let post of posts; let i = index">
                 <div *ngIf="i != posts.length-1" (click)="showDetails(post._id, i)" class="card"
-                    [class.selected]="index == i && !(isHandset$ | async)">
+                    [class.selected]="index == i">
                     <div class="card-body">
                         <h5 class="title">{{post.title}}</h5>
                         <p>{{post.company}}</p>
