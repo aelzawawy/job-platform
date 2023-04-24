@@ -241,7 +241,7 @@ router.get("/users", auth.userAuth, async (req, res) => {
 // Get by id
 router.get("/users/:id", auth.userAuth, (req, res) => {
   const _id = req.params.id; // get user id
-  User.findById(_id).select('-messages -notifications -contactList -savedJobs')
+  User.findById(_id).select('-messages -notifications -contactList -savedJobs -verifyToken -verified')
     .then((user) => {
       if (!user) return res.status(404).send("User not found");
       res.status(200).send(user);
@@ -259,12 +259,8 @@ router.get("/profile", auth.userAuth, async (req, res) => {
 // Get cotacts
 router.get("/contacts", auth.userAuth, async (req, res) => {
   try {
-    const ids = req.user.contactList.map((el) => el.contact.toString());
-    const contacts = await Promise.all(
-      ids.map(async (id) => {
-        return await User.findById(id);
-      })
-    );
+    const ids = req.user.contactList.map((el) => el.contact);
+    const contacts = await User.find({ _id: { $in: ids } }).select('-messages -notifications -contactList -savedJobs -verifyToken -verified');
     res.status(200).send(contacts);
   } catch (err) {
     res.status(400).send(err.message);
@@ -280,15 +276,16 @@ router.patch("/profile", auth.userAuth, async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         location: {
-          address: req.body.location.address&&data.name,
-          coordinates: req.body.location.address&&data.coords,
+          address: locationErr? req.body.location.address&&data.name : data.name,
+          coordinates: locationErr? [] : data.coords,
         },
         headline: req.body.headline,
+        about: req.body.about,
         phone: req.body.phone,
       });
     });
-    // await req.user.save();
-    // res.status(200).send(req.user);
+    await req.user.save();
+    res.status(200).send(req.user);
   } catch (err) {
     res.status(400).send(err);
   }
@@ -395,8 +392,8 @@ router.post(
         });
       }
 
-      await user.save();
-      await req.user.save();
+      user.save();
+      req.user.save();
       res.status(200).send(message);
     } catch (err) {
       res.status(400).send(err.message);
@@ -430,12 +427,16 @@ router.get("/delMessage/:id", auth.userAuth, async (req, res) => {
 // Get messages
 router.get("/message/:id", auth.userAuth, async (req, res) => {
   try {
-    const msgs = req.user.messages.filter(
-      (msg) =>
-        (msg.to == req.params.id && msg.from == req.user._id.toString()) ||
-        (msg.to == req.user._id.toString() && msg.from == req.params.id)
-    );
-    res.status(200).send(msgs);
+    // const msgs = req.user.messages.filter(
+    //   (msg) =>
+    //     (msg.to == req.params.id && msg.from == req.user._id.toString()) ||
+    //     (msg.to == req.user._id.toString() && msg.from == req.params.id)
+    // );
+    const test = await User.findById(req.user._id).select('messages').find({
+      to: req.params.id,
+      from: req.user._id
+    })
+    res.status(200).send(test[0].messages);
   } catch (err) {
     res.status(400).send(err);
   }

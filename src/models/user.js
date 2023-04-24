@@ -44,27 +44,7 @@ const userSchema = new mongoose.Schema({
       message: "Passwords are not the same",
     },
   },
-  job_title: {
-    type: String,
-    trim: true,
-    lowercase: true,
-  },
-  Employment_type: {
-    type: String,
-    trim: true,
-    lowercase: true,
-  },
   Company_name: {
-    type: String,
-    trim: true,
-    lowercase: true,
-  },
-  job_Location: {
-    type: String,
-    trim: true,
-    lowercase: true,
-  },
-  industry: {
     type: String,
     trim: true,
     lowercase: true,
@@ -73,11 +53,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
   },
-  // skills: {
-  //   type: String,
-  //   lowercase: true,
-  // },
-  experience: {
+  about: {
     type: String,
     lowercase: true,
   },
@@ -204,7 +180,7 @@ userSchema.pre("save", async function () {
 // login data check
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
-  if (!user) throw new Error("Wrong email!");
+  if (!user) throw new Error("User not found!");
 
   const matchPass = await bcryptjs.compare(password, user.password);
   if (!matchPass) throw new Error("Wrong password!");
