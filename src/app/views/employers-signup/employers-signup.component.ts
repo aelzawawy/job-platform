@@ -36,16 +36,20 @@ export class EmployersSignupComponent implements OnInit {
   pass_type = 'password';
   pass_state = '<span class="material-symbols-outlined">visibility</span>'
   pattern: RegExp = /(?<=Path).*/
+  loading:boolean = false
   signup(data: any) {
+    this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
         localStorage.setItem('id', res.user._id);
         localStorage.setItem('role', res.user.roles);
         this.userService.emitRole(res.user.roles);
+        this.loading = false;
         this.router.navigateByUrl('/');
       },
       error: (err: any) => {
+        this.loading = false;
         console.log(err)
         if (err.error.errors?.email) {
           this.invalidEmail = true;

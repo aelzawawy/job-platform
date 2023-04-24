@@ -103,36 +103,33 @@ export class JobPostsComponent implements OnInit {
   };
 
   // Display posts
-  jobPosts() {
-    this.loading = true
-    if(localStorage['role'] == 'employer'){
-      this.jobsService.getPosts().subscribe({
-        next: (res: any) => {
-          this.posts = res.reverse();
-          this.loading = false
-          if(this.posts.length != 0) this.job = this.posts[0]
-        }
-      });
-    }
-  }
+  // jobPosts() {
+  //   this.loading = true
+  //   this.jobsService.getPosts().subscribe({
+  //     next: (res: any) => {
+  //       this.posts = res.reverse();
+  //       if(this.posts.length != 0 && !this.ismobile) this.job = this.posts[0]
+  //       this.loading = false
+  //     }
+  //   });
+  // }
 
   // Details function
   index = 0
-  showDetails(e:any, i: number) {
+  showDetails(e:any, id: any, i: number) {
     if(!e) return;
-    this.index = i
-    this.loadingPost = true
     const card = (e.target as HTMLElement).closest('.card')
     if(card != e.target) return;
+    this.index = i;
     if (!this.ismobile) {
-      this.job = this.posts[i]
-      this.loadingPost = false
-    } else {
-      this.router.navigate([`/job/${this.posts[i]._id}`]);
-      this.jobsService.passJob(this.posts[i])
-      this.loading = false
+      this.loadingPost = true;
+      this.job = this.posts[i];
+      this.loadingPost = false;
+    } else if (this.ismobile) {
+      this.jobsService.passJob(this.posts[i]);
+      this.router.navigate([`/job/${id}`]);
+      this.loadingPost = false;
     }
-    this.job = this.posts[i]
   }
 
   // Input Fields animations
@@ -144,14 +141,21 @@ export class JobPostsComponent implements OnInit {
     }
   }
   ngOnInit(): void {
+    this.loading = true
+    this.jobsService.getPosts().subscribe({
+      next: async(res: any) => {
+        this.posts = await res.reverse();
+        if(this.posts.length != 0 && !this.ismobile) this.job = this.posts[0]
+        this.loading = false
+      }
+    });
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
       
       if(!this.ismobile){
-        this.showDetails(null,0)
+        this.showDetails(null,null,0)
       }
       
     });
-    this.jobPosts();
   }
 }

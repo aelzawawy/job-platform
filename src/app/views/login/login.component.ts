@@ -29,7 +29,9 @@ export class LoginComponent implements OnInit {
   invalidLogin = false;
   wrongPassText = '';
   forgotPassword = false;
+  loading:boolean = false
   login(data: any) {
+    this.loading = true
     if(this.loginForm.status == 'INVALID') return;
     this.authService.login(data).subscribe({
       next: (res: any) => {
@@ -37,12 +39,14 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('id', res.user._id);
         localStorage.setItem('role', res.user.roles);
         this.userService.emitRole(res.user.roles);
+        this.loading = false
         this.router.navigateByUrl(`/`);
       },
       error: (err: any) => {
         console.log(err)
         if (err) this.invalidLogin = true;
         this.wrongPassText = err.error;
+        this.loading = false
       },
     });
   }

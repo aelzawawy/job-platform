@@ -39,11 +39,12 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   contacts: User[] = [];
   currContact: User = {};
   user: User = {};
-  toUser:string = '';
+  toUser: string = '';
   contact: boolean = false;
   newMessage: string = '';
   msgs: Message[] = [];
   loadingContacts: boolean = false;
+  loadingMsgs: boolean = false;
 
   message: string = '';
   file: any;
@@ -97,46 +98,60 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   search_value = '';
   profileBiId(e: any, id: any) {
     this.router.navigate([`/messaging`], { queryParams: { contact: id } });
-    this.search_value = ''
+    this.search_value = '';
     this.users = [];
   }
 
   //! Sending message to selected user
   sendMsg() {
     if (this.message == '' && !this.file) return;
-    this.userService
-    .message(this.toUser, this.message, this.file)
-    .subscribe({
-      next: async (res: any) => {
-        this.userService.emitMsg(this.toUser, res.message, res.file, res.file_name, res.file_size)
-        this.msgs.unshift({
-          id: res.id,
-          message: res.message,
-          time: res.time,
-          file: res.file,
-          sent: res.sent,
-          file_name: res.file_name,
-          file_size: res.file_size,
-        });
-        },
-        error: (e: any) => {
-          console.log(e);
-        },
-      });
+    this.userService.emitMsg(
+      this.toUser,
+      this.message,
+      this.file,
+      this.file?.name,
+      `${this.bytesToSize(this.file?.size)}`
+    );
+    this.msgs.unshift({
+      message: this.message,
+      time: `${Date.now()}`,
+      file: this.file,
+      sent: true,
+      file_name: this.file?.name,
+      file_size: `${this.bytesToSize(this.file?.size)}`,
+    });
+    setTimeout(() => {
+      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+    }, 0);
+    this.userService.message(this.toUser, this.message, this.file).subscribe({
+      next: async (res: any) => {},
+      error: (e: any) => {
+        console.log(e);
+      },
+    });
     this.message = '';
     this.file = null;
   }
   getFile(e: any) {
     this.file = e.target.files[0];
   }
+  bytesToSize(bytes:number) {
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    if (bytes == 0) return "n/a";
+    const i:number = Math.floor(Math.log(bytes) / Math.log(1024));
+    if (i == 0) return bytes + " " + sizes[i];
+    return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
+  }
   page = 0;
   getMsgs(id: any) {
+    this.loadingMsgs = true;
     this.message = '';
     this.msgs = [];
     this.page = 0;
     this.userService.getMsgs(id).subscribe({
       next: (res: any) => {
         this.msgs = this.msgs.concat(res.reverse().splice(30 * this.page, 30));
+        this.loadingMsgs = false;
       },
       error: (err: any) => {
         console.log(err);
@@ -218,7 +233,7 @@ export class MessagingComponent implements OnInit, AfterViewInit {
                 this.page++;
                 this.msgs = this.msgs.concat(
                   res.reverse().splice(15 * this.page, 15)
-                );
+                  );
               },
               error: (err: any) => {
                 console.log(err);
@@ -233,15 +248,15 @@ export class MessagingComponent implements OnInit, AfterViewInit {
     );
     this.route.queryParamMap.subscribe((params) => {
       contact = params.get('contact') || '';
-      if (contact && this.contacts.length!=0) {
+      if (contact && this.contacts.length != 0) {
         this.contact = true;
-        this.toUser = contact
-        this.currContact = this.contacts.find(el => el._id == contact) || {}
+        this.toUser = contact;
+        this.currContact = this.contacts.find((el) => el._id == contact) || {};
         this.getMsgs(contact);
         this.userService.contactChatRoom(localStorage['id'], contact);
       } else {
         this.contact = false;
-        this.router.navigate(['/messaging'])
+        this.router.navigate(['/messaging']);
       }
     });
     this.userService.getNewMessage().subscribe((message: any) => {

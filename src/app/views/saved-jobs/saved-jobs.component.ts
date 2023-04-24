@@ -26,18 +26,18 @@ export class SavedJobsComponent implements OnInit {
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
-      setTimeout(() => {
-        if (!this.ismobile) {
-          this.showDetails(this.posts[0]._id, 0);
-        }
-      }, 100);
+      // setTimeout(() => {
+      //   if (!this.ismobile) {
+      //     this.showDetails(this.posts[0]._id, 0);
+      //   }
+      // }, 100);
     });
     this.loading = true
     this.userService.profile().subscribe({
       next: (res: any) => {
         this.posts = res.savedJobs.reverse();
         this.job = this.posts[0];
-        if (this.posts.length != 0) this.isSaved = true;
+        this.job.saved = true
         this.loading = false
       },
       error: (e: any) => {
@@ -64,21 +64,18 @@ export class SavedJobsComponent implements OnInit {
   }
 
   // Details function
-  index = 0;
+  index:number = 0;
   showDetails(id: any, i: number) {
     this.index = i;
-    this.loadingPost = true
-    this.jobsService.jobById(id).subscribe({
-      next: (res: any) => {
-        if (!this.ismobile) {
-          this.job = res;
-          this.loadingPost = false
-        } else {
-          this.router.navigate([`/job/${id}`]);
-          this.jobsService.passJob(res)
-        }
-      },
-    });
+    if (!this.ismobile) {
+      this.loadingPost = true;
+      this.job = this.posts[i];
+      this.loadingPost = false;
+    } else if (this.ismobile) {
+      this.jobsService.passJob(this.posts[i]);
+      this.router.navigate([`/job/${id}`]);
+      this.loadingPost = false;
+    }
   }
 
   // Salary formatting

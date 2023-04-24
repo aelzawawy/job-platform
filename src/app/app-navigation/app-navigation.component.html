@@ -48,7 +48,7 @@
 
   </mat-sidenav>
 
-  <mat-sidenav-content class="appContainer" (scroll)="isScrolling($event)" style="scroll-behavior: smooth;">
+  <mat-sidenav-content class="appContainer" (scroll)="isScrolling($event)" style="scroll-behavior: smooth;height: 105vh">
     <mat-toolbar>
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
         *ngIf="((isHandset$ | async) || (isHandsetMd$ | async)) && loggedIn()">
@@ -59,7 +59,7 @@
 
       <button *ngIf="!(isHandset$ | async)" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active"
         mat-button routerLink="/">JobsFeed</button>
-      <button mat-button *ngIf="loggedIn() && !(isHandset$ | async)" routerLinkActive="active" class="profile-box"
+      <button mat-button *ngIf="loggedIn() && !(isHandset$ | async)" routerLinkActive="active" class="profile-box" [class.active]="active"
         [matMenuTriggerFor]="menu" (click)="expanded = !expanded">
         <img *ngIf="!loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
         <span>{{user.name}}</span>
@@ -72,11 +72,11 @@
         routerLink="/messaging"><mat-icon>mail</mat-icon></button>
       <div style="flex:.97"></div>
       <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/employers">For Employers</button>
-      <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/login">Login</button>
+      <button style="background-color: rgb(68, 152, 155); color: white;" *ngIf="!loggedIn()" mat-raised-button routerLink="/login">Login</button>
 
       <mat-menu #menu="matMenu" [overlapTrigger]="false" (close)="expanded = !expanded">
         <div class="matMenu">
-          <a mat-menu-item *ngIf="loggedIn()" routerLink="/profile/{{user._id}}">Profile</a>
+          <a mat-menu-item *ngIf="loggedIn()" routerLink="/profile">Profile</a>
           <a mat-menu-item *ngIf="loggedIn()" routerLink="/" (click)="logOut()">Logout</a>
         </div>
       </mat-menu>
@@ -99,7 +99,7 @@
           mail
         </span></button>
       <button mat-button *ngIf="loggedIn() && (isHandset$ | async)" routerLinkActive="active"
-        routerLink="/profile/{{user._id}}">
+        routerLink="/profile">
         <img *ngIf="!loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
       </button>
     </div>

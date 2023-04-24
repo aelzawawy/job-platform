@@ -2,10 +2,19 @@
     <div class="container">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-                <div class="card" style="border-radius: 15px;">
+                <div *ngIf="loading" class="dot-spinner">
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                    <div class="dot-spinner__dot"></div>
+                </div>
+                <div *ngIf="!loading" class="card" style="border-radius: 15px;">
                     <div class="card-body p-5">
                         <h2 class="text-uppercase text-center mb-5">{{!forgotPassword? 'Login': 'Send a password reset email'}}</h2>
-
                         <form *ngIf="!forgotPassword" [formGroup]='loginForm' (ngSubmit)="login(loginForm.value)">
 
                             <div class="form-outline mb-4">

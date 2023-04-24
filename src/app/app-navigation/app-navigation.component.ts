@@ -1,11 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, NavigationError, NavigationStart, RouterOutlet } from '@angular/router';
-import { fader, slider } from '../route-animations';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { Observable } from 'rxjs';
+import { User } from 'src/app/interfaces/user';
 import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
-import { User } from 'src/app/interfaces/user';
-import { ActivatedRoute, Router } from '@angular/router';
+import { fader, slider } from '../route-animations';
 @Component({
   selector: 'app-app-navigation',
   templateUrl: './app-navigation.component.html',
@@ -30,26 +36,25 @@ export class AppNavigationComponent implements OnInit {
   user: User = {};
   role?: string;
   loading: boolean = false;
-  expanded:boolean = false
-  fadeUpClass:boolean = false
+  expanded: boolean = false;
+  fadeUpClass: boolean = false;
   ngOnInit(): void {
-  //   this.router.events.subscribe((event) => {
-  //     if (event instanceof NavigationStart) {
-  //         // Show progress spinner or progress bar
-  //         console.log(event.url.includes);
-  //     }
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        // Show progress spinner or progress bar
+        this.active = event.url.includes('/profile')
+      }
+      // if (event instanceof NavigationEnd) {
+      //     // Hide progress spinner or progress bar
+      //     console.log(event);
+      // }
 
-  //     if (event instanceof NavigationEnd) {
-  //         // Hide progress spinner or progress bar      
-  //         console.log(event);
-  //     }
-
-  //     if (event instanceof NavigationError) {
-  //         // Hide progress spinner or progress bar
-  //         // Present error to user
-  //         console.log(event.error);
-  //     }
-  // });
+      // if (event instanceof NavigationError) {
+      //     // Hide progress spinner or progress bar
+      //     // Present error to user
+      //     console.log(event.error);
+      // }
+    });
     this.loading = true;
     this.userService.getRole().subscribe((role) => {
       this.role = role || localStorage['role'];
@@ -66,8 +71,9 @@ export class AppNavigationComponent implements OnInit {
       }
     });
   }
-  isScrolling(e:any){
-    this.fadeUpClass = true
+  active:Boolean = false
+  isScrolling(e: any) {
+    this.fadeUpClass = true;
   }
   prepareRoute(outlet: RouterOutlet) {
     return (
@@ -78,7 +84,7 @@ export class AppNavigationComponent implements OnInit {
   }
 
   logOut() {
-    localStorage.clear()
+    localStorage.clear();
     this.router.navigateByUrl(`/`);
     this.loggedIn();
   }

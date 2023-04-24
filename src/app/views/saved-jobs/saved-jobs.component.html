@@ -2,7 +2,7 @@
     <div class="content" style="opacity: 1; transform: translateY(0px);">
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <li *ngFor="let post of posts; let i = index">
-                <div (click)="showDetails(post._id, i)" class="card" [class.selected]="index == i && !(isHandset$ | async)">
+                <div (click)="showDetails(post._id, i)" class="card" [class.selected]="index == i">
                     <div class="card-body">
                         <h5 class="title">{{post.title}}</h5>
                         <p>{{post.company}}</p>

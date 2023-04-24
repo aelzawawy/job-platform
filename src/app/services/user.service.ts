@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, skip } from 'rxjs';
 import { io } from "socket.io-client";
 
 @Injectable({
@@ -114,7 +114,7 @@ export class UserService {
       this.message$.next(message);
     });
     
-    return this.message$.asObservable();
+    return this.message$.asObservable().pipe(skip(1));
   };
 
   emitRole(role:string){

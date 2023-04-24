@@ -50,15 +50,17 @@ export class JobDetailsComponent implements OnInit, OnChanges {
             }
           }, 0);
         });
+        this.loading = true;
         this.jobsService.getPassedJob().subscribe(async (res) => {
-          if(Object.keys(res).length == 0) this.router.navigate([`/`]);
-          await this.checkSaved(res._id)
-          this.job = res 
+          this.job = res
+          this.checkSaved(res._id)
+          this.loading = false;
         })
       }
     })
   }
   isSaved!:boolean
+  loading:boolean = false
   ismobile!:boolean
   myId = localStorage['id']
   @Input() job: JobPost = {};

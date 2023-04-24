@@ -30,37 +30,37 @@ export class ProfileComponent implements OnInit {
   // routeQueryParams$: Subscription;
   users: User[] = [];
   user: User = {};
-  user_toView_id!:string;
   profileImg: any;
   backgoroundImg: any;
   resume: any;
   expanded:boolean = true;
-  toView:boolean = false;
+  toView:boolean = true;
   loading:boolean = false;
     
   profile() {
     this.loading = true;
     this.userService.profile().subscribe({
       next: (res: any) => {
-        if(res._id === this.user_toView_id) {
-          this.user = res;
-          this.loading = false;
-        }else{
-          this.userService.profileById(this.user_toView_id).subscribe({
-            next: (res: any) => {
-              this.user = res;
-              this.loading = false;
-            },
-            error: (err: any) => {
-              console.log(err);
-            },
-          });
-        }
+        this.user = res;
+        this.loading = false;
       },
       error: (err: any) => {
         console.log(err);
       },
     });
+    // if(localStorage['id'] === this.user_toView_id) {
+    // }else{
+    //   this.userService.profileById(this.user_toView_id).subscribe({
+    //     next: (res: any) => {
+    //       this.user = res;
+    //       this.loading = false;
+    //     },
+    //     error: (err: any) => {
+    //       console.log(err);
+    //     },
+    //   });
+    // }
+    
   }
 
   uploadImg(e: any) {
@@ -118,18 +118,31 @@ export class ProfileComponent implements OnInit {
   }
 
   openEdit(){
-    this.router.navigate([`/profile/${localStorage['id']}`], {queryParams: {edit: true}})
+    this.router.navigate([`/profile`], {queryParams: {edit: true}})
   }
   
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.user_toView_id = params['id'];
-      this.toView = localStorage['id'] == params['id']
-      this.profile();
+      // this.toView = localStorage['id'] == params['id']
+      if(params['id']){
+        this.toView = false
+        this.loading = true;
+        this.userService.profileById(params['id']).subscribe({
+          next: (res: any) => {
+            this.user = res;
+            this.loading = false;
+          },
+          error: (err: any) => {
+            console.log(err);
+          },
+        });
+      }else{
+        this.toView = true
+        this.profile();
+      }
     })
     this.userService.updatedProfile().subscribe((body) => {
       if(body == '') return;
-      this.dialog.closeAll()
       this.user.name = body.name;
       this.user.location!.address = body.location.address;
       this.user.headline = body.headline;
@@ -142,7 +155,7 @@ export class ProfileComponent implements OnInit {
           height: '80%',
         });
         dialogRef.afterClosed().subscribe(result => {
-          this.router.navigateByUrl(`/profile/${localStorage['id']}`)
+          this.router.navigateByUrl(`/profile`)
         });
       }
       

@@ -59,17 +59,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
   };
   queryBody = {
     page: 1,
-    limit: 10,
+    limit: 7,
     order: -1,
   };
-  loadingSvg:boolean = false
+  loadingSvg: boolean = false;
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
       setTimeout(() => {
-        if(!this.ismobile && this.posts.length !=0){
-          this.showDetails(this.posts[0]._id, 0)
-        }
+        // if(!this.ismobile && this.posts.length !=0){
+        //   // this.showDetails(this.posts[0]._id, 0)
+        // }
         this.loadingSvg = true;
       }, 200);
     });
@@ -168,12 +168,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
           this.loading = false;
           return;
         }
-        if (this.queryBody.page == 1 && !this.ismobile) {
-          this.showDetails(res.posts[0]._id, 0);
-        }
         this.posts = this.posts.concat(res.posts);
         this.totalPages = res.totalPages;
         this.loading = false;
+        if (this.queryBody.page == 1 && !this.ismobile) {
+          this.showDetails(res.posts[0]._id, 0);
+        }
       },
       error: (e: any) => {
         console.log(e);
@@ -182,22 +182,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   index!: number;
-  loadingPost: boolean = false
+  loadingPost: boolean = false;
   // Details function
   showDetails(id: any, i: number) {
     this.index = i;
-    this.loadingPost = true;
-    this.jobsService.jobById(id).subscribe({
-      next: (res: any) => {
-        if (!this.ismobile) {
-          this.job = res;
-          this.loadingPost = false;
-        } else {
-          this.router.navigate([`/job/${id}`]);
-          this.jobsService.passJob(res)
-        }
-      },
-    });
+    if (!this.ismobile) {
+      this.loadingPost = true;
+      this.job = this.posts[i];
+      this.loadingPost = false;
+    } else if (this.ismobile) {
+      this.jobsService.passJob(this.posts[i]);
+      this.router.navigate([`/job/${id}`]);
+      this.loadingPost = false;
+    }
   }
 
   // Salary formatting

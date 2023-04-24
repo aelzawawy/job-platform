@@ -19,4 +19,5 @@ export interface JobPost {
     company?: string,
     applictions?: Array<object>,
     available?: boolean,
+    saved?: boolean,
 }
