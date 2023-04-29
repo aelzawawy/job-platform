@@ -32,10 +32,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { JobsComponent } from './views/jobs/jobs.component';
+// import { JobsComponent } from './views/jobs/jobs.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
+import { MapBoxComponent } from './map-box/map-box.component';
+import { Loader1Component } from './loaders/loader1/loader1.component';
+import { Loader2Component } from './loaders/loader2/loader2.component';
 
 @NgModule({
   declarations: [
@@ -53,9 +56,12 @@ import { ResetPasswordComponent } from './views/reset-password/reset-password.co
     JobApplicationsComponent,
     SavedJobsComponent,
     AppNavigationComponent,
-    JobsComponent,
+    // JobsComponent,
     JobPostsFormComponent,
     ResetPasswordComponent,
+    MapBoxComponent,
+    Loader1Component,
+    Loader2Component,
   ],
   // entryComponents: [MessagingComponent],
   imports: [

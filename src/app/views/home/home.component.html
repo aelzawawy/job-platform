@@ -1,13 +1,14 @@
-<div class="container h-100" [class.container-max-width]="(isHandsetMd$ | async)">
+<div class="container h-100 container-max-width">
 
-    <div class="heroSection" [class.flexColumn]="(isHandsetMd$ | async) || (isHandset$ | async)">
+    <div class="heroSection" [class.flexColumn]="(isHandset$ | async)">
         <div class="what_we_offer" [class.fadeUp]="loadingSvg">
             <h1>Find your next job with <u>Reach</u></h1>
             <p>We use geospatial information for geography and mapping with advanced search techniques to bring you what
                 you need.</p>
-            <p *ngIf="!loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for talents nearby, <a
-                    routerLink="/signup"><span>join our family and reach for it.</span></a></p>
-            <p *ngIf="loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for talents nearby,<span>reach for it.</span></p>
+            <p *ngIf="!loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for
+                talents nearby, <a routerLink="/signup"><span>join our family and reach for it.</span></a></p>
+            <p *ngIf="loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for
+                talents nearby,<span>reach for it.</span></p>
         </div>
         <svg [class.animated]="loadingSvg" id="freepik_stories-job-hunt" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -862,97 +863,102 @@
             </defs>
         </svg>
     </div>
+    
+    <a *ngIf="!(isHandset$|async)" href="#search" class="scroll-down"></a>
+    <app-map-box #map [locations]="jobLocations" [flyToo]="flyToo"></app-map-box>
 
-    <div class="home_header" [class.fadeUp]="loadingSvg">
-        <div *ngIf="search_Warning" class="inputsEmpty" [class.onMaxSize]="!(isHandset$ | async) && !(isHandsetMd$ | async)">
-            <p>
-                <svg xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" fill="currentColor"
-                    viewBox="0 0 24 24" aria-hidden="true" class="css-1xqhio eac13zx0">
-                    <path fill-rule="evenodd"
-                        d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 14.75a.25.25 0 01-.25.25h-1.5a.25.25 0 01-.25-.25v-1.5a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v1.5zm0-4a.25.25 0 01-.25.25h-1.5a.25.25 0 01-.25-.25v-5.5a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v5.5z"
-                        clip-rule="evenodd"></path>
-                </svg>
-                Enter a job title or location to start a search
-            </p>
+    <div id="search" class="container inner" [class.container-max-width]="(isHandsetMd$ | async)">
+        <div class="home_header home">
+            <div *ngIf="search_Warning" class="inputsEmpty"
+                [class.onMaxSize]="!(isHandset$ | async) && !(isHandsetMd$ | async)">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" fill="currentColor"
+                        viewBox="0 0 24 24" aria-hidden="true" class="css-1xqhio eac13zx0">
+                        <path fill-rule="evenodd"
+                            d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 14.75a.25.25 0 01-.25.25h-1.5a.25.25 0 01-.25-.25v-1.5a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v1.5zm0-4a.25.25 0 01-.25.25h-1.5a.25.25 0 01-.25-.25v-5.5a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v5.5z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    Enter a job title or location to start a search
+                </p>
+            </div>
+            <form (submit)="jobSearch()" class="search-form">
+                <div class="search-form--main">
+                    <mat-form-field appearance="outline" class="form-field">
+                        <span matPrefix><label for="what" class="search-form-label">What</label></span>
+                        <input name="search_terms" id="what" placeholder="job title, keywords" matInput type="text"
+                            [(ngModel)]="search.search_terms" (ngModelChange)="search_Warning = false">
+                        <mat-icon matSuffix style="color: goldenrod;">search</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="form-field">
+                        <span matPrefix><label for="where" class="search-form-label">Where</label></span>
+                        <input name="Location" id="where" placeholder="Country or City" type="text" matInput
+                            [(ngModel)]="search.location" (ngModelChange)="search_Warning = false">
+                        <mat-icon matSuffix style="color: goldenrod;">map</mat-icon>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="search-form--feature">
+                <h1>Find jobs within an approximate radius from your current set location.</h1>
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Search radius</mat-label>
+                    <input matInput type="number" name="Radius" [(ngModel)]="search.radius" placeholder="o.o" [disabled]="!loggedIn()">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Unit</mat-label>
+                    <mat-select name="unit" [(ngModel)]="search.unit" [disabled]="!loggedIn()">
+                        <mat-option value="kilometre">kilometre</mat-option>
+                        <mat-option value="mile">mile</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+                <button type="submit" mat-raised-button class="search-form-submit">Find Jobs</button>
+            </form>
         </div>
-        <form (submit)="jobSearch()" class="search-form" [class.fadeUp]="loadingSvg">
-            <div class="search-form--main">
-                <mat-form-field appearance="outline" class="form-field">
-                    <span matPrefix><label for="what" class="search-form-label">What</label></span>
-                    <input name="search_terms" id="what" placeholder="job title, keywords" matInput type="text"
-                        [(ngModel)]="search.search_terms" (ngModelChange)="search_Warning = false">
-                    <mat-icon matSuffix>search</mat-icon>
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="form-field">
-                    <span matPrefix><label for="where" class="search-form-label">Where</label></span>
-                    <input name="Location" id="where" placeholder="Country or City" type="text" matInput
-                        [(ngModel)]="search.location" (ngModelChange)="search_Warning = false">
-                    <mat-icon matSuffix>map</mat-icon>
-                </mat-form-field>
-            </div>
-
-            <!-- <div class="search-form--feature">
-            <h1>Find jobs within an approximate radius from your current set location.</h1>
-            <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Search radius</mat-label>
-                <input matInput type="number" name="Radius" [(ngModel)]="search.radius" placeholder="o.o" [disabled]="!loggedIn()">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Unit</mat-label>
-                <mat-select name="unit" [(ngModel)]="search.unit" [disabled]="!loggedIn()">
-                    <mat-option value="kilometre">kilometre</mat-option>
-                    <mat-option value="mile">mile</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div> -->
-
-            <button type="submit" mat-raised-button class="search-form-submit">Find Jobs</button>
-        </form>
-    </div>
-    <div class="content" [class.fadeUp]="loadingSvg">
-        <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
-            <li *ngFor="let post of posts; let i = index">
-                <div *ngIf="i != posts.length-1" (click)="showDetails(post._id, i)" class="card"
-                    [class.selected]="index == i">
-                    <div class="card-body">
-                        <h5 class="title">{{post.title}}</h5>
-                        <p>{{post.company}}</p>
-                        <p>{{post.location?.address}}</p>
-                        <div class="detail-row">
-                            <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
-                            <p class="detail-row--item">{{post.type}}</p>
-                            <p class="detail-row--item" *ngIf="post.remote">Remote</p>
-                        </div>
-                        <p class="post-date">Posted {{post.date | date:'short'}}</p>
-                    </div>
+        <div class="content">
+            <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
+                <div *ngIf="!loading && searching" class="sortBox">
+                    <p>Sort by:</p>
+                    <span [ngClass]="{'active': !sortByDate}" class="link" (click)="resetSort($event)">relevance</span>
+                    <span>-</span>
+                    <span [ngClass]="{'active': sortByDate}" (click)="sort($event)" class="link"> date</span>
+                    <span style="flex:1;"></span>
+                    <button title="Undo search!" mat-icon-button (click)="undoSearch()" class="link"><span class="material-symbols-outlined link">undo</span></button>
                 </div>
-                <div *ngIf="i == posts.length-1" (click)="showDetails(post._id, i)" class="card" #lastElement
-                    [class.selected]="index == i">
-                    <div class="card-body">
-                        <h5 class="title">{{post.title}}</h5>
-                        <p>{{post.company}}</p>
-                        <p>{{post.location?.address}}</p>
-                        <div class="detail-row">
-                            <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
-                            <p class="detail-row--item">{{post.type}}</p>
-                            <p class="detail-row--item" *ngIf="post.remote">Remote</p>
+                <li *ngFor="let post of posts; let i = index">
+                    <div *ngIf="i != posts.length-1" (click)="showDetails(post._id, i)" class="card home"
+                        [class.selected]="index == i">
+                        <div class="card-body">
+                            <h5 class="title">{{post.title}}</h5>
+                            <p>{{post.company}}</p>
+                            <p>{{post.location?.address}}</p>
+                            <div class="detail-row">
+                                <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
+                                <p class="detail-row--item">{{post.type}}</p>
+                                <p class="detail-row--item" *ngIf="post.remote">Remote</p>
+                            </div>
+                            <p class="post-date">Posted {{post.date | date:'short'}}</p>
                         </div>
-                        <p class="post-date">Posted {{post.date | date:'short'}}</p>
                     </div>
-                </div>
-            </li>
-            <div *ngIf="loading" class="loading">
-                <span class="effect loading__head"></span>
-                <span class="effect loading__body"></span>
+                    <div *ngIf="i == posts.length-1" (click)="showDetails(post._id, i)" class="card home" #lastElement
+                        [class.selected]="index == i">
+                        <div class="card-body">
+                            <h5 class="title">{{post.title}}</h5>
+                            <p>{{post.company}}</p>
+                            <p>{{post.location?.address}}</p>
+                            <div class="detail-row">
+                                <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
+                                <p class="detail-row--item">{{post.type}}</p>
+                                <p class="detail-row--item" *ngIf="post.remote">Remote</p>
+                            </div>
+                            <p class="post-date">Posted {{post.date | date:'short'}}</p>
+                        </div>
+                    </div>
+                </li>
+                <app-loader1 *ngIf="loading"></app-loader1>
+            </ul>
+            <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details home">
+                <app-loader1 *ngIf="loadingPost"></app-loader1>
+                <app-job-details *ngIf="!loadingPost" [job]="job"></app-job-details>
             </div>
-        </ul>
-
-        <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
-            <div *ngIf="loadingPost" class="loading">
-                <span class="effect loading__head"></span>
-                <span class="effect loading__body"></span>
-            </div>
-            <app-job-details *ngIf="!loadingPost" [job]="job"></app-job-details>
         </div>
     </div>
 </div>

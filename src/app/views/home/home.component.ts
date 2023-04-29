@@ -2,21 +2,19 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  EventEmitter,
-  Input,
   OnInit,
-  Output,
   QueryList,
+  ViewChild,
   ViewChildren,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ApiJob } from 'src/app/interfaces/api-job';
+import { Location } from 'src/app/interfaces/geoJson';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { JobsService } from 'src/app/services/jobs.service';
 import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -37,7 +35,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
   isHandsetMd$!: Observable<boolean>;
   @ViewChildren('lastElement', { read: ElementRef })
   lastElement!: QueryList<ElementRef>;
+  @ViewChild('map', { read: ElementRef })
+  map!: ElementRef;
   observeIntersection: any;
+  mapObserver: any;
   posts: JobPost[] = [];
   apiPosts: ApiJob[] = [];
   job: JobPost = {};
@@ -50,12 +51,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   totalPages!: number;
   pages!: number[];
   ismobile: boolean = false;
-
   search = {
     search_terms: '',
     location: '',
     radius: undefined,
     unit: '',
+    sort: '',
   };
   queryBody = {
     page: 1,
@@ -63,17 +64,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
     order: -1,
   };
   loadingSvg: boolean = false;
+  jobLocations: Location[] = [];
+  flyToo!: [number, number];
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
       setTimeout(() => {
-        // if(!this.ismobile && this.posts.length !=0){
-        //   // this.showDetails(this.posts[0]._id, 0)
-        // }
         this.loadingSvg = true;
+        if (!this.ismobile) {
+          this.job = this.posts[0];
+        }
       }, 200);
     });
-    this.route.params.subscribe((params) => {
+    this.route.params.subscribe((params: any) => {
       if (params['id'] && params['token']) {
         this.userService.verify(params['id'], params['token']).subscribe({
           next: (res: any) => {
@@ -102,7 +105,28 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     );
 
-    // console.log(JSON.parse(localStorage['apiRes'] || '[]'));
+    this.mapObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            this.passLocations();
+            this.mapObserver.unobserve(e.target);
+          }
+        });
+      },
+      {
+        threshold: .5,
+      }
+    );
+
+    this.userService.getContacts().subscribe({
+      next: (res: any) => {
+        localStorage.setItem('contacts', JSON.stringify(res));
+      },
+      error: (err: any) => {
+        console.log(err);
+      },
+    });
   }
 
   ngAfterViewInit(): void {
@@ -110,6 +134,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       if (list.last && this.posts.length >= this.queryBody.limit)
         this.observeIntersection.observe(list.last.nativeElement);
     });
+    this.mapObserver.observe(this.map.nativeElement);
   }
 
   async pageUp(page: any) {
@@ -124,38 +149,67 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  // Search api
+  //! undo search
+  undoSearch() {
+    this.search.search_terms = '';
+    this.search.location = '';
+    this.posts = []
+    this.searching = false;
+    this.queryBody.page = 1
+    this.jobPosts();
+  }
+
+  //! Send locations to mapBox component
+  passLocations() {
+    this.jobLocations = this.posts.map((post) => {
+      const location = {
+        title: `${post.title}`,
+        address: `${post.location?.address}`,
+        coords: post.location?.coordinates,
+      };
+      return location;
+    });
+  }
+
+  //todo Search functions
+  sort(e: any) {
+    if (this.search.sort == 'date') return;
+    this.sortByDate = true;
+    this.search.sort = 'date';
+    this.jobSearch();
+  }
+  resetSort(e: any) {
+    if (this.search.sort == '') return;
+    this.sortByDate = false;
+    this.search.sort = '';
+    this.jobSearch();
+  }
+  sortByDate: boolean = false;
+  searching: boolean = false;
   jobSearch() {
     if (this.search.search_terms == '' && this.search.location == '') {
       this.search_Warning = true;
       return;
     }
-    this.router.navigate(['/jobs'], {
-      queryParams: {
-        q: this.search.search_terms.trim(),
-        i: this.search.location.trim(),
-        radius: this.search.radius,
-        unit: this.search.unit,
+    this.jobsService.searchApi(this.search).subscribe({
+      next: async (res: any) => {
+        if (res.length == 0) {
+          this.loading = false;
+          return;
+        } else {
+          this.job = res[0];
+          this.posts = res;
+          this.searching = true;
+          this.passLocations();
+        }
+
+        this.loading = false;
+        // localStorage.setItem('apiRes', JSON.stringify(res));
+      },
+      error: (e: any) => {
+        console.log(e);
       },
     });
-    // this.jobsService.searchApi(this.search).subscribe({
-    //   next: async (res: any) => {
-    //     if (res.length == 0) {
-    //       this.loading = false;
-    //       return;
-    //     }else{
-    //       this.job = res[0];
-    //       this.isSaved(res[0]._id);
-    //       this.posts = res;
-    //     }
-
-    //     // this.loading = false;
-    //     // localStorage.setItem('apiRes', JSON.stringify(res));
-    //   },
-    //   error: (e: any) => {
-    //     console.log(e);
-    //   },
-    // });
   }
   observe: boolean = true;
   // Display posts
@@ -171,8 +225,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.posts = this.posts.concat(res.posts);
         this.totalPages = res.totalPages;
         this.loading = false;
+        this.mapObserver.observe(this.map.nativeElement);
         if (this.queryBody.page == 1 && !this.ismobile) {
-          this.showDetails(res.posts[0]._id, 0);
+          this.index = 0;
+          this.job = res.posts[0];
         }
       },
       error: (e: any) => {
@@ -190,6 +246,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.loadingPost = true;
       this.job = this.posts[i];
       this.loadingPost = false;
+      this.flyToo = this.posts[i].location?.coordinates || [0, 0];
     } else if (this.ismobile) {
       this.jobsService.passJob(this.posts[i]);
       this.router.navigate([`/job/${id}`]);

@@ -11,7 +11,6 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatListModule} from '@angular/material/list';
 import {MatSelectModule} from '@angular/material/select';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatDividerModule} from '@angular/material/divider';
 const components = [
   MatToolbarModule,
   MatButtonModule,
@@ -25,7 +24,6 @@ const components = [
   MatListModule,
   MatSelectModule,
   MatCheckboxModule,
-  MatDividerModule
 ]
 @NgModule({
   imports: [components],

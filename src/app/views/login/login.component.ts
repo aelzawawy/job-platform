@@ -31,14 +31,14 @@ export class LoginComponent implements OnInit {
   forgotPassword = false;
   loading:boolean = false
   login(data: any) {
-    this.loading = true
     if(this.loginForm.status == 'INVALID') return;
+    this.loading = true
     this.authService.login(data).subscribe({
       next: (res: any) => {
+        localStorage.setItem('user', JSON.stringify(res.user));
         localStorage.setItem('token', res.token);
         localStorage.setItem('id', res.user._id);
-        localStorage.setItem('role', res.user.roles);
-        this.userService.emitRole(res.user.roles);
+        // this.userService.emitRole(res.user);
         this.loading = false
         this.router.navigateByUrl(`/`);
       },

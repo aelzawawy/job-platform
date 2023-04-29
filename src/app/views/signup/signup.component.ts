@@ -36,6 +36,7 @@ export class SignupComponent implements OnInit {
   emailMsg = '';
   loading:boolean = false
   signup(data: any) {
+    if(this.signupForm.status == 'INVALID') return;
     this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {

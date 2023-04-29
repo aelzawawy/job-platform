@@ -1,5 +1,5 @@
 <div class="container h-100" [class.container-max-width]="(isHandsetMd$ | async)">
-    <div class="content" style="opacity: 1; transform: translateY(0px);">
+    <div class="content" style="transform: translateY(12px);">
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <li *ngFor="let post of posts; let i = index">
                 <div (click)="showDetails(post._id, i)" class="card" [class.selected]="index == i">
@@ -16,17 +16,11 @@
                     </div>
                 </div>
             </li>
-            <div *ngIf="loading" class="loading">
-                <span class="effect loading__head"></span>
-                <span class="effect loading__body"></span>
-            </div>
+            <app-loader1 *ngIf="loading"></app-loader1>
         </ul>
         
         <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
-            <div *ngIf="loadingPost" class="loading">
-                <span class="effect loading__head"></span>
-                <span class="effect loading__body"></span>
-            </div>
+            <app-loader1 *ngIf="loadingPost"></app-loader1>
             <app-job-details *ngIf="!loadingPost" (unSave)="unSave($event)" [job]="job"></app-job-details>
         </div>
         

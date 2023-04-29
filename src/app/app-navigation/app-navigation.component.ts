@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   ActivatedRoute,
-  NavigationEnd,
-  NavigationError,
   NavigationStart,
   Router,
   RouterOutlet,
@@ -11,15 +9,12 @@ import { Observable } from 'rxjs';
 import { User } from 'src/app/interfaces/user';
 import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
-import { fader, slider } from '../route-animations';
+import { fader } from '../route-animations';
 @Component({
   selector: 'app-app-navigation',
   templateUrl: './app-navigation.component.html',
   styleUrls: ['./app-navigation.component.scss'],
-  animations: [
-    fader,
-    // slider
-  ],
+  animations: [fader],
 })
 export class AppNavigationComponent implements OnInit {
   constructor(
@@ -37,43 +32,36 @@ export class AppNavigationComponent implements OnInit {
   role?: string;
   loading: boolean = false;
   expanded: boolean = false;
-  fadeUpClass: boolean = false;
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        // Show progress spinner or progress bar
-        this.active = event.url.includes('/profile')
-      }
-      // if (event instanceof NavigationEnd) {
-      //     // Hide progress spinner or progress bar
-      //     console.log(event);
-      // }
-
-      // if (event instanceof NavigationError) {
-      //     // Hide progress spinner or progress bar
-      //     // Present error to user
-      //     console.log(event.error);
-      // }
-    });
-    this.loading = true;
-    this.userService.getRole().subscribe((role) => {
-      this.role = role || localStorage['role'];
-      if (this.loggedIn()) {
-        this.userService.profile().subscribe({
-          next: (res: any) => {
-            this.user = res;
-            this.loading = false;
-          },
-          error: (err: any) => {
-            console.log(err);
-          },
-        });
+        this.active = event.url.includes('/profile');
+        this.user = JSON.parse(localStorage['user'] || '[]');
       }
     });
+    // this.userService.getRole().subscribe((user) => {
+    // this.role = role || localStorage['role'];
+    // if (this.loggedIn()) {
+    //   this.loading = true;
+    //   this.userService.profile().subscribe({
+    //     next: (res: any) => {
+    //       this.user = res;
+    //       this.loading = false;
+    //     },
+    //     error: (err: any) => {
+    //       console.log(err);
+    //     },
+    //   });
+    // }
+    // });
   }
-  active:Boolean = false
+  active: Boolean = false;
   isScrolling(e: any) {
-    this.fadeUpClass = true;
+    const navBar = document.querySelector('.mat-toolbar') as HTMLElement;
+    navBar.classList.toggle(
+      'transparent',
+      Boolean(e.target.scrollTop > window.innerHeight)
+    );
   }
   prepareRoute(outlet: RouterOutlet) {
     return (

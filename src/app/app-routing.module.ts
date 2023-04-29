@@ -10,15 +10,15 @@ import { EmployersSignupComponent } from './views/employers-signup/employers-sig
 import { JobPostsComponent } from './views/job-posts/job-posts.component';
 import { MessagingComponent } from './views/messaging/messaging.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
-import { JobsComponent } from './views/jobs/jobs.component';
+// import { JobsComponent } from './views/jobs/jobs.component';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 import { JobDetailsComponent } from './views/job-details/job-details.component';
 
 const routes: Routes = [
-  {path:'', component:HomeComponent, data:{animation:'isHome'}},
-  {path:'verify/:id/:token', component:HomeComponent, data:{animation:'isHome'}},
-  {path:'jobs', component:JobsComponent, data:{animation:'jobs'}},
+  {path:'', component:HomeComponent},
+  {path:'verify/:id/:token', component:HomeComponent},
+  // {path:'jobs', component:JobsComponent, data:{animation:'jobs'}},
   {path:'signup', component:SignupComponent, data:{animation:'isSignup'}, canActivate:[AuthGuardService]},
   {path:'login', component:LoginComponent, data:{animation:'isLogin'}, canActivate:[AuthGuardService]},
   {path:'profile', component:ProfileComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},

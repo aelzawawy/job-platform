@@ -1,11 +1,8 @@
 <div class="container" [class.container-max-width]="(isHandsetMd$ | async)">
     <h3 *ngIf="posts.length == 0 && !loading">You haven't posted any jobs yet!</h3>
-    <div class="content" style="opacity: 1; transform: translateY(0px);">
+    <div class="content" style="transform: translateY(12px);">
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
-            <div *ngIf="loading" class="loading">
-                <span class="effect loading__head"></span>
-                <span class="effect loading__body"></span>
-            </div>
+            <app-loader1 *ngIf="loading"></app-loader1>
             <li *ngFor="let post of posts; let i = index">
                 <div *ngIf="!loading" (click)="showDetails($event, post._id, i)" class="card" [class.selected]="index == i">
                     <div class="card--options">
@@ -37,10 +34,7 @@
             </li>
         </ul>
         <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
-            <div *ngIf="loadingPost" class="loading">
-                <span class="effect loading__head"></span>
-                <span class="effect loading__body"></span>
-            </div>
+            <app-loader1 *ngIf="loadingPost"></app-loader1>
             <app-job-details *ngIf="!loadingPost" [job]="job"></app-job-details>
         </div>
     </div>

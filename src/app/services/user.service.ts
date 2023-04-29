@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, skip } from 'rxjs';
 import { io } from "socket.io-client";
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,10 @@ import { io } from "socket.io-client";
 export class UserService {
 
   constructor(private http:HttpClient) { }
-  url:string= 'https://inreach-api.onrender.com/';
-  socket = io('https://inreach-api.onrender.com/');
+  url:string= 'http://localhost:3000/';
+  socket = io('http://localhost:3000/');
   public message$: BehaviorSubject<any> = new BehaviorSubject('');
-  public role$: BehaviorSubject<string> = new BehaviorSubject('');
+  public user$: BehaviorSubject<User> = new BehaviorSubject({});
   public body$: BehaviorSubject<any> = new BehaviorSubject('');
 
   profile(){
@@ -106,7 +107,7 @@ export class UserService {
       this.body$.next(body);
     });
     
-    return this.body$.asObservable();
+    return this.body$.asObservable().pipe(skip(1));
   };
 
   public getNewMessage = () => {
@@ -123,8 +124,8 @@ export class UserService {
 
   public getRole = () => {
     this.socket.on('role', (role) => {
-      this.role$.next(role)
+      this.user$.next(role)
     });
-    return this.role$.asObservable();
+    return this.user$.asObservable().pipe(skip(1));
   }
 }

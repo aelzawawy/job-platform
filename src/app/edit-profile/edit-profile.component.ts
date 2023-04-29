@@ -8,7 +8,7 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
-
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './edit-profile.component.html',
@@ -19,6 +19,10 @@ export class EditProfileComponent implements OnInit {
     private userService: UserService,
     private _snackBar: MatSnackBar
   ) {}
+  public Editor = ClassicEditor;
+  public config = {
+    placeholder: `Format your profile`,
+  };
 
   // emailFormControl = new FormControl('', [Validators.email]);
   body: User = {
@@ -30,6 +34,7 @@ export class EditProfileComponent implements OnInit {
     email: '',
     phone: '',
     headline: '',
+    about: "<h2>remove extra lines before saving!</h2><h2>who you are?</h2><p>…………………………………..</p><p>…………………………………..</p><h2>skills:</h2><ul><li>…………………………….</li><li>…………………………….</li><li>…………………………….</li></ul><h2>work experience:</h2><p>…………………………………..</p><p>………………………………….</p>",
   };
   durationInSeconds = 5;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -58,6 +63,7 @@ export class EditProfileComponent implements OnInit {
         this.body.email = res.email;
         this.body.phone = res.phone;
         this.body.headline = res.headline;
+        this.body.about = res.about || this.body.about;
       },
       error: (err: any) => {
         console.log(err);

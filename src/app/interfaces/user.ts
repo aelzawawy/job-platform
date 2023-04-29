@@ -6,6 +6,7 @@ export interface User {
   password?: string;
   roles?: string;
   headline?: string;
+  about?: string;
   location?: {
     address: string,
     coordinates: [number],

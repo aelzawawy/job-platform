@@ -1,24 +1,29 @@
 <h4>Edit info...</h4>
-<form>
+<form class="form">
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Name</mat-label>
         <input name="name" matInput type="text" [(ngModel)]="body.name">
     </mat-form-field>
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Email</mat-label>
-        <input name="email" type="email" matInput [(ngModel)]="body.email"  placeholder="Ex. pat@example.com">
+        <input name="email" type="email" matInput [(ngModel)]="body.email" placeholder="Ex. pat@example.com">
     </mat-form-field>
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Headline</mat-label>
         <input name="headline" matInput type="text" [(ngModel)]="body.headline">
     </mat-form-field>
+    <div class="form-field">
+        <ckeditor matInput id="about" [editor]="Editor" name="about" [(ngModel)]="body.about">
+        </ckeditor>
+        <div class="field--underline"></div>
+    </div>
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Location</mat-label>
         <input name="location" matInput type="text" [(ngModel)]="body.location!.address">
     </mat-form-field>
-    <mat-form-field appearance="outline" class="example-full-width form-field" >
+    <mat-form-field appearance="outline" class="form-field">
         <mat-label>Telephone</mat-label>
         <input name="phone" type="tel" [(ngModel)]="body.phone" matInput placeholder="5555-555-1234">
     </mat-form-field>
-    <button type="submit" style="float: right;" mat-raised-button color="primary" (click)="save()">Save</button>
+    <button type="submit" mat-raised-button color="primary" (click)="save()">Save</button>
 </form>

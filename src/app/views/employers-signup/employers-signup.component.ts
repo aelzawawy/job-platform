@@ -38,6 +38,7 @@ export class EmployersSignupComponent implements OnInit {
   pattern: RegExp = /(?<=Path).*/
   loading:boolean = false
   signup(data: any) {
+    if(this.signupForm.status == 'INVALID') return;
     this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {

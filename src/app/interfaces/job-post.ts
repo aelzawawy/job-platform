@@ -4,7 +4,7 @@ export interface JobPost {
     description?: string,
     location?: {
         address: string,
-        coordinates: [number]
+        coordinates: [number, number]
     },
     employer?: {
         _id: string,

@@ -19,16 +19,7 @@
                     </ul>
                     <div class="userSearch--border"></div>
                 </div>
-                <div *ngIf="loadingContacts" class="dot-spinner">
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                    <div class="dot-spinner__dot"></div>
-                </div>
+                <app-loader2 *ngIf="loadingContacts"></app-loader2>
                 <ul *ngIf="!loadingContacts" class="contacts">
                     <li [class.chat-hidden]="loadingContacts" *ngFor="let contact of contacts; let i=index"
                         class="contact" (click)="profileBiId($event,contact._id)">
@@ -42,7 +33,7 @@
                 </ul>
             </div>
 
-            <div *ngIf="contact && !loadingContacts" class="chat" [ngClass]="{
+            <div *ngIf="contact" class="chat" [ngClass]="{
                 'flex1': (isHandset$ | async) && contact,
                 'flex0': ((isHandset$ | async) && !contact) } ">
                 <div class="toUser">
@@ -62,16 +53,7 @@
                     </a>
                 </div>
                 <div #chat class="chat-messages">
-                    <div *ngIf="loadingMsgs" class="dot-spinner">
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                        <div class="dot-spinner__dot"></div>
-                    </div>
+                    <app-loader2 *ngIf="loadingMsgs"></app-loader2>
                     <div *ngFor="let msg of msgs; let i=index">
                         <div *ngIf="i != msgs.length-5" class="wrapper">
                             <div class="{{msg.sent? 'message-sent' : 'message'}}">

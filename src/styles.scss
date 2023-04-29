@@ -69,7 +69,7 @@ body {
   background-color: whitesmoke;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(129, 129, 129);
+  background: #daa520;
 }
 .ck-editor__editable {
   min-height: 300px;
@@ -83,6 +83,14 @@ body {
   // background-color: rgba(0, 0, 0, 0.04);
   box-shadow: none !important;
   border: 1px solid var(--ck-color-base-border) !important;
+}
+.mapboxgl-ctrl-top-right {
+  right: 10px;
+  top: 70px;
+}
+.mapboxgl-ctrl-bottom-right,
+.mapboxgl-ctrl-bottom-left{
+  display: none;
 }
 @media (max-width: 600px) {   
   ::-webkit-scrollbar {

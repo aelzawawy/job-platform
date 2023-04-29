@@ -1,4 +1,4 @@
-<div class="mat-app-background card" [class.no_backgound_border]="(isHandset$ | async)">
+<div class="card" [class.no_backgound_border]="(isHandset$ | async)">
     <div *ngIf="loading && (isHandset$ | async)" class="dot-spinner">
         <div class="dot-spinner__dot"></div>
         <div class="dot-spinner__dot"></div>
@@ -29,6 +29,7 @@
             <p><span class="detail-row--item">Job Type</span> {{job.type}}</p>
             <p *ngIf="job.remote"><span class="detail-row--item">Remote</span> YAY, you can work from home🎉.</p>
         </div>
+        <h5>Full description</h5>
         <div class="description" [innerHTML]="job.description"></div>
     </div>
 </div>

@@ -36,31 +36,11 @@ export class ProfileComponent implements OnInit {
   expanded:boolean = true;
   toView:boolean = true;
   loading:boolean = false;
-    
+  
   profile() {
     this.loading = true;
-    this.userService.profile().subscribe({
-      next: (res: any) => {
-        this.user = res;
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.log(err);
-      },
-    });
-    // if(localStorage['id'] === this.user_toView_id) {
-    // }else{
-    //   this.userService.profileById(this.user_toView_id).subscribe({
-    //     next: (res: any) => {
-    //       this.user = res;
-    //       this.loading = false;
-    //     },
-    //     error: (err: any) => {
-    //       console.log(err);
-    //     },
-    //   });
-    // }
-    
+    this.user = JSON.parse(localStorage['user'] || '[]')
+    this.loading = false;
   }
 
   uploadImg(e: any) {
@@ -81,6 +61,11 @@ export class ProfileComponent implements OnInit {
     myBgImg.append('backgoroundImage', this.backgoroundImg);
     this.userService.backgoroundImage(myBgImg).subscribe({});
     imageOut.src = URL.createObjectURL(this.backgoroundImg);
+  }
+
+  ContactUser(user:User){
+    this.router.navigate(['/messaging'], {queryParams: {new: user._id}})
+    localStorage.setItem('newContact', JSON.stringify(user));
   }
 
   uploadResume(e:any){
@@ -123,7 +108,6 @@ export class ProfileComponent implements OnInit {
   
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      // this.toView = localStorage['id'] == params['id']
       if(params['id']){
         this.toView = false
         this.loading = true;
@@ -147,6 +131,7 @@ export class ProfileComponent implements OnInit {
       this.user.location!.address = body.location.address;
       this.user.headline = body.headline;
       this.user.email = body.email;
+      this.user.about = body.about;
     })
     this.route.queryParamMap.subscribe((param) => {
       if ((param.get('edit') == 'true')) {
