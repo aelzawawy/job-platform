@@ -1,6 +1,6 @@
 .card {
   position: relative;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 105px);
   min-height: 500px;
   overflow-y: auto;
   background-color: inherit;
@@ -54,7 +54,7 @@
         border-radius: 3px;
         padding: 1px 10px;
         background-color: rgba(218, 165, 32, 0.527);
-        color: #000000;
+        color: inherit;
       }
     }
     & p {

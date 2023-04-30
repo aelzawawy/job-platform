@@ -119,14 +119,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     );
 
-    this.userService.getContacts().subscribe({
-      next: (res: any) => {
-        localStorage.setItem('contacts', JSON.stringify(res));
-      },
-      error: (err: any) => {
-        console.log(err);
-      },
-    });
+    if(localStorage['token']){
+      this.userService.getContacts().subscribe({
+        next: (res: any) => {
+          localStorage.setItem('contacts', JSON.stringify(res));
+        },
+        error: (err: any) => {
+          console.log(err);
+        },
+      });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -155,6 +157,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.search.location = '';
     this.posts = []
     this.searching = false;
+    this.observe = true;
     this.queryBody.page = 1
     this.jobPosts();
   }
