@@ -87,10 +87,8 @@ const userSchema = new mongoose.Schema({
   notifications: [
     {
       time: String,
-      notification: {
-        type: String,
-        trim: true,
-      },
+      body: String,
+      path: String,
     },
   ],
   messages: [
@@ -159,6 +157,9 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   verifyToken: {
+    type: String,
+  },
+  fcmToken: {
     type: String,
   },
 });

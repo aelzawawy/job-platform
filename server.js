@@ -65,18 +65,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('editProfile', (body) => {
-    socket.emit('updatedProfile', body);
-  })
-
-  socket.on('role', (role) => {
-    socket.emit('role', role);
-  })
-
-  socket.on('removeSave', (id) => {
-    socket.emit('removeSave', id);
-  })
-
   socket.on('disconnect', () => {});
 });
 

@@ -57,7 +57,6 @@ const postSchema = new mongoose.Schema({
     {
       applicant: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: "User",
       },
       name: String,
@@ -79,8 +78,12 @@ postSchema.pre(/^find/, function (next) {
   this.populate({
     path: "employer",
     select: "name image headline",
+  }).populate({
+    path: "applictions.applicant",
+    select: "name image headline",
   });
   next();
 });
+
 const JobPost = mongoose.model("JobPost", postSchema);
 module.exports = JobPost;

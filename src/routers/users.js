@@ -9,6 +9,7 @@ const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/email");
 const getLocation = require("../utils/locationApi");
 const crypto = require("crypto");
+const pushNotification = require("../utils/fcm/admin");
 
 // profile image
 const upload = multer({
@@ -126,28 +127,25 @@ router.post("/signup", async (req, res) => {
 });
 
 // Verify account
-router.get('/verify/:id/:token', async(req, res)=> {
-  try{
-    const {id, token} = req.params;
-    const hashedToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+router.get("/verify/:id/:token", async (req, res) => {
+  try {
+    const { id, token } = req.params;
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const user = await User.findOne({
       _id: id,
-      verifyToken: hashedToken
+      verifyToken: hashedToken,
     });
-    if(!user){
-      return res.status(400).send({message: 'User not found!'})
+    if (!user) {
+      return res.status(400).send({ message: "User not found!" });
     }
     user.verified = true;
-    user.verifyToken = undefined
+    user.verifyToken = undefined;
     await user.save({ validateBeforeSave: false });
-    res.status(200).send({messages: "You're verified now!"})
-  }catch(e){
-    res.status(400).send(e.message)
+    res.status(200).send({ messages: "You're verified now!" });
+  } catch (e) {
+    res.status(400).send(e.message);
   }
-})
+});
 
 // Login
 router.post("/login", async (req, res) => {
@@ -207,7 +205,7 @@ router.patch("/resetPassword/:token", async (req, res) => {
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() }, // Check if token isn't expired
     });
-    console.log(user)
+    console.log(user);
     //todo 2: Set a new password if token isn't expired and the user exists
     if (!user) {
       return res.status(400).send("Invalid token or expired");
@@ -241,7 +239,10 @@ router.get("/users", auth.userAuth, async (req, res) => {
 // Get by id
 router.get("/users/:id", auth.userAuth, (req, res) => {
   const _id = req.params.id; // get user id
-  User.findById(_id).select('-messages -notifications -contactList -savedJobs -verifyToken -verified')
+  User.findById(_id)
+    .select(
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified"
+    )
     .then((user) => {
       if (!user) return res.status(404).send("User not found");
       res.status(200).send(user);
@@ -260,7 +261,9 @@ router.get("/profile", auth.userAuth, async (req, res) => {
 router.get("/contacts", auth.userAuth, async (req, res) => {
   try {
     const ids = req.user.contactList.map((el) => el.contact);
-    const contacts = await User.find({ _id: { $in: ids } }).select('-messages -notifications -contactList -savedJobs -verifyToken -verified');
+    const contacts = await User.find({ _id: { $in: ids } }).select(
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified"
+    );
     res.status(200).send(contacts);
   } catch (err) {
     res.status(400).send(err.message);
@@ -276,8 +279,10 @@ router.patch("/profile", auth.userAuth, async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         location: {
-          address: locationErr? req.body.location.address&&data.name : data.name,
-          coordinates: locationErr? [] : data.coords,
+          address: locationErr
+            ? req.body.location.address && data.name
+            : data.name,
+          coordinates: locationErr ? [] : data.coords,
         },
         headline: req.body.headline,
         about: req.body.about,
@@ -306,6 +311,30 @@ router.get("/profile/:key", auth.userAuth, async (req, res) => {
   }
 });
 
+router.patch("/saveToken", auth.userAuth, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user._id, {
+      fcmToken: req.body.token,
+    });
+    await req.user.save();
+    res.status(200).send({ message: "success" });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
+router.patch("/removeToken", auth.userAuth, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.user._id, {
+      fcmToken: '',
+    });
+    await req.user.save();
+    res.status(200).send(user);
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
 // Sending messages
 router.post(
   "/message/:id",
@@ -318,6 +347,16 @@ router.post(
       const messageId = uuidv4();
       const fileName = decodeURIComponent(req.body.encodedFileName);
       let message = {};
+
+      // Send push notification
+      if(user.fcmToken){
+        pushNotification({
+          title: `New message from ${req.user.name}`,
+          body: `${req.body.message}`,
+          pathname: `http://localhost:4200/messaging?contact=${req.user._id}`,
+          token: `${user.fcmToken}`,
+        });
+      }
 
       if (req.file) {
         file = Buffer.from(req.file.buffer).toString("base64");
@@ -432,10 +471,10 @@ router.get("/message/:id", auth.userAuth, async (req, res) => {
     //     (msg.to == req.params.id && msg.from == req.user._id.toString()) ||
     //     (msg.to == req.user._id.toString() && msg.from == req.params.id)
     // );
-    const test = await User.findById(req.user._id).select('messages').find({
+    const test = await User.findById(req.user._id).select("messages").find({
       to: req.params.id,
-      from: req.user._id
-    })
+      from: req.user._id,
+    });
     res.status(200).send(test[0].messages);
   } catch (err) {
     res.status(400).send(err);
