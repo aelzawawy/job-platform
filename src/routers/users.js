@@ -347,13 +347,13 @@ router.post(
       const messageId = uuidv4();
       const fileName = decodeURIComponent(req.body.encodedFileName);
       let message = {};
-
+      console.log(req.get('origin'))
       // Send push notification
       if(user.fcmToken){
         pushNotification({
-          title: `New message from ${req.user.name}`,
+          title: `${req.user.name}`,
           body: `${req.body.message}`,
-          pathname: `http://localhost:4200/messaging?contact=${req.user._id}`,
+          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
           token: `${user.fcmToken}`,
         });
       }

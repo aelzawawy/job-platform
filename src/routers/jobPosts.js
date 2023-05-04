@@ -168,14 +168,14 @@ router.get("/apply/:id", auth.userAuth, async (req, res) => {
         pushNotification({
           title: `Reach`,
           body: `${req.user.name} has applied for the ${jobPost.title}`,
-          pathname: `http://localhost:4200/messaging?contact=${req.user._id}`,
+          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
           token: `${employer.fcmToken}`,
         });
       }
       employer.notifications.push({
         time: Date.now(),
         body: `${req.user.name} has applied for the ${jobPost.title} position.`,
-        path: `http://localhost:4200/messaging?contact=${req.user._id}`,
+        path: `${req.get('origin')}/messaging?contact=${req.user._id}`,
       });
       await employer.save();
       res.status(200).send({ message: "Applied successfully✅" });
@@ -207,14 +207,14 @@ router.get(
         pushNotification({
           title: `${req.user.name}`,
           body: `We accepted your offer for ${jobPost.title}`,
-          pathname: `http://localhost:4200/messaging?contact=${req.user._id}`,
+          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
           token: `${applicant.fcmToken}`,
         });
       }
       applicant.notifications.push({
         time: Date.now(),
         body: `Your offer has been accepted for ${jobPost.title} position.`,
-        path: `http://localhost:4200/messaging?contact=${req.user._id}`,
+        path: `${req.get('origin')}/messaging?contact=${req.user._id}`,
       });
       applicant.messages.push({
         from: req.user._id,
@@ -293,14 +293,14 @@ router.get(
         pushNotification({
           title: `${req.user.name}`,
           body: `${req.user.name} has declined your offer for ${jobPost.title}`,
-          pathname: `http://localhost:4200/messaging?contact=${req.user._id}`,
+          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
           token: `${applicant.fcmToken}`,
         });
       }
       applicant.notifications.push({
         time: Date.now(),
         body: `Your offer has been declined for ${jobPost.title} position.`,
-        path: `http://localhost:4200/messaging?contact=${req.user._id}`,
+        path: `${req.get('origin')}/messaging?contact=${req.user._id}`,
       });
       applicant.messages.push({
         from: req.user._id,
