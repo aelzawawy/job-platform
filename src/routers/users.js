@@ -32,7 +32,7 @@ const fileUpload = multer({
 });
 
 router.post(
-  "/resume",
+  "/api/resume",
   auth.userAuth,
   fileUpload.single("resume"),
   async (req, res) => {
@@ -47,7 +47,7 @@ router.post(
 );
 
 router.post(
-  "/profileImage",
+  "/api/profileImage",
   auth.userAuth,
   upload.single("image"),
   async (req, res) => {
@@ -65,7 +65,7 @@ router.post(
   }
 );
 
-router.delete("/profileImage", auth.userAuth, async (req, res) => {
+router.delete("/api/profileImage", auth.userAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     user.image = undefined;
@@ -77,7 +77,7 @@ router.delete("/profileImage", auth.userAuth, async (req, res) => {
 });
 
 router.post(
-  "/backgoroundImage",
+  "/api/backgoroundImage",
   auth.userAuth,
   upload.single("backgoroundImage"),
   async (req, res) => {
@@ -95,7 +95,7 @@ router.post(
   }
 );
 
-router.delete("/backgoroundImage", auth.userAuth, async (req, res) => {
+router.delete("/api/backgoroundImage", auth.userAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     user.backgoroundImage = undefined;
@@ -107,14 +107,14 @@ router.delete("/backgoroundImage", auth.userAuth, async (req, res) => {
 });
 
 // Signup
-router.post("/signup", async (req, res) => {
+router.post("/api/signup", async (req, res) => {
   try {
     const user = new User(req.body);
     // generate token on our document(input data)
     const token = user.generateToken();
     const verifyToken = user.createVerifyToken();
     await user.save();
-    const url = `${req.protocol}://inreach-af837.web.app/verify/${user.id}/${verifyToken}`;
+    const url = `${req.get('origin')}/verify/${user.id}/${verifyToken}`;
     sendEmail({
       email: user.email,
       subject: "Welcome",
@@ -127,7 +127,7 @@ router.post("/signup", async (req, res) => {
 });
 
 // Verify account
-router.get("/verify/:id/:token", async (req, res) => {
+router.get("/api/verify/:id/:token", async (req, res) => {
   try {
     const { id, token } = req.params;
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -148,7 +148,7 @@ router.get("/verify/:id/:token", async (req, res) => {
 });
 
 // Login
-router.post("/login", async (req, res) => {
+router.post("/api/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -162,7 +162,7 @@ router.post("/login", async (req, res) => {
 });
 
 //! Deactivate account
-router.delete("/deactivate", async (req, res) => {
+router.delete("/api/deactivate", async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user._id, { active: false });
     req.status(204).send();
@@ -172,7 +172,7 @@ router.delete("/deactivate", async (req, res) => {
 });
 
 //! Forgot Password
-router.post("/forgotPassword", async (req, res) => {
+router.post("/api/forgotPassword", async (req, res) => {
   try {
     //todo 1: Get user bu his email address
     const user = await User.findOne({ email: req.body.email });
@@ -181,7 +181,7 @@ router.post("/forgotPassword", async (req, res) => {
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
     // Send email
-    const resetURL = `${req.protocol}://inreach-af837.web.app/resetPassword/${resetToken}`;
+    const resetURL = `${req.get('origin')}/resetPassword/${resetToken}`;
     await sendEmail({
       email: user.email,
       subject: "Password reset token",
@@ -194,7 +194,7 @@ router.post("/forgotPassword", async (req, res) => {
 });
 
 //! Reset Password
-router.patch("/resetPassword/:token", async (req, res) => {
+router.patch("/api/resetPassword/:token", async (req, res) => {
   try {
     //todo 1: Get user based on token
     const hashedToken = crypto
@@ -227,7 +227,7 @@ router.patch("/resetPassword/:token", async (req, res) => {
 });
 
 // get all
-router.get("/users", auth.userAuth, async (req, res) => {
+router.get("/api/users", auth.userAuth, async (req, res) => {
   try {
     const user = await User.find({});
     res.send(user);
@@ -237,7 +237,7 @@ router.get("/users", auth.userAuth, async (req, res) => {
 });
 
 // Get by id
-router.get("/users/:id", auth.userAuth, (req, res) => {
+router.get("/api/users/:id", auth.userAuth, (req, res) => {
   const _id = req.params.id; // get user id
   User.findById(_id)
     .select(
@@ -253,12 +253,12 @@ router.get("/users/:id", auth.userAuth, (req, res) => {
 });
 
 // profile router
-router.get("/profile", auth.userAuth, async (req, res) => {
+router.get("/api/profile", auth.userAuth, async (req, res) => {
   res.send(req.user);
 });
 
 // Get cotacts
-router.get("/contacts", auth.userAuth, async (req, res) => {
+router.get("/api/contacts", auth.userAuth, async (req, res) => {
   try {
     const ids = req.user.contactList.map((el) => el.contact);
     const contacts = await User.find({ _id: { $in: ids } }).select(
@@ -271,7 +271,7 @@ router.get("/contacts", auth.userAuth, async (req, res) => {
 });
 
 // Updating profile data
-router.patch("/profile", auth.userAuth, async (req, res) => {
+router.patch("/api/profile", auth.userAuth, async (req, res) => {
   try {
     getLocation(req.body.location.address, async (locationErr, data) => {
       // if (locationErr) console.log(locationErr);
@@ -297,7 +297,7 @@ router.patch("/profile", auth.userAuth, async (req, res) => {
 });
 
 // User search
-router.get("/profile/:key", auth.userAuth, async (req, res) => {
+router.get("/api/profile/:key", auth.userAuth, async (req, res) => {
   try {
     const users = await User.find({
       $or: [
@@ -311,7 +311,7 @@ router.get("/profile/:key", auth.userAuth, async (req, res) => {
   }
 });
 
-router.patch("/saveToken", auth.userAuth, async (req, res) => {
+router.patch("/api/saveToken", auth.userAuth, async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user._id, {
       fcmToken: req.body.token,
@@ -323,7 +323,7 @@ router.patch("/saveToken", auth.userAuth, async (req, res) => {
   }
 });
 
-router.patch("/removeToken", auth.userAuth, async (req, res) => {
+router.patch("/api/removeToken", auth.userAuth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user._id, {
       fcmToken: '',
@@ -337,7 +337,7 @@ router.patch("/removeToken", auth.userAuth, async (req, res) => {
 
 // Sending messages
 router.post(
-  "/message/:id",
+  "/api/message/:id",
   auth.userAuth,
   fileUpload.single("file"),
   async (req, res) => {
@@ -448,7 +448,7 @@ function bytesToSize(bytes) {
 }
 
 // delete messages
-router.get("/delMessage/:id", auth.userAuth, async (req, res) => {
+router.get("/api/delMessage/:id", auth.userAuth, async (req, res) => {
   try {
     const msg = req.user.messages.find((msg) => msg.id == req.params.id);
     const user = await User.findById(msg.to.toString());
@@ -464,7 +464,7 @@ router.get("/delMessage/:id", auth.userAuth, async (req, res) => {
 });
 
 // Get messages
-router.get("/message/:id", auth.userAuth, async (req, res) => {
+router.get("/api/message/:id", auth.userAuth, async (req, res) => {
   try {
     // const msgs = req.user.messages.filter(
     //   (msg) =>

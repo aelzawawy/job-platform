@@ -10,7 +10,7 @@ const natural = require("natural");
 const pushNotification = require("../utils/fcm/admin");
 
 // Add Job Posts
-router.post("/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
+router.post("/api/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
   try {
     getLocation(req.body.location, async (locationErr, data) => {
       // if (locationErr) return res.send(locationErr);
@@ -36,7 +36,7 @@ router.post("/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
 });
 
 // get all posts
-router.get("/feed/:page/:limit/:order", async (req, res) => {
+router.get("/api/feed/:page/:limit/:order", async (req, res) => {
   try {
     const { page, limit, order } = req.params;
     const posts = await JobPost.find({})
@@ -62,7 +62,7 @@ router.get("/feed/:page/:limit/:order", async (req, res) => {
 });
 
 // get all posts for an employer
-router.get("/posts", auth.userAuth, auth.employerAuth, async (req, res) => {
+router.get("/api/posts", auth.userAuth, auth.employerAuth, async (req, res) => {
   try {
     await req.user.populate("jobPosts");
     res.send(req.user.jobPosts);
@@ -72,7 +72,7 @@ router.get("/posts", auth.userAuth, auth.employerAuth, async (req, res) => {
 });
 
 // get by id
-router.get("/posts/:id", async (req, res) => {
+router.get("/api/posts/:id", async (req, res) => {
   try {
     const job = await JobPost.findById(req.params.id);
     if (!job) res.status(404).send({message: "Not found!"});
@@ -84,7 +84,7 @@ router.get("/posts/:id", async (req, res) => {
 
 // Patch posts
 router.patch(
-  "/posts/:id",
+  "/api/posts/:id",
   auth.userAuth,
   auth.employerAuth,
   async (req, res) => {
@@ -119,7 +119,7 @@ router.patch(
 
 // Delete posts
 router.delete(
-  "/posts/:id",
+  "/api/posts/:id",
   auth.userAuth,
   auth.employerAuth,
   async (req, res) => {
@@ -135,7 +135,7 @@ router.delete(
 );
 
 // Apply for a job
-router.get("/apply/:id", auth.userAuth, async (req, res) => {
+router.get("/api/apply/:id", auth.userAuth, async (req, res) => {
   try {
     const _id = req.params.id;
     const jobPost = await JobPost.findById(_id);
@@ -189,7 +189,7 @@ router.get("/apply/:id", auth.userAuth, async (req, res) => {
 
 // Accept job application
 router.get(
-  "/accept/:jobId/:applicationId",
+  "/api/accept/:jobId/:applicationId",
   auth.userAuth,
   auth.employerAuth,
   async (req, res) => {
@@ -278,7 +278,7 @@ router.get(
 
 // Decline job application
 router.get(
-  "/decline/:jobId/:applicationId",
+  "/api/decline/:jobId/:applicationId",
   auth.userAuth,
   auth.employerAuth,
   async (req, res) => {
@@ -321,7 +321,7 @@ router.get(
 );
 
 // Save a job
-router.get("/save/:id", auth.userAuth, async (req, res) => {
+router.get("/api/save/:id", auth.userAuth, async (req, res) => {
   try {
     const job = await JobPost.findById(req.params.id);
 
@@ -347,7 +347,7 @@ router.get("/save/:id", auth.userAuth, async (req, res) => {
 });
 
 // Check saved?
-router.get("/check_saved/:id", auth.userAuth, async (req, res) => {
+router.get("/api/check_saved/:id", auth.userAuth, async (req, res) => {
   try {
     const exists = function () {
       if (req.user.savedJobs.length != 0) {
@@ -369,7 +369,7 @@ router.get("/check_saved/:id", auth.userAuth, async (req, res) => {
 });
 
 // Unsave a job
-router.get("/unSave/:id", auth.userAuth, async (req, res) => {
+router.get("/api/unSave/:id", auth.userAuth, async (req, res) => {
   try {
     const index = req.user.savedJobs.indexOf(
       req.user.savedJobs.find((el) => el._id.toString() == req.params.id)
@@ -397,7 +397,7 @@ router.get("/unSave/:id", auth.userAuth, async (req, res) => {
 //     });
 //     console.log(geoPosts)
 
-router.post("/api-search", async (req, res) => {
+router.post("/api/api-search", async (req, res) => {
   try {
     const { search_terms, location, sort } = req.body;
     const posts = await JobPost.find(
