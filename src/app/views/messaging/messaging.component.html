@@ -1,17 +1,15 @@
-<div class="container" [class.container-max-width]="(isHandsetMd$ | async)">
+<div class="container sub" [class.container-max-width]="(isHandsetMd$ | async)">
     <div class="chat-container">
-        <!-- <header class="chat-header" [class.isHandset]="(isHandset$ | async)">
-            <h1><i class="fas fa-smile"></i> Messaging</h1>
-        </header> -->
         <main class="chat-main" [class.isHandset]="(isHandset$ | async)">
             <div class="chat-sidebar" [ngClass]="{
                 'flex1': (isHandset$ | async ) && !contact,
                 'flex0': (isHandset$ | async) && contact}" [class.isHandset]="(isHandset$ | async)">
                 <input class="form-control searchInput" [(ngModel)]="search_value" placeholder="Search"
                     (keyup)="search($event)">
+                    <app-loader2 *ngIf="searching"></app-loader2>
                 <div *ngIf="users.length != 0" class="userSearch">
                     <ul class="users">
-                        <li *ngFor="let i of users" class="user" (click)="profileBiId($event,i._id)">
+                        <li *ngFor="let i of users" class="user" (click)="profileBiId($event,i)">
                             <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{i.image}}"
                                 alt="profile picture">
                             {{i.name}}
@@ -22,13 +20,13 @@
                 <app-loader2 *ngIf="loadingContacts"></app-loader2>
                 <ul *ngIf="!loadingContacts" class="contacts">
                     <li [class.chat-hidden]="loadingContacts" *ngFor="let contact of contacts; let i=index"
-                        class="contact" (click)="profileBiId($event,contact._id)">
+                        class="contact" (click)="profileBiId($event,contact)">
                         <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{contact.image}}"
                             alt="profile picture">
                         <div class="contact__name">{{contact.name}}</div>
                         <div class="contact__haedline">{{contact.headline}}</div>
                         <!-- <p class="contact__lastMsg">{{lastMsg.message}}</p>
-                        <p class="contact__meta">{{formatDate(lastMsg.time)}}</p> -->
+                        <p class="contact__meta">{{lastMsg.time}}</p> -->
                     </li>
                 </ul>
             </div>
@@ -52,10 +50,10 @@
                         </div>
                     </a>
                 </div>
+                <app-loader2 *ngIf="loadingMsgs"></app-loader2>
                 <div #chat class="chat-messages">
-                    <app-loader2 *ngIf="loadingMsgs"></app-loader2>
                     <div *ngFor="let msg of msgs; let i=index">
-                        <div *ngIf="i != msgs.length-5" class="wrapper">
+                        <div *ngIf="i != msgs.length-1" class="wrapper">
                             <div class="{{msg.sent? 'message-sent' : 'message'}}">
                                 <!-- <span class="delete-msg" (click)="delMsg(msg.id, i)">X</span> -->
                                 <a *ngIf="msg.file" id="attach_file" href="data:application/pdf;base64,{{msg.file}}"
@@ -115,7 +113,7 @@
                                 <span class="material-symbols-outlined">check</span>
                             </label>
                         </div>
-                        <input class="form-control" id="msg" required type="text" [(ngModel)]="message" name="message"
+                        <input class="form-control" id="msg" required type="text" autofocus="true" [(ngModel)]="message" name="message"
                             placeholder="Send message" autocomplete="off" />
                         <button type="submit" class="btn"><mat-icon>send</mat-icon></button>
                     </form>

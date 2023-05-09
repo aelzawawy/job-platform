@@ -35,6 +35,10 @@ export class SavedJobsComponent implements OnInit {
     this.loading = true
     this.userService.profile().subscribe({
       next: (res: any) => {
+        if(res.savedJobs.length == 0){
+          this.loading = false
+          return
+        }
         this.posts = res.savedJobs.reverse();
         this.job = this.posts[0];
         this.job.saved = true
@@ -54,11 +58,12 @@ export class SavedJobsComponent implements OnInit {
   loadingPost: boolean = false;
   jobPosts!: NodeListOf<HTMLElement>;
 
-  async unSave(id: string) {
+  unSave(id: string) {
     const index = this.posts.indexOf(this.posts.find((el) => el._id == id));
     if (index != -1) {
       this.posts.splice(index, 1);
       this.job = this.posts[0];
+      localStorage.setItem('savedJobs', JSON.stringify(this.posts));
       this.isSaved = true;
     }
   }

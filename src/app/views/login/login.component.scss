@@ -1,93 +1,105 @@
 .gradient-custom-3 {
-    /* fallback for old browsers */
-    background: #84fab0;
-  
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(
-      to right,
-      rgba(132, 250, 176, 0.5),
-      rgba(143, 211, 244, 0.5)
-    );
-  
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(
-      to right,
-      rgba(132, 250, 176, 0.5),
-      rgba(143, 211, 244, 0.5)
-    );
+  /* fallback for old browsers */
+  background: #84fab0;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(132, 250, 176, 0.5),
+    rgba(143, 211, 244, 0.5)
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(
+    to right,
+    rgba(132, 250, 176, 0.5),
+    rgba(143, 211, 244, 0.5)
+  );
+}
+.gradient-custom-4 {
+  /* fallback for old browsers */
+  background: #84fab0;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(132, 250, 176, 1),
+    rgba(143, 211, 244, 1)
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(
+    to right,
+    rgba(132, 250, 176, 1),
+    rgba(143, 211, 244, 1)
+  );
+}
+.container {
+  height: calc(100vh - 100px);
+}
+.card {
+  position: relative;
+  border-radius: 15px;
+  @media (max-width: 600px) {
+    & {
+      border-radius: 0;
+      width: 100%;
+      height: calc(100vh - 110px);
+      top: 54px;
+    }
   }
-  .gradient-custom-4 {
-    /* fallback for old browsers */
-    background: #84fab0;
-  
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(
-      to right,
-      rgba(132, 250, 176, 1),
-      rgba(143, 211, 244, 1)
-    );
-  
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(
-      to right,
-      rgba(132, 250, 176, 1),
-      rgba(143, 211, 244, 1)
-    );
-  }
-  .container{
-    height: calc(100vh - 100px);
-  }
-  form{
-    position: relative;
-  }
-  .form-outline{
-      position: relative;
-  }
-  .form-control{
-      &:focus{
-          box-shadow: none;
-          border: 2px solid #3B71CA;
-          background-color: transparent;
-          &:invalid{
-              border: 2px solid rgba(255, 17, 0, 0.788);
-              &~.form-label{
-                  color:  rgba(255, 17, 0, 0.788);
-              }
-          }
-          &~.form-label {
-              color: #3B71CA;
-              background-color: white;
-              top: -.7rem;
-              left: .70rem;
-              font-size: .8rem;
-              padding-inline: 5px;
-          }
+}
+form {
+  position: relative;
+}
+.form-outline {
+  position: relative;
+}
+.form-control {
+  &:focus {
+    box-shadow: none;
+    border: 2px solid #3b71ca;
+    background-color: transparent;
+    &:invalid {
+      border: 2px solid rgba(255, 17, 0, 0.788);
+      & ~ .form-label {
+        color: rgba(255, 17, 0, 0.788);
       }
+    }
+    & ~ .form-label {
+      color: #3b71ca;
+      background-color: white;
+      top: -0.7rem;
+      left: 0.7rem;
+      font-size: 0.8rem;
+      padding-inline: 5px;
+    }
   }
-  .active{
-      &~.form-label {
-          color: #3B71CA;
-          background-color: white;
-          top: -.7rem;
-          left: .70rem;
-          font-size: .8rem;
-          padding-inline: 5px;
-      }
+}
+.active {
+  & ~ .form-label {
+    color: #3b71ca;
+    background-color: white;
+    top: -0.7rem;
+    left: 0.7rem;
+    font-size: 0.8rem;
+    padding-inline: 5px;
   }
-  .form-label{
-      position: absolute;
-      top: .75rem;
-      left: .75rem;
-      color: rgba(0,0,0,.6);
-      pointer-events: none;
-      transition: all .2s ease-out;
-  }
-  .message{
-      color: rgba(255, 17, 0, 0.788);
-  }
-  .showPass{
-      position: absolute;
-      top: .75rem;
-      right: .75rem;
-      cursor: pointer;
-  }
+}
+.form-label {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+}
+.message {
+  color: rgba(255, 17, 0, 0.788);
+}
+.showPass {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  cursor: pointer;
+}

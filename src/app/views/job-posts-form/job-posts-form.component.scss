@@ -5,8 +5,12 @@
   & #form {
     display: flex;
     flex-direction: column;
+    height: 100vh;
     width: 100%;
+    margin-top: 64px;
+    overflow-y: auto;
     padding-top: 10px;
+    padding-bottom: 100px;
     flex-grow: 1;
     .field {
       position: relative;

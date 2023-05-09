@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container sub">
     <app-loader1 *ngIf="loading"></app-loader1>
     <div *ngIf="!loading" class="bgPic" [class.isHandset]="(isHandset$ | async)">
         <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
@@ -22,18 +22,19 @@
         </div>
 
     </div>
-    <div *ngIf="!loading" class="pic">
-        <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
-
-        <input *ngIf="toView" accept="image/*" type="file" name="image" id="upload" (change)="uploadImg($event)">
-        <label *ngIf="toView" title="Change_picture" id="uploadImg" (click)="openDialog()">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
-                fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
-                <path
-                    d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
-                </path>
-            </svg>
-        </label>
+    <div class="pic-wrapper">
+        <div *ngIf="!loading" class="pic">
+            <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+            <input *ngIf="toView" accept="image/*" type="file" name="image" id="upload" (change)="uploadImg($event)">
+            <label *ngIf="toView" title="Change_picture" id="uploadImg" (click)="openDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                    fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
+                    <path
+                        d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                    </path>
+                </svg>
+            </label>
+        </div>
     </div>
     <div *ngIf="!loading" class="head">
         <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
@@ -71,7 +72,7 @@
     </div>
 
     <div class="headline">
-        <p>{{user.headline}}</p>
+        {{user.headline}}
     </div>
     
     <div *ngIf="!loading" class="body">

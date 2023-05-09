@@ -15,20 +15,20 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$in_reach-primary: mat.define-palette(mat.$indigo-palette);
-$in_reach-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$reach-primary: mat.define-palette(mat.$indigo-palette);
+$reach-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$in_reach-warn: mat.define-palette(mat.$red-palette);
+$reach-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$in_reach-theme: mat.define-light-theme(
+$reach-theme: mat.define-light-theme(
   (
     color: (
-      primary: $in_reach-primary,
-      accent: $in_reach-accent,
-      warn: $in_reach-warn,
+      primary: $reach-primary,
+      accent: $reach-accent,
+      warn: $reach-warn,
     ),
   )
 );
@@ -36,7 +36,7 @@ $in_reach-theme: mat.define-light-theme(
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.all-component-themes($in_reach-theme);
+@include mat.all-component-themes($reach-theme);
 
 // html{
 //     font-size: 62.5%;
@@ -58,7 +58,6 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  height: calc(100vh - 60px);
 }
 
 ::-webkit-scrollbar {
@@ -66,7 +65,7 @@ body {
   height: 0px;
 }
 ::-webkit-scrollbar-track {
-  background-color: whitesmoke;
+  background-color: rgb(73, 73, 73);
 }
 ::-webkit-scrollbar-thumb {
   background: #daa520;
@@ -89,10 +88,10 @@ body {
   top: 70px;
 }
 .mapboxgl-ctrl-bottom-right,
-.mapboxgl-ctrl-bottom-left{
+.mapboxgl-ctrl-bottom-left {
   display: none;
 }
-@media (max-width: 600px) {   
+@media (max-width: 600px) {
   ::-webkit-scrollbar {
     width: 0px;
     height: 0px;

@@ -66,6 +66,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   loadingSvg: boolean = false;
   jobLocations: Location[] = [];
   flyToo!: [number, number];
+  navBar!: HTMLElement;
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
@@ -105,27 +106,38 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     );
 
-    this.mapObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            this.passLocations();
-            this.mapObserver.unobserve(e.target);
-          }
-        });
-      },
-      {
-        threshold: .5,
-      }
-    );
+    // this.mapObserver = new IntersectionObserver(
+    //   (entries) => {
+    //     entries.forEach((e) => {
+    //       console.log(e.isIntersecting)
+    //       this.navBar = document.querySelector('.mat-toolbar') as HTMLElement;
+    //       this.navBar.classList.toggle('transparent', e.isIntersecting);
+    //       if (e.isIntersecting) {
+            
+    //       }
+    //     });
+    //   },
+    //   {
+    //     threshold: 1,
+    //   }
+    // );
 
-    if(localStorage['token']){
+    if (localStorage['token']) {
       this.userService.getContacts().subscribe({
         next: (res: any) => {
           localStorage.setItem('contacts', JSON.stringify(res));
         },
         error: (err: any) => {
           console.log(err);
+        },
+      });
+
+      this.userService.profile().subscribe({
+        next: (res: any) => {
+          localStorage.setItem('savedJobs', JSON.stringify(res.savedJobs.reverse()));
+        },
+        error: (e: any) => {
+          console.log(e);
         },
       });
     }
@@ -136,7 +148,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       if (list.last && this.posts.length >= this.queryBody.limit)
         this.observeIntersection.observe(list.last.nativeElement);
     });
-    this.mapObserver.observe(this.map.nativeElement);
+    // this.mapObserver.observe(this.map.nativeElement);
   }
 
   async pageUp(page: any) {
@@ -155,10 +167,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
   undoSearch() {
     this.search.search_terms = '';
     this.search.location = '';
-    this.posts = []
+    this.posts = [];
     this.searching = false;
     this.observe = true;
-    this.queryBody.page = 1
+    this.queryBody.page = 1;
     this.jobPosts();
   }
 
@@ -228,7 +240,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.posts = this.posts.concat(res.posts);
         this.totalPages = res.totalPages;
         this.loading = false;
-        this.mapObserver.observe(this.map.nativeElement);
+        this.passLocations();
+        // this.mapObserver.observe(this.map.nativeElement);
         if (this.queryBody.page == 1 && !this.ismobile) {
           this.index = 0;
           this.job = res.posts[0];
@@ -253,8 +266,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
     } else if (this.ismobile) {
       this.jobsService.passJob(this.posts[i]);
       this.router.navigate([`/job/${id}`]);
+      localStorage.setItem('openedPost', JSON.stringify(this.posts[i]));
       this.loadingPost = false;
     }
+  }
+
+  unSave(id: string) {
+    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]')
+    const index = savedJobs.indexOf(savedJobs.find((el:any) => el._id == id));
+    if (index != -1) {
+      savedJobs.splice(index, 1);
+      localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+    }
+  }
+  doSave(job:JobPost){
+    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]')
+    savedJobs.push(job);
+    localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
   }
 
   // Salary formatting

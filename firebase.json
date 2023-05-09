@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/in_reach",
+    "public": "dist/reach",
     "ignore": [
       "firebase.json",
       "**/.*",

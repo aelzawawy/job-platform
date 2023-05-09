@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   constructor(private http: HttpClient) {}
-  url: string = 'http://localhost:3000/';
+  url: string = 'https://inreach-api.onrender.com/api/';
   signUP(body: any) {
     return this.http.post(this.url + 'signup', body);
   }

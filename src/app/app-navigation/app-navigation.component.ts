@@ -39,30 +39,9 @@ export class AppNavigationComponent implements OnInit {
         this.user = JSON.parse(localStorage['user'] || '[]');
       }
     });
-    // this.userService.getRole().subscribe((user) => {
-    // this.role = role || localStorage['role'];
-    // if (this.loggedIn()) {
-    //   this.loading = true;
-    //   this.userService.profile().subscribe({
-    //     next: (res: any) => {
-    //       this.user = res;
-    //       this.loading = false;
-    //     },
-    //     error: (err: any) => {
-    //       console.log(err);
-    //     },
-    //   });
-    // }
-    // });
   }
   active: Boolean = false;
-  isScrolling(e: any) {
-    const navBar = document.querySelector('.mat-toolbar') as HTMLElement;
-    navBar.classList.toggle(
-      'transparent',
-      Boolean(e.target.scrollTop > window.innerHeight)
-    );
-  }
+  
   prepareRoute(outlet: RouterOutlet) {
     return (
       outlet &&
@@ -72,6 +51,7 @@ export class AppNavigationComponent implements OnInit {
   }
 
   logOut() {
+    this.userService.removeToken().subscribe()
     localStorage.clear();
     this.router.navigateByUrl(`/`);
     this.loggedIn();

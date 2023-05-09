@@ -48,7 +48,7 @@ export class EditProfileComponent implements OnInit {
           verticalPosition: this.verticalPosition,
           duration: this.durationInSeconds * 500,
         });
-        this.userService.editProfileSocket(this.body);
+        this.userService.passNewBody(this.body);
       },
       error: (err: any) => {
         console.log(err);

@@ -7,6 +7,7 @@ export interface User {
   roles?: string;
   headline?: string;
   about?: string;
+  fcmToken?: string;
   location?: {
     address: string,
     coordinates: [number],

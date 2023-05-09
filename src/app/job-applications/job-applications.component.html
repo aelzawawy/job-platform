@@ -4,7 +4,7 @@
         <p *ngIf="applicants.length == 0"> No applications yet...</p>
         <mat-list-item *ngFor="let user of applicants; ; let i = index">
             <div class="applicant">
-                <div class="main" routerLink="/profile/{{user._id}}" (click)="userProfile($event,i)">
+                <div class="main" routerLink="/user/{{user._id}}" (click)="userProfile()">
                     <img class="profile-pic" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
                     <div class="info">
                         <div class="info__name">{{user.name}}</div>
@@ -13,7 +13,7 @@
                 </div>
                 <div class="actions">
                     <button mat-icon-button color="primary" (click)="acceptOffer(jobId, applicationIds[i])"><mat-icon>check</mat-icon></button>
-                    <button mat-icon-button color="secondary" (click)="declineOffer(jobId, applicationIds[i])">❌</button>
+                    <button mat-icon-button color="secondary" (click)="declineOffer(jobId, applicationIds[i], i)">❌</button>
                 </div>
             </div>
         </mat-list-item>

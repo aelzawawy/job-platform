@@ -40,10 +40,11 @@ export class SignupComponent implements OnInit {
     this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {
+        localStorage.setItem('user', JSON.stringify(res.user));
         localStorage.setItem('token', res.token);
         localStorage.setItem('id', res.user._id);
         localStorage.setItem('role', res.user.roles);
-        this.userService.emitRole(res.user.roles);
+        this.userService.emitSignal(true);
         this.loading = false;
         this.router.navigateByUrl('/');
       },

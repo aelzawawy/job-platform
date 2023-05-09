@@ -1,7 +1,7 @@
-<div class="container h-100 container-max-width">
+<div class="container main container-max-width">
 
     <div class="heroSection" [class.flexColumn]="(isHandset$ | async)">
-        <div class="what_we_offer" [class.fadeUp]="loadingSvg">
+        <div class="what_we_offer">
             <h1>Find your next job with <u>Reach</u></h1>
             <p>We use geospatial information for geography and mapping with advanced search techniques to bring you what
                 you need.</p>
@@ -10,7 +10,7 @@
             <p *ngIf="loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for
                 talents nearby,<span>reach for it.</span></p>
         </div>
-        <svg [class.animated]="loadingSvg" id="freepik_stories-job-hunt" xmlns="http://www.w3.org/2000/svg"
+        <svg [class.animated]="loadingSvg && !(isHandset$ | async)" id="freepik_stories-job-hunt" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:svgjs="http://svgjs.com/svgjs">
             <g id="freepik--Floor--inject-284" class="animable" style="transform-origin: 249.045px 307.924px;">
@@ -864,7 +864,7 @@
         </svg>
     </div>
     
-    <a *ngIf="!(isHandset$|async)" href="#search" class="scroll-down"></a>
+    <a   href="#search" class="scroll-down"></a>
     <app-map-box #map [locations]="jobLocations" [flyToo]="flyToo"></app-map-box>
 
     <div id="search" class="container inner" [class.container-max-width]="(isHandsetMd$ | async)">
@@ -957,7 +957,7 @@
             </ul>
             <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details home">
                 <app-loader1 *ngIf="loadingPost"></app-loader1>
-                <app-job-details *ngIf="!loadingPost" [job]="job"></app-job-details>
+                <app-job-details *ngIf="!loadingPost" (unSave)="unSave($event)" (doSave)="doSave($event)" [job]="job"></app-job-details>
             </div>
         </div>
     </div>

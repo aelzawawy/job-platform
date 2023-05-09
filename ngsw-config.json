@@ -26,5 +26,21 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "dbQuery",
+      "urls": [
+        "https://inreach-api.onrender.com/api/*",
+        "http://localhost:3000/api/*",
+        "https://api.mapbox.com/*"
+      ],
+      "cacheConfig": {
+        "maxAge": "3d",
+        "maxSize": 200,
+        "strategy": "freshness",
+        "timeout": "0u"
+      }
+    }
   ]
 }

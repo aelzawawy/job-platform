@@ -1,4 +1,4 @@
-<div class="container" [class.container-max-width]="(isHandsetMd$ | async)">
+<div class="container sub" [class.container-max-width]="(isHandsetMd$ | async)">
     <h3 *ngIf="posts.length == 0 && !loading">You haven't posted any jobs yet!</h3>
     <div class="content" style="transform: translateY(12px);">
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
@@ -28,7 +28,7 @@
                             <p class="detail-row--item" *ngIf="post.remote">Remote</p>
                         </div>
                         <p class="post-date">{{post.date | date:'short'}}</p>
-                        <button title="Applications" class="abs-pos" mat-mini-fab (click)="applicants(post.applictions, post._id)"><mat-icon>group</mat-icon></button>
+                        <button title="Applications" class="abs-pos" mat-mini-fab (click)="applicants(post.applictions, post._id, i)"><mat-icon>group</mat-icon></button>
                     </div>
                 </div>
             </li>

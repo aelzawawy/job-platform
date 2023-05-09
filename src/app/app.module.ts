@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
@@ -39,7 +39,10 @@ import { ResetPasswordComponent } from './views/reset-password/reset-password.co
 import { MapBoxComponent } from './map-box/map-box.component';
 import { Loader1Component } from './loaders/loader1/loader1.component';
 import { Loader2Component } from './loaders/loader2/loader2.component';
-
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from "../environments/environment";
+import { initializeApp } from "firebase/app";
+initializeApp(environment.firebase);
 @NgModule({
   declarations: [
     AppComponent,
@@ -79,7 +82,13 @@ import { Loader2Component } from './loaders/loader2/loader2.component';
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    CKEditorModule
+    CKEditorModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:1000'
+    })
   ],
   providers: [
     AuthService,

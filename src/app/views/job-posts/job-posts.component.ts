@@ -35,12 +35,6 @@ export class JobPostsComponent implements OnInit {
   public config = {
     placeholder: 'Job description',
   }
-  profilePic(user:any):boolean{
-    if(!user.image){
-      return true
-    }
-    return false
-  }
 
   updatePost(id:any, index:number) {
     this.router.navigate(['/jobs-form'], {queryParams: {update_post: id}})
@@ -51,6 +45,7 @@ export class JobPostsComponent implements OnInit {
     this.jobsService.delJOb(id).subscribe({
       next:()=> {
         this.posts.splice(i, 1);
+        this.job = this.posts[0];
       },
       error(err:any){
         console.log(err);
@@ -66,14 +61,9 @@ export class JobPostsComponent implements OnInit {
     }).format(value);
   };
 
-  applictions = []
-
   // Get job applicants
-  applicants(applications:any, jobId:any){
-    this.jobsService.getJobInfo(jobId, applications);
-    this.applictions = applications.map((el:any) => el.applicant);
-    this.jobsService.getApplications(this.applictions);
-
+  applicants(applications:any, jobId:any, index:any){
+    this.jobsService.passJob(this.posts[index])
     const dialog = this.dialog.open(JobApplicationsComponent, {
       width: '400px',
       height: '500px'
@@ -132,14 +122,6 @@ export class JobPostsComponent implements OnInit {
     }
   }
 
-  // Input Fields animations
-  effect(event: any) {
-    if (event.target.value != '') {
-      event.target.classList.add('active');
-    } else {
-      event.target.classList.remove('active');
-    }
-  }
   ngOnInit(): void {
     this.loading = true
     this.jobsService.getPosts().subscribe({

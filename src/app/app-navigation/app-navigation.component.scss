@@ -43,9 +43,11 @@
     stroke: white;
     filter: drop-shadow(0px 0px 3px rgb(255, 145, 0));
     stroke-width: 3px;
-    stroke-dasharray: 404;
     margin-left: 25px;
-    animation: 3s offSet cubic-bezier(0.47, 0, 0.745, 0.715) alternate;
+    @media (min-width: 600px) {
+      stroke-dasharray: 404;
+      animation: 3s offSet cubic-bezier(0.47, 0, 0.745, 0.715) alternate;
+    }
   }
 }
 @keyframes offSet {
@@ -67,7 +69,6 @@
   background-color: rgba(0, 0, 0, 0.5411764706);
   backdrop-filter: blur(7px);
   color: white;
-  transition: all .3s ease-in-out;
   &.transparent{
     background-color: rgba(0, 0, 0, 0);
   }
@@ -120,18 +121,10 @@
   filter: drop-shadow(0px 0px 3px rgb(255, 145, 0));
   stroke: white;
   stroke-width: 3px;
-  stroke-dasharray: 404;
-  animation: 3s offSet cubic-bezier(0.47, 0, 0.745, 0.715) alternate;
-  // padding-inline: 1rem;
-  // font-weight: 500;
-  // font-size: 1.5rem;
-  // letter-spacing: 3px;
-  // margin-bottom: -5px;
-  // @media (max-width: 600px) {
-  //   &{
-  //     margin-left: -20px;
-  //   }
-  // }
+  @media (min-width: 600px) {
+    stroke-dasharray: 404;
+    animation: 3s offSet cubic-bezier(0.47, 0, 0.745, 0.715) alternate;
+  }
 }
 .profile-box {
   display: flex;
@@ -178,7 +171,7 @@
 
 .dock {
   position: fixed;
-  bottom: 0;
+  bottom: -1px;
   width: 100%;
   height: 50px;
   display: flex;

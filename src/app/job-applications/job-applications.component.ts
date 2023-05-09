@@ -16,43 +16,34 @@ export class JobApplicationsComponent implements OnInit {
   ) {}
   applicants: User[] = [];
   currUser: User = {}
-  jobId = this.jobsService.jobId;
-  applicationIds = this.jobsService.applicationId;
+  jobId!:string;
+  applicationIds!:object[];
 
   ngOnInit(): void {
-    const users = this.jobsService.users;
-    users.forEach((user: any) => {
-      this.userService.profileById(user).subscribe({
-        next: (res: any) => {
-          this.applicants.push(res);
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      });
-    });
+    this.jobsService.getPassedJob().subscribe(job => {
+      this.jobId = job._id;
+      this.applicationIds = job.applictions?.map((el:any) => el._id) || [];
+      this.applicants = job.applictions?.map((el:any) => el.applicant) || [];
+    })
   }
 
-  userProfile(e: any, index: any) {
-    this.jobsService.getUser(this.applicants[index]);
+  userProfile() {
     this.dialog.closeAll();
   }
 
   acceptOffer(id:any, appId:any){
-    console.log(id);
-    console.log(appId);
     this.jobsService.acceptOffer(id, appId).subscribe({
       next: (res:any) => {
-        console.log(res);
+        console.log(res)
       },error: (e:any) => {
         console.log(e);
       }
     })
   }
-  declineOffer(id:any, appId:any){
+  declineOffer(id:any, appId:any, i:number){
+    this.applicants.splice(i, 1)
     this.jobsService.declineOffer(id, appId).subscribe({
       next: (res:any) => {
-        console.log(res);
       },error: (e:any) => {
         console.log(e);
       }

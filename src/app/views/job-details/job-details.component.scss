@@ -7,7 +7,13 @@
   backdrop-filter: blur(7px);
   color: inherit;
   flex: .6;
-  
+  @media (max-width: 600px) {
+    &{
+      height: calc(100vh - 105px);
+      margin-top: 56px;
+      overflow-y: scroll;
+    }
+  }
   &.no_backgound_border{
     color: black;
     background-color: transparent;

@@ -7,6 +7,18 @@ p {
 .container {
   height: calc(100vh - 105px);
   padding: 0;
+  &.sub {
+    height: 100vh;
+    margin-top: 64px;
+    overflow-y: auto;
+    @media (max-width: 600px) {
+      & {
+        height: calc(100vh - 105px);
+        margin-top: 56px;
+        overflow-y: auto;
+      }
+    }
+  }
 }
 .slide-out {
   transform: translateX(-100%);
@@ -15,6 +27,18 @@ p {
 }
 form {
   position: relative;
+}
+.pic-wrapper{
+  @media (max-width: 600px) {
+    &{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .pic{
+      margin-left: 0;
+    }
+  }
 }
 .pic {
   display: inline-block;
@@ -47,6 +71,15 @@ form {
   justify-content: space-between;
   align-items: center;
   margin-left: 20px;
+  @media (max-width: 600px) {
+    &{
+      flex-direction: column-reverse;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 40px;
+      margin-left: 0px;
+    }
+  }
   .actions {
     display: flex;
     gap: 10px;
@@ -136,9 +169,16 @@ form {
     }
   }
 }
-.headline{
+.headline {
   margin-left: 20px;
   max-width: 60%;
+  @media (max-width: 600px) {
+    &{
+      width: fit-content;
+      margin: auto;
+      text-align: center;
+    }
+  }
 }
 #upload,
 #bgupload {
@@ -244,9 +284,9 @@ form {
     flex-shrink: 0;
   }
   @media (max-width: 770px) {
-    &{
+    & {
       flex-direction: column-reverse;
-      &__right{
+      &__right {
         width: 100%;
       }
     }

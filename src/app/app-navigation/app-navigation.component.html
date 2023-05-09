@@ -17,13 +17,13 @@
       </mat-list-item>
       <mat-list-item *ngIf="(isHandset$ | async) || (isHandsetMd$ | async)" routerLinkActive="active" title="Saved Posts" routerLink="/saved-jobs"
         (click)="drawer.toggle()">
-        <mat-icon mat-list-icon>favorite_border</mat-icon>
+        <mat-icon mat-list-icon>collections_bookmark</mat-icon>
         <span>Saved Jobs</span>
       </mat-list-item>
 
       <mat-list-item *ngIf="!(isHandset$ | async) && !(isHandsetMd$ | async)" routerLinkActive="active" title="Saved Posts"
         routerLink="/saved-jobs">
-        <mat-icon mat-list-icon>favorite_border</mat-icon>
+        <mat-icon mat-list-icon>collections_bookmark</mat-icon>
         <span>Saved Jobs</span>
       </mat-list-item>
 
@@ -49,7 +49,7 @@
 
   </mat-sidenav>
 
-  <mat-sidenav-content class="appContainer" (scroll)="isScrolling($event)" style="scroll-behavior: smooth;height: 100vh;">
+  <mat-sidenav-content class="appContainer" style="height: 100vh; overflow: hidden;">
     <mat-toolbar>
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
         *ngIf="((isHandset$ | async) || (isHandsetMd$ | async)) && loggedIn()">
@@ -84,7 +84,7 @@
     </mat-toolbar>
 
 
-    <main [@routeAnimations]='prepareRoute(outlet)' [class.mainSMargin]="(isHandset$ | async)" [class.mainLMargin]="!(isHandset$ | async)">
+    <main [@routeAnimations]='prepareRoute(outlet)'>
       <router-outlet #outlet="outlet"></router-outlet>
     </main>
 

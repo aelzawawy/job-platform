@@ -4,24 +4,33 @@
 .container {
   margin: auto;
   background-color: #fafafa;
-  margin-bottom: -20px;
+  &.main {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
+  // margin-bottom: -20px;
   padding-bottom: 44px;
+  &.sub{
+    margin-top: 65px;
+  }
   @media (max-width: 600px) {
-    & {
-      padding-bottom: 70px;
+    &.sub{
+      height: calc(100vh - 105px);
+      margin-top: 56px;
+      overflow-y: scroll;
     }
   }
 }
 .heroSection {
   position: sticky;
-  top: 70px;
+  top: 0px;
   display: flex;
   justify-content: space-evenly;
   height: 100vh;
   @media (max-width: 600px) {
     & {
       top: 0;
-      margin-top: -56px;
       margin-bottom: 47px;
       height: 95vh;
     }
@@ -30,7 +39,7 @@
     flex-direction: column-reverse;
     align-items: center;
     & > svg#freepik_stories-job-hunt {
-      width: 100%;
+      width: 90%;
       margin-bottom: -100px;
     }
   }
@@ -41,9 +50,14 @@
     flex-direction: column;
     justify-content: center;
     font-family: monospace;
-    transform: translateY(100px);
-    opacity: 0;
-    animation: fadeUp 1s 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+    z-index: 5;
+    @media (min-width: 600px){
+      &{
+        transform: translateY(100px);
+        opacity: 0;
+        animation: fadeUp 1s 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+      }
+    }
     @media (max-width: 600px) {
       padding: 10px;
       text-align: center;
@@ -90,24 +104,32 @@
   border: 2px solid #000000;
   background-size: 14px auto;
   border-radius: 50%;
-  z-index: 2;
-  -webkit-animation: bounce 2s infinite 2s;
-  animation: bounce 2s infinite 2s;
-  -webkit-transition: all .2s ease-in;
-  transition: all .2s ease-in;
+  -webkit-animation: bounce 2s infinite;
+  animation: bounce 2s infinite;
+  -webkit-transition: all 0.1s;
+  transition: all 0.1s;
+  &:hover{
+    background-color: #c4c4c4;
+  }
+  @media (max-width: 600px) {
+    bottom: 49px;
+    left: 95%;
+    width: 30px;
+    height: 30px;
+  }
 }
 
 .scroll-down:before {
-    position: absolute;
-    top: calc(50% - 8px);
-    left: calc(50% - 6px);
-    transform: rotate(-45deg);
-    display: block;
-    width: 12px;
-    height: 12px;
-    content: "";
-    border: 2px solid rgb(0, 0, 0);
-    border-width: 0px 0 2px 2px;
+  position: absolute;
+  top: calc(50% - 8px);
+  left: calc(50% - 6px);
+  transform: rotate(-45deg);
+  display: block;
+  width: 12px;
+  height: 12px;
+  content: "";
+  border: 2px solid rgb(0, 0, 0);
+  border-width: 0px 0 2px 2px;
 }
 
 @keyframes bounce {
@@ -151,7 +173,7 @@
     justify-content: center;
     align-items: center;
     color: inherit;
-    
+
     mat-slider {
       width: 300px;
     }
@@ -384,6 +406,11 @@ svg#freepik_stories-job-hunt {
 
 svg#freepik_stories-job-hunt:not(.animated) .animable {
   opacity: 0;
+  @media (max-width: 600px) {
+    &{
+      opacity: 1;
+    }
+  }
 }
 
 svg#freepik_stories-job-hunt.animated #freepik--Floor--inject-284 {

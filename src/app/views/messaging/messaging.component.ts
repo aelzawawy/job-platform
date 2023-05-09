@@ -38,7 +38,6 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   users: User[] = [];
   contacts: User[] = [];
   currContact: User = {};
-  newContact: User = {};
   user: User = {};
   toUser: string = '';
   contact: boolean = false;
@@ -46,6 +45,7 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   msgs: Message[] = [];
   loadingContacts: boolean = false;
   loadingMsgs: boolean = false;
+  searching: boolean = false;
 
   message: string = '';
   file: any;
@@ -81,24 +81,38 @@ export class MessagingComponent implements OnInit, AfterViewInit {
 
   search(event: any) {
     const input = event.target.value;
-    if (input == '') {
+    if(input == ''){
       this.users = [];
-    } else {
-      this.userService.search(input?.trim()).subscribe({
-        next: (res: any) => {
-          this.users = res;
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      });
+      return;
     }
+    setTimeout(() => {
+      if(input === this.search_value && !this.searching) {
+        this.searching = true;
+        this.userService.search(input?.trim()).subscribe({
+          next: (res: any) => {
+            this.users = res;
+            this.searching = false;
+          },
+          error: (err: any) => {
+            console.log(err);
+            this.searching = false;
+          },
+        });
+      }
+    }, 500);
   }
 
   //! Getting selected user's id
   search_value = '';
-  profileBiId(e: any, id: any) {
-    this.router.navigate([`/messaging`], { queryParams: { contact: id } });
+  profileBiId(e: any, user: User) {
+    if(this.loadingMsgs) return;
+    if(this.contacts.some(el => el._id == user._id)){
+      this.router.navigate([`/messaging`], { queryParams: { contact: user._id } })
+    }else{
+      this.router.navigate([`/messaging`], { queryParams: { new: user._id } });
+      this.msgs = [];
+      localStorage.setItem('newContact', JSON.stringify(user));
+    }
     this.search_value = '';
     this.users = [];
   }
@@ -121,6 +135,10 @@ export class MessagingComponent implements OnInit, AfterViewInit {
       file_name: this.file?.name,
       file_size: `${this.bytesToSize(this.file?.size)}`,
     });
+    if(!this.contacts.some((el:any) => el._id == this.toUser)) {
+      this.contacts.push(this.currContact)
+      localStorage.setItem('contacts', JSON.stringify(this.contacts))
+    }
     setTimeout(() => {
       this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
     }, 0);
@@ -151,7 +169,7 @@ export class MessagingComponent implements OnInit, AfterViewInit {
     this.page = 0;
     this.userService.getMsgs(id).subscribe({
       next: (res: any) => {
-        this.msgs = this.msgs.concat(res.reverse().splice(30 * this.page, 30));
+        this.msgs = this.msgs.concat(res.reverse().splice(30 * this.page, 100));
         this.loadingMsgs = false;
       },
       error: (err: any) => {
@@ -165,26 +183,6 @@ export class MessagingComponent implements OnInit, AfterViewInit {
     this.loadingContacts = true;
     this.contacts = JSON.parse(localStorage['contacts'] || '[]');
     this.loadingContacts = false;
-    // this.userService.profile().subscribe({
-    //   next: (res: any) => {
-    //     this.user = res;
-    //     if (res.contactList) {
-    //       this.userService.getContacts().subscribe({
-    //         next: (res: any) => {
-    //           this.contacts = res;
-    //           localStorage.setItem('contacts', JSON.stringify(res));
-    //           this.loadingContacts = false;
-    //         },
-    //         error: (err: any) => {
-    //           console.log(err);
-    //         },
-    //       });
-    //     }
-    //   },
-    //   error: (err: any) => {
-    //     console.log(err);
-    //   },
-    // });
   }
 
   // Date formatting
@@ -224,7 +222,10 @@ export class MessagingComponent implements OnInit, AfterViewInit {
   backButton(e: any) {
     this.router.navigateByUrl('/messaging');
   }
-
+  // lastMsg = {
+  //   message: '',
+  //   time: ''
+  // }
   ngOnInit(): void {
     this.currentUser();
     let contact: string;
@@ -232,13 +233,15 @@ export class MessagingComponent implements OnInit, AfterViewInit {
     this.intersectionObserver = new IntersectionObserver(
       (enteries) => {
         enteries.forEach((e) => {
-          if (e.isIntersecting) {
+          if (e.isIntersecting && this.msgs.length > 100) {
+            this.loadingMsgs = true;
             this.userService.getMsgs(contact || newContact).subscribe({
               next: (res: any) => {
                 this.page++;
                 this.msgs = this.msgs.concat(
-                  res.reverse().splice(30 * this.page, 30)
+                  res.reverse().splice(100 * this.page, 100)
                   );
+                  this.loadingMsgs = false;
               },
               error: (err: any) => {
                 console.log(err);
@@ -272,7 +275,6 @@ export class MessagingComponent implements OnInit, AfterViewInit {
       }
     });
     this.userService.getNewMessage().subscribe((message: any) => {
-      if (message == '') return;
       this.msgs.unshift({
         message: message.msg,
         time: message.time,
@@ -281,7 +283,7 @@ export class MessagingComponent implements OnInit, AfterViewInit {
         file_name: message.fileName,
         file_size: message.fileSize,
       });
-      // this.lastMsg = { message: message, time: `${Date.now()}`}
+      // this.lastMsg = { message: message.msg, time: `${message.time}`}
     });
   }
 }

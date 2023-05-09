@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, skip } from 'rxjs';
+import { BehaviorSubject, filter, take } from 'rxjs';
 import { io } from "socket.io-client";
-import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +9,11 @@ import { User } from '../interfaces/user';
 export class UserService {
 
   constructor(private http:HttpClient) { }
-  url:string= 'http://localhost:3000/';
-  socket = io('http://localhost:3000/');
-  public message$: BehaviorSubject<any> = new BehaviorSubject('');
-  public user$: BehaviorSubject<User> = new BehaviorSubject({});
-  public body$: BehaviorSubject<any> = new BehaviorSubject('');
+  url:string= 'https://inreach-api.onrender.com/api/';
+  socket = io('https://inreach-api.onrender.com/');
+  public message$: BehaviorSubject<any> = new BehaviorSubject(undefined);
+  public fire$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public body$: BehaviorSubject<any> = new BehaviorSubject(undefined);
 
   profile(){
     return this.http.get(this.url + 'profile')
@@ -77,6 +76,13 @@ export class UserService {
     return this.http.get(this.url + 'profile/' + input)
   };
 
+  saveToken(token:any){
+    return this.http.patch(this.url + 'saveToken', {token})
+  };
+  removeToken(){
+    return this.http.patch(this.url + 'removeToken', {})
+  };
+
   message(id: any, message: any, file:File) {
     const encodedFileName = encodeURIComponent(file?.name);
     const formData = new FormData(); 
@@ -98,16 +104,12 @@ export class UserService {
     return this.http.get(this.url + 'delMessage/' + id)
   }
   
-  editProfileSocket(body:any){
-    this.socket.emit('editProfile', body);
+  passNewBody(body:any){
+    this.body$.next(body);
   }
 
   public updatedProfile = () => {
-    this.socket.on('updatedProfile', (body) =>{
-      this.body$.next(body);
-    });
-    
-    return this.body$.asObservable().pipe(skip(1));
+    return this.body$.asObservable().pipe(filter((x:any) => x != undefined));
   };
 
   public getNewMessage = () => {
@@ -115,17 +117,14 @@ export class UserService {
       this.message$.next(message);
     });
     
-    return this.message$.asObservable().pipe(skip(1));
+    return this.message$.asObservable().pipe(filter((x:any) => x != undefined), take(1));
   };
 
-  emitRole(role:string){
-    this.socket.emit('role', role);
+  emitSignal(signal:boolean){
+    this.fire$.next(signal);
   };
 
-  public getRole = () => {
-    this.socket.on('role', (role) => {
-      this.user$.next(role)
-    });
-    return this.user$.asObservable().pipe(skip(1));
+  public getSignal = () => {
+    return this.fire$.asObservable().pipe(filter((x:any) => x != false));
   }
 }

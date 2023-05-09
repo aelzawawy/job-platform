@@ -18,7 +18,7 @@
         <div class="card-head--right" *ngIf="job.employer?._id != myId || !loggedIn()">
             <button class="apply" title="Apply to job" mat-flat-button (click)="applyJob(job._id)">Apply</button>
             <button title="{{isSaved || job.saved? 'Remove!' : 'Save for later'}}" mat-stroked-button (click)="saveJob(job._id)">
-                <mat-icon>{{isSaved || job.saved? 'favorite' : 'favorite_border'}}</mat-icon>
+                <mat-icon>{{isSaved || job.saved? 'bookmark' : 'bookmark_border'}}</mat-icon>
             </button>
         </div>
     </div>

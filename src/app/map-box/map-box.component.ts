@@ -37,15 +37,16 @@ export class MapBoxComponent implements OnInit {
           });
         });
       }
-      this.initializeMap();
-      // if (this.locations.length != 0) {
-      // }
+      if (this.locations.length != 0) {
+        this.initializeMap();
+      }
     }
     if (changes['flyToo'] && this.locations.length != 0) {
       this.map.flyTo({
         center: changes['flyToo'].currentValue,
-        zoom: 5,
+        zoom: 7,
       });
+      
     }
   }
   private initializeMap() {
@@ -60,6 +61,18 @@ export class MapBoxComponent implements OnInit {
       zoom: 5,
     });
 
+    //! If on mobile and touching one finger
+    if (/Mobi/.test(navigator.userAgent)) {
+      this.map.dragPan.disable();
+      this.map.getContainer().addEventListener('touchmove', (e) =>  {
+        if (e.touches.length === 1) {
+          this.map.dragPan.disable();
+        }else{
+          this.map.dragPan.enable();
+        }
+      });
+    }
+    
     this.map.addControl(new mapboxgl.NavigationControl());
     // todo Create markers
     this.locations.forEach((loc: any) => {
@@ -90,13 +103,6 @@ export class MapBoxComponent implements OnInit {
       bounds.extend(loc.coords);
     });
     
-    this.map.fitBounds(bounds, {
-      padding: {
-        top: 100,
-        bottom: 100,
-        left: 100,
-        right: 100,
-      }
-    });
+    this.map.fitBounds(bounds);
   }
 }

@@ -9,13 +9,13 @@ import { JobPost } from 'src/app/interfaces/job-post';
 })
 export class JobsService {
   constructor(private http:HttpClient) { }
-  url:string= 'http://localhost:3000/';
-  socket = io('http://localhost:3000/');
+  url:string= 'https://inreach-api.onrender.com/api/';
+  socket = io('https://inreach-api.onrender.com/');
   public saveRm$: BehaviorSubject<string> = new BehaviorSubject('');
   public job$: BehaviorSubject<JobPost> = new BehaviorSubject({});
 
   getJobs(body:any){
-    return this.http.post(this.url + 'jobs-feed', body)
+    return this.http.get(this.url + `feed/${body.page}/${body.limit}/${body.order}`)
   };
 
   public passJob = (res:any) => {
@@ -25,7 +25,7 @@ export class JobsService {
     return this.job$.asObservable();
   }
   jobById(id:any){
-    return this.http.get(this.url + 'jobs-feed/' + id)
+    return this.http.get(this.url + 'posts/' + id)
   }
 
   getPosts(){
@@ -55,24 +55,7 @@ export class JobsService {
     return this.http.get(this.url + 'unSave/' + id)
   }
 
-
-  users = []
-  currUser:User = {}
-  jobId = '';
-  applicationId = []
   toUpdate:JobPost = {}
-  getJobInfo(id:any, applicationId:any){
-    this.jobId = id;
-    this.applicationId = applicationId.map((el:any) => el._id);
-  }
-
-  getApplications(users:any){
-    this.users = users;
-  }
-  
-  getUser(user:any){
-    this.currUser = user;
-  }
 
   acceptOffer(id:any, appId:any){
     return this.http.get(this.url + 'accept/' + id + '/' + appId)

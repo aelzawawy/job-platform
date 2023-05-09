@@ -19,7 +19,6 @@ import { JobsService } from 'src/app/services/jobs.service';
 import { ObserverService } from 'src/app/services/observer.service';
 import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { json } from 'express';
 @Component({
   selector: 'app-job-details',
   templateUrl: './job-details.component.html',
@@ -52,8 +51,8 @@ export class JobDetailsComponent implements OnInit, OnChanges {
         });
         this.loading = true;
         this.jobsService.getPassedJob().subscribe(async (res) => {
-          this.job = res
-          this.checkSaved(res._id)
+          this.job = Object.keys(res).length != 0? res : JSON.parse(localStorage['openedPost'] || '[]')
+          if(localStorage['token']) this.checkSaved(res._id);
           this.loading = false;
         })
       }
@@ -67,22 +66,24 @@ export class JobDetailsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['job'] && localStorage['token']) {
-    //*    The ngOnChanges() hook is a good choice for this, since it is called whenever an @Input property changes.
-    this.checkSaved(this.job._id)
+    //* The ngOnChanges() hook is a good choice for this, since it is called whenever an @Input property changes.
+    if(localStorage['token']) this.checkSaved(this.job._id);
     }
   }
 
   async checkSaved(id:any){
-    if (this.loggedIn()){
-      this.jobsService.checkSaved(id).subscribe({
-        next: (res: any) => {
-          this.isSaved = res;
-        },
-        error: (e: any) => {
-          console.log(e);
-        },
-      });
-    }
+    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]')
+    this.isSaved = savedJobs.some((el:any) => el._id == id)
+    // if (this.loggedIn()){
+    //   this.jobsService.checkSaved(id).subscribe({
+    //     next: (res: any) => {
+    //       this.isSaved = res;
+    //     },
+    //     error: (e: any) => {
+    //       console.log(e);
+    //     },
+    //   });
+    // }
   }
   loggedIn(): boolean {
     if (localStorage['token']) {
@@ -90,7 +91,9 @@ export class JobDetailsComponent implements OnInit, OnChanges {
     }
     return false;
   }
+  // @Output() savePost = new EventEmitter<any>();
   @Output() unSave = new EventEmitter<string>();
+  @Output() doSave = new EventEmitter<JobPost>();
   durationInSeconds = 5;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
@@ -98,22 +101,18 @@ export class JobDetailsComponent implements OnInit, OnChanges {
   applyJob(id: any) {
     this.jobsService.applyJob(id).subscribe({
       next: (res: any) => {
-        setTimeout(() => {
-          this._snackBar.open(`${res.message}`, '', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-            duration: this.durationInSeconds * 500,
-          });
-        }, 800);
+        this._snackBar.open(`${res.message}`, '', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: this.durationInSeconds * 500,
+        });
       },
       error: (e: any) => {
-        setTimeout(() => {
-          this._snackBar.open(`${e.error.Error}`, '', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-            duration: this.durationInSeconds * 500,
-          });
-        }, 800);
+        this._snackBar.open(`${e.error.Error}`, '', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: this.durationInSeconds * 500,
+        });
       },
     });
   }
@@ -122,23 +121,20 @@ export class JobDetailsComponent implements OnInit, OnChanges {
     if (!this.isSaved) {
       this.jobsService.saveJob(id).subscribe({
         next: (res: any) => {
-          setTimeout(() => {
-            this._snackBar.open(`${res.message}`, '', {
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-              duration: this.durationInSeconds * 500,
-            });
-          }, 800);
+          this._snackBar.open(`${res.message}`, '', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: this.durationInSeconds * 500,
+          });
+          this.doSave.emit(res.job);
         },
         error: (e: any) => {
           console.log(e);
-          setTimeout(() => {
-            this._snackBar.open(`${e.error.Error}`, '', {
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-              duration: this.durationInSeconds * 500,
-            });
-          }, 800);
+          this._snackBar.open(`${e.error.Error}`, '', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: this.durationInSeconds * 500,
+          });
         },
       });
       setTimeout(() => {
@@ -147,28 +143,22 @@ export class JobDetailsComponent implements OnInit, OnChanges {
     } else {
       this.jobsService.unSaveJob(id).subscribe({
         next: (res: any) => {
-          setTimeout(() => {
-            this._snackBar.open(`${res.message}`, '', {
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-              duration: this.durationInSeconds * 500,
-            });
-            this.unSave.emit(id);
-          }, 800);
+          this._snackBar.open(`${res.message}`, '', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: this.durationInSeconds * 500,
+          });
+          this.unSave.emit(id);
         },
         error: (e: any) => {
-          setTimeout(() => {
-            this._snackBar.open(`${e.error.Error}`, '', {
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-              duration: this.durationInSeconds * 500,
-            });
-          }, 800);
+          this._snackBar.open(`${e.error.Error}`, '', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: this.durationInSeconds * 500,
+          });
         },
       });
-      setTimeout(() => {
-        this.isSaved = !this.isSaved;
-      }, 800);
+      this.isSaved = !this.isSaved;
     }
   }
 
