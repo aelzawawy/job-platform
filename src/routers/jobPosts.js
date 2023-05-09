@@ -337,7 +337,7 @@ router.get("/api/save/:id", auth.userAuth, async (req, res) => {
     if (!exists()) {
       req.user.savedJobs.push(job);
       await req.user.save();
-      res.send({ message: "Added to bookmarks" });
+      res.send({job:job, message: "Added to bookmarks" });
     } else {
       res.send({ message: "Post Was already saved!" });
     }

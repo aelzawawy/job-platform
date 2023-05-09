@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
-const { set } = require("mongoose");
+const { set, Mongoose, default: mongoose } = require("mongoose");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/email");
@@ -114,7 +114,7 @@ router.post("/api/signup", async (req, res) => {
     const token = user.generateToken();
     const verifyToken = user.createVerifyToken();
     await user.save();
-    const url = `${req.get('origin')}/verify/${user.id}/${verifyToken}`;
+    const url = `${req.get("origin")}/verify/${user.id}/${verifyToken}`;
     sendEmail({
       email: user.email,
       subject: "Welcome",
@@ -181,7 +181,7 @@ router.post("/api/forgotPassword", async (req, res) => {
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
     // Send email
-    const resetURL = `${req.get('origin')}/resetPassword/${resetToken}`;
+    const resetURL = `${req.get("origin")}/resetPassword/${resetToken}`;
     await sendEmail({
       email: user.email,
       subject: "Password reset token",
@@ -205,7 +205,6 @@ router.patch("/api/resetPassword/:token", async (req, res) => {
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() }, // Check if token isn't expired
     });
-    console.log(user);
     //todo 2: Set a new password if token isn't expired and the user exists
     if (!user) {
       return res.status(400).send("Invalid token or expired");
@@ -262,7 +261,7 @@ router.get("/api/contacts", auth.userAuth, async (req, res) => {
   try {
     const ids = req.user.contactList.map((el) => el.contact);
     const contacts = await User.find({ _id: { $in: ids } }).select(
-      "-messages -notifications -contactList -savedJobs -verifyToken -verified"
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles"
     );
     res.status(200).send(contacts);
   } catch (err) {
@@ -304,7 +303,9 @@ router.get("/api/profile/:key", auth.userAuth, async (req, res) => {
         { name: { $regex: req.params.key } },
         { email: { $regex: req.params.key } },
       ],
-    });
+    }).select(
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles"
+    );
     res.send(users.filter((user) => user.email != req.user.email));
   } catch (err) {
     res.status(400).send(err);
@@ -326,7 +327,7 @@ router.patch("/api/saveToken", auth.userAuth, async (req, res) => {
 router.patch("/api/removeToken", auth.userAuth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.user._id, {
-      fcmToken: '',
+      fcmToken: "",
     });
     await req.user.save();
     res.status(200).send(user);
@@ -347,13 +348,12 @@ router.post(
       const messageId = uuidv4();
       const fileName = decodeURIComponent(req.body.encodedFileName);
       let message = {};
-      console.log(req.get('origin'))
       // Send push notification
-      if(user.fcmToken){
+      if (user.fcmToken) {
         pushNotification({
           title: `${req.user.name}`,
           body: `${req.body.message}`,
-          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
+          pathname: `${req.get("origin")}/messaging?contact=${req.user._id}`,
           token: `${user.fcmToken}`,
         });
       }
@@ -466,16 +466,12 @@ router.get("/api/delMessage/:id", auth.userAuth, async (req, res) => {
 // Get messages
 router.get("/api/message/:id", auth.userAuth, async (req, res) => {
   try {
-    // const msgs = req.user.messages.filter(
-    //   (msg) =>
-    //     (msg.to == req.params.id && msg.from == req.user._id.toString()) ||
-    //     (msg.to == req.user._id.toString() && msg.from == req.params.id)
-    // );
-    const test = await User.findById(req.user._id).select("messages").find({
-      to: req.params.id,
-      from: req.user._id,
-    });
-    res.status(200).send(test[0].messages);
+    const msgs = req.user.messages.filter(
+      (msg) =>
+        (msg.to == req.params.id && msg.from == req.user._id.toString()) ||
+        (msg.to == req.user._id.toString() && msg.from == req.params.id)
+    );
+    res.status(200).send(msgs);
   } catch (err) {
     res.status(400).send(err);
   }
