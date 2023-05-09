@@ -14,9 +14,7 @@ firebase.initializeApp({
   measurementId: "G-QSNMCTG1C1",
 });
 const messaging = firebase.messaging();
-// if (localStorage['token']){}
 messaging.onBackgroundMessage(function (payload) {
-  // console.log(payload);
   //todo Customize notification
   const notificationTitle = payload.data.title;
   const notificationOptions = payload.data.title.includes('message')? {
