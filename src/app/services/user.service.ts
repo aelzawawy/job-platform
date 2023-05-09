@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, filter, take } from 'rxjs';
+import { BehaviorSubject, filter } from 'rxjs';
 import { io } from "socket.io-client";
 
 @Injectable({
@@ -117,7 +117,7 @@ export class UserService {
       this.message$.next(message);
     });
     
-    return this.message$.asObservable().pipe(filter((x:any) => x != undefined), take(1));
+    return this.message$.asObservable().pipe(filter((x:any) => x != undefined));
   };
 
   emitSignal(signal:boolean){

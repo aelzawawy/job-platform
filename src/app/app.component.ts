@@ -46,7 +46,12 @@ export class AppComponent implements OnInit {
   listen() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
-      console.log(payload);
+      // const senderImage = JSON.parse(localStorage['contacts'] || '[]').filter((el:any) => el.name == `${payload.data?.['title']}`).pop().image
+      // new Notification(`${payload.data?.['title']}`,{
+      //   body: `${payload.data?.['body']}`,
+      //   icon: `data:image/png;base64,${sender.pop().image}`
+      // });
+      // console.log(`data:image/png;base64,${senderImage}`);
     });
     
   }
