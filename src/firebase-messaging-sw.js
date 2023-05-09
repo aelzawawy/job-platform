@@ -19,22 +19,28 @@ messaging.onBackgroundMessage(function (payload) {
   // console.log(payload);
   //todo Customize notification
   const notificationTitle = payload.data.title;
-  const notificationOptions = payload.data.title.includes('message')? {
-    body: payload.data.body,
-    icon: "./assets/reach-logo.png",
-    data: {
-      pathname: payload.data.pathname
-    },
-    // silent: true,
-    tag: 'new messsage'
-  } : {
-    body: payload.data.body,
-    icon: "./assets/icons/icon-512x512.png",
-    data: {
-      pathname: payload.data.pathname
-    },
-  };
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  const notificationOptions = payload.data.title.includes("message")
+    ? {
+        body: payload.data.body,
+        icon: "./assets/reach-logo.png",
+        data: {
+          pathname: payload.data.pathname,
+        },
+        // silent: true,
+        tag: "new messsage",
+      }
+    : {
+        body: payload.data.body,
+        icon: "./assets/icons/icon-512x512.png",
+        data: {
+          pathname: payload.data.pathname,
+        },
+      };
+  self.addEventListener("push", async function (event) {
+    event.waitUntil(
+      self.registration.showNotification(notificationTitle, notificationOptions)
+    );
+  });
 });
 //todo Listen to click event
 self.addEventListener("notificationclick", (event) => {
