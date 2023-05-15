@@ -7,7 +7,7 @@ const cors = require('cors')
 const app = express();
 const port = process.env.PORT
 app.use(express.json()); // parse to obj (muust come before router)
-app.use(cors());
+app.use(cors({origin : '*'}));
 
 const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer, {
