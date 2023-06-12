@@ -17,15 +17,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function (payload) {
   //todo Customize notification
   const notificationTitle = payload.data.title;
-  const notificationOptions = payload.data.title.includes('message')? {
-    body: payload.data.body,
-    icon: "./assets/reach-logo.png",
-    data: {
-      pathname: payload.data.pathname
-    },
-    // silent: true,
-    tag: 'new messsage'
-  } : {
+  const notificationOptions = {
     body: payload.data.body,
     icon: "./assets/icons/icon-512x512.png",
     data: {

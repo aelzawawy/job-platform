@@ -42,6 +42,9 @@ import { Loader2Component } from './loaders/loader2/loader2.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from "../environments/environment";
 import { initializeApp } from "firebase/app";
+import { NotificationsComponent } from './views/notifications/notifications.component';
+import { DateAgoPipe } from './pipes/date-ago.pipe';
+import { DeleteChatComponent } from './delete-chat/delete-chat.component';
 initializeApp(environment.firebase);
 @NgModule({
   declarations: [
@@ -65,6 +68,9 @@ initializeApp(environment.firebase);
     MapBoxComponent,
     Loader1Component,
     Loader2Component,
+    NotificationsComponent,
+    DateAgoPipe,
+    DeleteChatComponent,
   ],
   // entryComponents: [MessagingComponent],
   imports: [

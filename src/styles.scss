@@ -61,14 +61,19 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 7px;
   height: 0px;
 }
 ::-webkit-scrollbar-track {
-  background-color: rgb(73, 73, 73);
+  background-color: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #daa520;
+  background: rgb(230, 196, 85);
+  transition: background 0.3s ease-in-out;
+  border-radius: 30px;
+  &:hover {
+    background: rgb(218, 178, 48);
+  }
 }
 .ck-editor__editable {
   min-height: 300px;

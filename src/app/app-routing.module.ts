@@ -14,6 +14,7 @@ import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 import { JobDetailsComponent } from './views/job-details/job-details.component';
+import { NotificationsComponent } from './views/notifications/notifications.component';
 
 const routes: Routes = [
   {path:'', component:HomeComponent},
@@ -27,6 +28,7 @@ const routes: Routes = [
   {path: 'employers-signup', component:EmployersSignupComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path: 'jobPosts', component:JobPostsComponent, data:{animation:'isTop'}, canActivate:[AuthGuardService]},
   {path: 'messaging', component:MessagingComponent, data:{animation:'isMsg'}, canActivate:[AuthGuardService]},
+  {path: 'notifications', component:NotificationsComponent, data:{animation:'isNotifications'}, canActivate:[AuthGuardService]},
   {path: 'saved-jobs', component:SavedJobsComponent, data:{animation:'isRight'}, canActivate:[AuthGuardService]},
   {path: 'jobs-form', component:JobPostsFormComponent, data:{animation:'isLeft'}, canActivate:[AuthGuardService]},
   {path: 'resetPassword/:token', component:ResetPasswordComponent, data:{animation:'isLeft'}},

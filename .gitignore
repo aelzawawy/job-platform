@@ -36,10 +36,12 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-.firebase
+/.firebase
 .firebaserc
 firebase.json
 .github\workflows
+/android
+capacitor.config.ts
 # System files
 .DS_Store
 Thumbs.db
