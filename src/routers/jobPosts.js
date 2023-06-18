@@ -10,30 +10,65 @@ const natural = require("natural");
 const pushNotification = require("../utils/fcm/admin");
 
 // Add Job Posts
-router.post("/api/posts/", auth.userAuth, auth.employerAuth, async (req, res) => {
-  try {
-    getLocation(req.body.location, async (locationErr, data) => {
-      // if (locationErr) return res.send(locationErr);
-      const jobPost = await JobPost.create({
-        title: req.body.title,
-        description: req.body.description,
-        location: {
-          address: locationErr? req.body.location : data.name,
-          coordinates: locationErr? [] : data.coords,
-        },
-        salary: req.body.salary,
-        company: req.body.company,
-        type: req.body.type,
-        remote: req.body.remote,
-        employer: req.user._id,
-        date: Date.now(),
+router.post(
+  "/api/posts/",
+  auth.userAuth,
+  auth.employerAuth,
+  async (req, res) => {
+    try {
+      getLocation(req.body.location, async (locationErr, data) => {
+        // if (locationErr) return res.send(locationErr);
+        const jobPost = await JobPost.create({
+          title: req.body.title,
+          description: req.body.description,
+          location: {
+            address: locationErr ? req.body.location : data.name,
+            coordinates: locationErr ? [] : data.coords,
+          },
+          salary: req.body.salary,
+          company: req.body.company,
+          type: req.body.type,
+          remote: req.body.remote,
+          employer: req.user._id,
+          date: Date.now(),
+        });
+        res.status(200).send(jobPost);
+
+        //! Find users within radius to notify them
+        const radius = 100; // in KM
+        const [lat, lng] = data.coords;
+        cosnt = radius_in_radians = (radius * 1) / 6378.1;
+        const users_within = await User.find({
+          id: { $ne: req.user._id },
+          location: {
+            $geoWithin: { $centerSphere: [[lat, lng], radius_in_radians] },
+          },
+        });
+        // Notify users
+        users_within.forEach((user) => {
+          user.notifications.push({
+            time: `${Date.now()}`,
+            body: `Check the new job in your area for a ${req.body.title} position.`,
+            path: `/job/${jobPost._id}`,
+            jobId: `${jobPost._id}`,
+          });
+          if (user.fcmToken) {
+            pushNotification({
+              title: `Job alert`,
+              body: `Check the new job in your area for a ${req.body.title} position.`,
+              pathname: `/notifications`,
+              token: `${user.fcmToken}`,
+              time: `${Date.now()}`,
+            });
+          }
+          user.save();
+        });
       });
-      res.status(200).send(jobPost);
-    });
-  } catch (e) {
-    res.status(400).send(e.message);
+    } catch (e) {
+      res.status(400).send(e.message);
+    }
   }
-});
+);
 
 // get all posts
 router.get("/api/feed/:page/:limit/:order", async (req, res) => {
@@ -45,16 +80,6 @@ router.get("/api/feed/:page/:limit/:order", async (req, res) => {
       .sort({ date: order });
     const count = await JobPost.count();
     const totalPages = Math.ceil(count / limit);
-    // const groups = await JobPost.aggregate([
-    //   {
-    //     $group: {
-    //       _id: { $dayOfMonth: "$date" },
-    //       no_of_posts: { $sum: 1 },
-    //       posts: { $push: "$$ROOT" },
-    //     },
-    //   },
-    //   { $sort: { "posts.date": -1 } },
-    // ]);
     res.status(200).send({ posts, totalPages });
   } catch (e) {
     res.status(400).send(e.message);
@@ -74,8 +99,11 @@ router.get("/api/posts", auth.userAuth, auth.employerAuth, async (req, res) => {
 // get by id
 router.get("/api/posts/:id", async (req, res) => {
   try {
-    const job = await JobPost.findById(req.params.id);
-    if (!job) res.status(404).send({message: "Not found!"});
+    const job = await JobPost.findOne({ id: req.params.id });
+    if (!job) {
+      res.status(404).send({ message: "Not found!" });
+      return;
+    }
     res.status(200).send(job);
   } catch (e) {
     res.status(400).send(e);
@@ -90,25 +118,37 @@ router.patch(
   async (req, res) => {
     try {
       const _id = req.params.id;
+      const jobPost = await JobPost.findOne({
+        _id: _id,
+        employer: req.user._id,
+      });
+      if (!jobPost) {
+        return res.status(403).send({ message: "Unauthorized" });
+      }
       getLocation(req.body.location, async (locationErr, data) => {
         // if (locationErr) return res.send(locationErr);
-        const jobPost = await JobPost.findByIdAndUpdate(_id, {
-          title: req.body.title,
-          description: req.body.description,
-          location: {
-            address: locationErr? req.body.location : data.name,
-            coordinates: locationErr? [] : data.coords,
+
+        const jobPost = await JobPost.findByIdAndUpdate(
+          _id,
+          {
+            title: req.body.title,
+            description: req.body.description,
+            location: {
+              address: locationErr ? req.body.location : data.name,
+              coordinates: locationErr ? [] : data.coords,
+            },
+            salary: req.body.salary,
+            company: req.body.company,
+            type: req.body.type,
+            remote: req.body.remote,
+            employer: req.user._id,
+            date: Date.now(),
           },
-          salary: req.body.salary,
-          company: req.body.company,
-          type: req.body.type,
-          remote: req.body.remote,
-          employer: req.user._id,
-          date: Date.now(),
-        }, {
-          new: true,
-          runValidators: true,
-        });
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
         res.status(200).send({ message: "success" });
       });
     } catch (e) {
@@ -126,7 +166,7 @@ router.delete(
     try {
       const _id = req.params.id;
       const jobPost = await JobPost.findOneAndDelete({ _id });
-      if (!jobPost) return res.status(404).send({message: "Not found!"});
+      if (!jobPost) return res.status(404).send({ message: "Not found!" });
       res.status(200).send(jobPost);
     } catch (e) {
       res.status(400).send(e.message);
@@ -139,6 +179,7 @@ router.get("/api/apply/:id", auth.userAuth, async (req, res) => {
   try {
     const _id = req.params.id;
     const jobPost = await JobPost.findById(_id);
+    const employer = await User.findById(jobPost.employer);
     if (!jobPost || !jobPost.available)
       return res.send({ message: "job is not available anymore." });
     if (req.user._id.toString() == jobPost.employer._id.toString())
@@ -155,34 +196,38 @@ router.get("/api/apply/:id", auth.userAuth, async (req, res) => {
         return false;
       }
     };
-    console.log(exists())
+
     if (!exists()) {
       jobPost.applictions.push({
         applicant: req.user._id,
         name: req.user.name,
       });
-      await jobPost.save();
-      // Notify employer
-      const employer = await User.findById(jobPost.employer);
-      if(employer.fcmToken){
-        pushNotification({
-          title: `Reach`,
-          body: `${req.user.name} has applied for the ${jobPost.title}`,
-          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
-          token: `${employer.fcmToken}`,
-        });
-      }
       employer.notifications.push({
-        time: Date.now(),
+        time: `${Date.now()}`,
         body: `${req.user.name} has applied for the ${jobPost.title} position.`,
-        path: `${req.get('origin')}/messaging?contact=${req.user._id}`,
+        path: `/jobPosts`,
+        jobId: `${jobPost._id}`,
       });
       await employer.save();
+      await jobPost.save();
+
+      // Notify employer
+      if (employer.fcmToken) {
+        pushNotification({
+          title: `${req.user.name}`,
+          body: `has applied for the ${jobPost.title} position.`,
+          pathname: `/notifications`,
+          token: `${employer.fcmToken}`,
+          sender: `${req.user._id}`,
+          time: `${Date.now()}`,
+        });
+      }
       res.status(200).send({ message: "Applied successfully✅" });
     } else {
       res.send({ message: "Applied already!" });
     }
   } catch (err) {
+    console.log(err);
     res.status(400).send(err.message);
   }
 });
@@ -200,28 +245,41 @@ router.get(
       );
       const applicant = await User.findById(application.applicant);
 
-      if (!jobPost.available) return res.send({message: "jobPost not available anymore"});
+      if (!jobPost.available)
+        return res.send({ message: "jobPost not available anymore" });
 
-      // Notify applicant
-      if(applicant.fcmToken){
-        pushNotification({
-          title: `${req.user.name}`,
-          body: `We accepted your offer for ${jobPost.title}`,
-          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
-          token: `${applicant.fcmToken}`,
+      // Add to contacts
+      if (
+        !applicant.contactList.some(
+          (el) => el.contact.toString() == req.user._id.toString()
+        )
+      ) {
+        applicant.contactList.push({
+          contact: req.user._id,
+          sent_newMsg: true,
+        });
+      } else {
+        applicant.contactList.find(
+          (el) => el.contact.toString() == req.user._id.toString()
+        ).sent_newMsg = true;
+      }
+
+      if (
+        !req.user.contactList.some(
+          (el) => el.contact.toString() == application.applicant
+        )
+      ) {
+        req.user.contactList.push({
+          contact: application.applicant,
         });
       }
-      applicant.notifications.push({
-        time: Date.now(),
-        body: `Your offer has been accepted for ${jobPost.title} position.`,
-        path: `${req.get('origin')}/messaging?contact=${req.user._id}`,
-      });
+
       applicant.messages.push({
         from: req.user._id,
         to: application.applicant,
         name: req.user.name,
         time: Date.now(),
-        message: `Dear Mr/Miss ${applicant.name}.\nWe would like to inform you that we accepted your offer for ${jobPost.title} position, please await for more details.`,
+        message: `Dear ${applicant.name}.\nWe would like to inform you that we accepted your offer for ${jobPost.title} position.`,
       });
       req.user.messages.push({
         from: req.user._id,
@@ -229,46 +287,34 @@ router.get(
         sent: true,
         name: req.user.name,
         time: Date.now(),
-        message: `Dear Mr/Miss ${applicant.name}.\nWe would like to inform you that we accepted your offer for ${jobPost.title} position.`,
+        message: `Dear ${applicant.name}.\nWe would like to inform you that we accepted your offer for ${jobPost.title} position.`,
       });
-
-      // Add to contacts
-      const exists = function () {
-        if (
-          applicant.contactList.length != 0 ||
-          req.user.contactList.length != 0
-        ) {
-          for (let other of applicant.contactList) {
-            for (let mine of req.user.contactList) {
-              if (
-                other.contact.toString() == req.user._id.toString() &&
-                mine.contact.toString() == application.applicant
-              ) {
-                return true;
-              }
-            }
-          }
-        } else {
-          return false;
-        }
-      };
-
-      if (exists() != true) {
-        applicant.contactList.push({
-          contact: req.user._id,
-        });
-        req.user.contactList.push({
-          contact: application.applicant,
-        });
-      }
+      // applicant.notifications.push({
+      //   time: Date.now(),
+      //   body: `Your offer has been accepted for ${jobPost.title} position.`,
+      //   path: `/messaging?contact=${req.user._id}`,
+      // });
 
       // clear applications list
-      // jobPost.applictions.splice(0, jobPost.applictions.length);
-
-      await applicant.save();
-      await req.user.save();
+      jobPost.applictions.splice(0, jobPost.applictions.length);
+      // Set unavailable
       jobPost.available = false;
-      await jobPost.save();
+
+      applicant.save();
+      req.user.save();
+      jobPost.save();
+
+      // Notify applicant
+      if (applicant.fcmToken) {
+        pushNotification({
+          title: `${req.user.name}`,
+          body: `We accepted your offer for ${jobPost.title}`,
+          pathname: `${req.get("origin")}/messaging?contact=${req.user._id}`,
+          token: `${applicant.fcmToken}`,
+          sender: `${req.user._id}`,
+          time: `${Date.now()}`,
+        });
+      }
       res.status(200).send();
     } catch (err) {
       res.status(400).send(err.message);
@@ -287,32 +333,62 @@ router.get(
       const application = jobPost.applictions.find(
         (application) => application._id == req.params.applicationId.toString()
       );
-      // Notify applicant
       const applicant = await User.findById(application.applicant);
-      if(applicant.fcmToken){
-        pushNotification({
-          title: `${req.user.name}`,
-          body: `${req.user.name} has declined your offer for ${jobPost.title}`,
-          pathname: `${req.get('origin')}/messaging?contact=${req.user._id}`,
-          token: `${applicant.fcmToken}`,
+
+      // Add to contacts
+      if (
+        !applicant.contactList.some(
+          (el) => el.contact.toString() == req.user._id.toString()
+        )
+      ) {
+        applicant.contactList.push({
+          contact: req.user._id,
+          sent_newMsg: true,
+        });
+      } else {
+        applicant.contactList.find(
+          (el) => el.contact.toString() == req.user._id.toString()
+        ).sent_newMsg = true;
+      }
+
+      if (
+        !req.user.contactList.some(
+          (el) => el.contact.toString() == application.applicant
+        )
+      ) {
+        req.user.contactList.push({
+          contact: application.applicant,
         });
       }
-      applicant.notifications.push({
-        time: Date.now(),
-        body: `Your offer has been declined for ${jobPost.title} position.`,
-        path: `${req.get('origin')}/messaging?contact=${req.user._id}`,
-      });
+
+      // applicant.notifications.push({
+      //   time: Date.now(),
+      //   body: `Your offer has been declined for ${jobPost.title} position.`,
+      //   path: `messaging?contact=${req.user._id}`,
+      // });
       applicant.messages.push({
         from: req.user._id,
         to: application.applicant,
         name: req.user.name,
         time: Date.now(),
-        message: `Dear Mr/Miss ${applicant.name}.\nWe would like to inform you that your applicaton for ${jobPost.title} position has been declined.`,
+        message: `Dear ${applicant.name}.\nWe would like to inform you that your applicaton for ${jobPost.title} position has been declined.`,
       });
 
       await applicant.save();
       jobPost.applictions.splice(jobPost.applictions.indexOf(application), 1);
       await jobPost.save();
+
+      // Notify applicant
+      if (applicant.fcmToken) {
+        pushNotification({
+          title: `${req.user.name}`,
+          body: `We are sorry to say that we declined your offer for ${jobPost.title}`,
+          pathname: `${req.get("origin")}/messaging?contact=${req.user._id}`,
+          token: `${applicant.fcmToken}`,
+          sender: `${req.user._id}`,
+          time: `${Date.now()}`,
+        });
+      }
       res.status(200).send();
     } catch (err) {
       res.status(400).send(err.message);
@@ -335,9 +411,9 @@ router.get("/api/save/:id", auth.userAuth, async (req, res) => {
       }
     };
     if (!exists()) {
-      req.user.savedJobs.push(job);
+      req.user.savedJobs.unshift(job);
       await req.user.save();
-      res.send({job:job, message: "Added to bookmarks" });
+      res.send({ job: job, message: "Added to bookmarks" });
     } else {
       res.send({ message: "Post Was already saved!" });
     }
@@ -376,7 +452,7 @@ router.get("/api/unSave/:id", auth.userAuth, async (req, res) => {
     );
 
     if (index == -1) {
-      res.send({message: "Was not saved to begin with!"});
+      res.send({ message: "Was not saved to begin with!" });
     } else {
       req.user.savedJobs.splice(index, 1);
       await req.user.save();
@@ -387,7 +463,6 @@ router.get("/api/unSave/:id", auth.userAuth, async (req, res) => {
   }
 });
 
-
 //! geo search
 // const {search_terms, location, radius, unit, sort} = req.params;
 //     const [lat, lng] = req.user.location.coordinates;
@@ -397,9 +472,9 @@ router.get("/api/unSave/:id", auth.userAuth, async (req, res) => {
 //     });
 //     console.log(geoPosts)
 
-router.post("/api/api-search", async (req, res) => {
+router.get("/api/job-search", async (req, res) => {
   try {
-    const { search_terms, location, sort } = req.body;
+    const { search_terms, location, sort, remote } = req.query;
     const posts = await JobPost.find(
       {
         $text: {
@@ -411,6 +486,9 @@ router.post("/api/api-search", async (req, res) => {
         score: { $meta: "textScore" },
       }
     ).sort(sort ? { date: -1 } : { score: { $meta: "textScore" } });
+    if (remote) {
+      posts = posts.filter((post) => post.remote);
+    }
     res.status(200).send(posts);
   } catch (e) {
     res.status(400).send(e.message);

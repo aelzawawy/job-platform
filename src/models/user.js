@@ -44,7 +44,15 @@ const userSchema = new mongoose.Schema({
       message: "Passwords are not the same",
     },
   },
-  Company_name: {
+  Company: {
+    name: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    website_link: String,
+  },
+  industry: {
     type: String,
     trim: true,
     lowercase: true,
@@ -57,6 +65,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
   },
+  skills: [
+    {
+      type: String,
+      lowercase: true,
+      trim: true,
+    },
+  ],
   location: {
     type: {
       type: String,
@@ -71,13 +86,13 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    validate: {
-      validator: function (value) {
-        return /^(010|011|012|015)([0-9]{8})$/.test(value);
-      },
-      message:
-        "Phone number must start with 010,011,012 or 015, and be 11 numbers",
-    },
+    // validate: {
+    //   validator: function (value) {
+    //     return /^(010|011|012|015)([0-9]{8})$/.test(value);
+    //   },
+    //   message:
+    //     "Phone number must start with 010,011,012 or 015, and be 11 numbers",
+    // },
   },
   roles: {
     type: String,
@@ -89,6 +104,11 @@ const userSchema = new mongoose.Schema({
       time: String,
       body: String,
       path: String,
+      jobId: String,
+      read: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
   messages: [
@@ -117,6 +137,10 @@ const userSchema = new mongoose.Schema({
   contactList: [
     {
       contact: mongoose.Schema.Types.ObjectId,
+      sent_newMsg: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
   savedJobs: [
@@ -161,6 +185,13 @@ const userSchema = new mongoose.Schema({
   },
   fcmToken: {
     type: String,
+  },
+  lastActive: {
+    type: String,
+  },
+  online: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -207,10 +238,7 @@ userSchema.methods.createPasswordResetToken = function () {
 };
 userSchema.methods.createVerifyToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
-  this.verifyToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  this.verifyToken = crypto.createHash("sha256").update(token).digest("hex");
   return token;
 };
 
@@ -232,7 +260,7 @@ userSchema.methods.toJSON = function () {
 
 //! filtering active users
 userSchema.pre(/^find/, function (next) {
-  this.find({ active: { $ne: false } }).select('-__v');
+  this.find({ active: { $ne: false } }).select("-__v");
   next();
 });
 

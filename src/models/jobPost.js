@@ -10,9 +10,6 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  jobSnippet: {
-    type: String,
-  },
   location: {
     type: {
       type: String,
@@ -73,6 +70,12 @@ const postSchema = new mongoose.Schema({
 //     console.log(`Query took ${Date.now() - this.start} ms!`)
 //     next()
 // })
+
+//! filtering available Jobs
+postSchema.pre(/^find/, function (next) {
+  this.find({ available: { $ne: false } }).select("-__v");
+  next();
+});
 
 postSchema.pre(/^find/, function (next) {
   this.populate({

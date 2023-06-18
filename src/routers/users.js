@@ -3,14 +3,13 @@ const router = express.Router();
 const multer = require("multer");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
-const { set, Mongoose, default: mongoose } = require("mongoose");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/email");
 const getLocation = require("../utils/locationApi");
 const crypto = require("crypto");
 const pushNotification = require("../utils/fcm/admin");
-
+const fs = require("fs");
 // profile image
 const upload = multer({
   fileFilter(req, file, cb) {
@@ -57,8 +56,8 @@ router.post(
         .jpeg({ quality: 80 })
         .toBuffer();
       req.user.image = convertedImageBuffer;
-      await req.user.save();
-      res.status(200).send();
+      req.user.save();
+      res.status(200).send({ message: "Success", user: req.user });
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -67,10 +66,9 @@ router.post(
 
 router.delete("/api/profileImage", auth.userAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
-    user.image = undefined;
-    await user.save();
-    res.status(200).send();
+    req.user.image = fs.readFileSync("assets/34AD2.png");
+    req.user.save();
+    res.status(200).send({ message: "Success", user: req.user });
   } catch (error) {
     res.status(500).send({ error: "Failed to delete user image." });
   }
@@ -87,8 +85,8 @@ router.post(
         .jpeg({ quality: 80 })
         .toBuffer();
       req.user.backgoroundImage = convertedImageBuffer;
-      await req.user.save();
-      res.status(200).send();
+      req.user.save();
+      res.status(200).send({ message: "Success", user: req.user });
     } catch (e) {
       res.send(e);
     }
@@ -97,10 +95,9 @@ router.post(
 
 router.delete("/api/backgoroundImage", auth.userAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
-    user.backgoroundImage = undefined;
-    await user.save();
-    res.status(200).send();
+    req.user.backgoroundImage = fs.readFileSync("assets/bg.jpg");
+    req.user.save();
+    res.status(200).send({ message: "Success", user: req.user });
   } catch (error) {
     res.status(500).send({ error: "Failed to delete user image." });
   }
@@ -228,10 +225,12 @@ router.patch("/api/resetPassword/:token", async (req, res) => {
 // get all
 router.get("/api/users", auth.userAuth, async (req, res) => {
   try {
-    const user = await User.find({});
-    res.send(user);
+    const users = await User.find({ _id: { $ne: req.user._id } }).select(
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+    );
+    res.send(users);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send(err.message);
   }
 });
 
@@ -261,7 +260,7 @@ router.get("/api/contacts", auth.userAuth, async (req, res) => {
   try {
     const ids = req.user.contactList.map((el) => el.contact);
     const contacts = await User.find({ _id: { $in: ids } }).select(
-      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles"
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
     );
     res.status(200).send(contacts);
   } catch (err) {
@@ -272,43 +271,240 @@ router.get("/api/contacts", auth.userAuth, async (req, res) => {
 // Updating profile data
 router.patch("/api/profile", auth.userAuth, async (req, res) => {
   try {
+    //* "findOneAndUpdate" returns the updated document (or the original document if the option new is false)
+    //* "findByIdAndUpdate" does not return anything.
+    //* Therefore, using "findOneAndUpdate" with the option {new: true} can help you get the updated document back without having to query it again.
     getLocation(req.body.location.address, async (locationErr, data) => {
-      // if (locationErr) console.log(locationErr);
-      await User.findByIdAndUpdate(req.user._id, {
-        name: req.body.name,
-        email: req.body.email,
-        location: {
-          address: locationErr
-            ? req.body.location.address && data.name
-            : data.name,
-          coordinates: locationErr ? [] : data.coords,
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          name: req.body.name,
+          email: req.body.email,
+          location: {
+            address: locationErr
+              ? req.body.location.address && data.name
+              : data.name,
+            coordinates: locationErr ? [] : data.coords,
+          },
+          headline: req.body.headline,
+          about: req.body.about,
+          skills: req.body.skills,
+          industry: req.body.industry,
+          phone: req.body.phone,
         },
-        headline: req.body.headline,
-        about: req.body.about,
-        phone: req.body.phone,
-      });
+        { new: true }
+      );
+      await updatedUser.save();
+      res.status(200).send(updatedUser);
     });
-    await req.user.save();
-    res.status(200).send(req.user);
   } catch (err) {
     res.status(400).send(err);
   }
 });
 
-// User search
-router.get("/api/profile/:key", auth.userAuth, async (req, res) => {
+// Mark online
+router.patch("/api/mark_online", auth.userAuth, async (req, res) => {
   try {
-    const users = await User.find({
-      $or: [
-        { name: { $regex: req.params.key } },
-        { email: { $regex: req.params.key } },
-      ],
-    }).select(
-      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles"
-    );
-    res.send(users.filter((user) => user.email != req.user.email));
-  } catch (err) {
-    res.status(400).send(err);
+    const user = await User.findByIdAndUpdate(req.body.id, {
+      online: true,
+      lastActive: Date.now(),
+    });
+    user.save();
+    res.status(200).send({ message: "Success" });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+// Mark offline
+router.patch("/api/mark_offline", auth.userAuth, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.body.id, {
+      online: false,
+    });
+    user.save();
+    res.status(200).send({ message: "Success" });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+// User search & filtering
+router.get("/api/user_search", auth.userAuth, async (req, res) => {
+  try {
+    const { search_terms, location, industry, skills } = req.query;
+    let users;
+
+    // Gett all (unfiltered)
+    users = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: req.user._id },
+          $text: {
+            $search: `${search_terms.trim()}`,
+            $caseSensitive: false,
+          },
+        },
+      },
+      {
+        $unset: [
+          "messages",
+          "notifications",
+          "contactList",
+          "savedJobs",
+          "verifyToken",
+          "verified",
+          "fcmToken",
+          "roles",
+          "passwordResetExpires",
+          "passwordResetToken",
+        ],
+      },
+      {
+        $sort: {
+          score: { $meta: "textScore" },
+        },
+      },
+    ]);
+
+    //!>>>> Filter by industry
+
+    if (industry && !skills) {
+      const groups = await User.aggregate([
+        {
+          $match: {
+            _id: { $ne: req.user._id },
+            $text: {
+              $search: `${search_terms.trim()}`,
+              $caseSensitive: false,
+            },
+          },
+        },
+        {
+          $unset: [
+            "messages",
+            "notifications",
+            "contactList",
+            "savedJobs",
+            "verifyToken",
+            "verified",
+            "fcmToken",
+            "roles",
+            "passwordResetExpires",
+            "passwordResetToken",
+          ],
+        },
+        {
+          $sort: {
+            score: { $meta: "textScore" },
+          },
+        },
+        {
+          $group: {
+            _id: "$industry",
+            count: { $sum: 1 },
+            users: { $push: "$$ROOT" },
+          },
+        },
+      ]);
+
+      users = groups
+        .filter((el) => industry.includes(el._id))
+        .flatMap((el) => el.users);
+
+      //!>>>> Filter by skill
+    } else if (skills && !industry) {
+      const groups = await User.aggregate([
+        {
+          $match: {
+            _id: { $ne: req.user._id },
+            $text: {
+              $search: `${search_terms.trim()} ${location.trim()}`,
+              $caseSensitive: false,
+            },
+          },
+        },
+        {
+          $sort: {
+            score: { $meta: "textScore" },
+          },
+        },
+        {
+          $unwind: "$skills",
+        },
+        {
+          $group: {
+            _id: "$skills",
+            count: { $sum: 1 },
+            ids: { $push: { $getField: "_id" } },
+          },
+        },
+      ]);
+
+      const ids = groups
+        .filter((el) => skills.includes(el._id))
+        .flatMap((el) => el.ids);
+
+      users = await User.find({ _id: { $in: ids } }).select(
+        "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+      );
+
+      //!>>>> Filter by both
+    } else if (industry && skills) {
+      const groups = await User.aggregate([
+        {
+          $match: {
+            _id: { $ne: req.user._id },
+            $text: {
+              $search: `${search_terms.trim()} ${location.trim()}`,
+              $caseSensitive: false,
+            },
+          },
+        },
+        {
+          $sort: {
+            score: { $meta: "textScore" },
+          },
+        },
+        {
+          //* $unwind stage, to separate each skill into its own document, which allows grouping based on each skill
+          $unwind: "$skills",
+        },
+        {
+          $group: {
+            _id: {
+              industry: "$industry",
+              skill: "$skills",
+            },
+            count: { $sum: 1 },
+            ids: { $push: { $getField: "_id" } },
+          },
+        },
+      ]);
+      //! Filtering and extracting unique IDs with the currently selected filters
+      const ids_unique = Array.from(
+        new Set(
+          groups
+            .filter(
+              (el) =>
+                skills.includes(el._id.skill) ||
+                industry.includes(el._id.industry)
+            )
+            .flatMap((el) => el.ids)
+            .map((id) => id.toString())
+        )
+      );
+
+      users = await User.find({ _id: { $in: ids_unique } }).select(
+        "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+      );
+    }
+
+    if (location) {
+      users = users.filter((user) => user.location.address.includes(location));
+    }
+
+    res.status(200).send(users);
+  } catch (e) {
+    res.status(400).send(e.message);
   }
 });
 
@@ -348,15 +544,6 @@ router.post(
       const messageId = uuidv4();
       const fileName = decodeURIComponent(req.body.encodedFileName);
       let message = {};
-      // Send push notification
-      if (user.fcmToken) {
-        pushNotification({
-          title: `${req.user.name}`,
-          body: `${req.body.message}`,
-          pathname: `${req.get("origin")}/messaging?contact=${req.user._id}`,
-          token: `${user.fcmToken}`,
-        });
-      }
 
       if (req.file) {
         file = Buffer.from(req.file.buffer).toString("base64");
@@ -405,27 +592,27 @@ router.post(
         });
       }
 
-      const exists = function () {
-        if (user.contactList.length != 0 || req.user.contactList.length != 0) {
-          for (let other of user.contactList) {
-            for (let mine of req.user.contactList) {
-              if (
-                other.contact.toString() == req.user._id.toString() &&
-                mine.contact.toString() == req.params.id
-              ) {
-                return true;
-              }
-            }
-          }
-        } else {
-          return false;
-        }
-      };
-
-      if (exists() != true) {
+      // Add to contacts
+      if (
+        !user.contactList.some(
+          (el) => el.contact.toString() == req.user._id.toString()
+        )
+      ) {
         user.contactList.push({
           contact: req.user._id,
+          sent_newMsg: true,
         });
+      } else {
+        user.contactList.find(
+          (el) => el.contact.toString() == req.user._id.toString()
+        ).sent_newMsg = true;
+      }
+
+      if (
+        !req.user.contactList.some(
+          (el) => el.contact.toString() == req.params.id
+        )
+      ) {
         req.user.contactList.push({
           contact: req.params.id,
         });
@@ -433,8 +620,21 @@ router.post(
 
       user.save();
       req.user.save();
+
+      // Send push notification
+      if (user.fcmToken) {
+        pushNotification({
+          title: `${req.user.name}`,
+          body: `${req.body.message}`,
+          pathname: `${req.get("origin")}/messaging?contact=${req.user._id}`,
+          token: `${user.fcmToken}`,
+          sender: `${req.user._id}`,
+          time: `${Date.now()}`,
+        });
+      }
       res.status(200).send(message);
     } catch (err) {
+      console.log(err);
       res.status(400).send(err.message);
     }
   }
@@ -447,8 +647,8 @@ function bytesToSize(bytes) {
   return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
 }
 
-// delete messages
-router.get("/api/delMessage/:id", auth.userAuth, async (req, res) => {
+// delete a message
+router.delete("/api/delMessage/:id", auth.userAuth, async (req, res) => {
   try {
     const msg = req.user.messages.find((msg) => msg.id == req.params.id);
     const user = await User.findById(msg.to.toString());
@@ -463,18 +663,126 @@ router.get("/api/delMessage/:id", auth.userAuth, async (req, res) => {
   }
 });
 
+// delete chat
+router.delete(
+  "/api/delChat/:id/:forBoth/:rmContact",
+  auth.userAuth,
+  async (req, res) => {
+    try {
+      const { id, forBoth, rmContact } = req.params;
+      const contact = await User.findById(id);
+
+      const deleteContact = (user, contactId) => {
+        user.contactList = user.contactList.filter(
+          (el) => el.contact != contactId
+        );
+      };
+
+      req.user.messages = req.user.messages.filter(
+        (msg) => !(msg.to == id || msg.from == id)
+      );
+
+      if (rmContact == "true") {
+        deleteContact(req.user, id);
+      }
+
+      if (forBoth == "true") {
+        contact.messages = contact.messages.filter(
+          (msg) =>
+            !(
+              msg.to == req.user._id.toString() ||
+              msg.from == req.user._id.toString()
+            )
+        );
+
+        if (rmContact == "true") {
+          deleteContact(contact, req.user._id.toString());
+        }
+      }
+
+      req.user.save();
+      contact.save();
+      res.status(200).send({ message: "Removed successfully" });
+    } catch (err) {
+      res.status(400).send(err.message);
+    }
+  }
+);
+
 // Get messages
-router.get("/api/message/:id", auth.userAuth, async (req, res) => {
+router.get("/api/messages", auth.userAuth, async (req, res) => {
   try {
-    const msgs = req.user.messages.filter(
-      (msg) =>
-        (msg.to == req.params.id && msg.from == req.user._id.toString()) ||
-        (msg.to == req.user._id.toString() && msg.from == req.params.id)
-    );
-    res.status(200).send(msgs);
+    res.status(200).send(req.user.messages);
   } catch (err) {
     res.status(400).send(err);
   }
 });
 
+// Mark read messages
+router.patch("/api/read_messages/:id", auth.userAuth, async (req, res) => {
+  try {
+    req.user.contactList.find(
+      (el) => el.contact == req.params.id
+    ).sent_newMsg = false;
+    req.user.save();
+    res.status(200).send({ message: "Success" });
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+// Get notifications
+router.get("/api/notifications", auth.userAuth, async (req, res) => {
+  try {
+    const notification = await req.user.notifications;
+    res.status(200).send(notification);
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
+// Get contacts-stats
+router.get("/api/contactStats", auth.userAuth, async (req, res) => {
+  try {
+    const contactStats = await req.user.contactList;
+    res.status(200).send(contactStats);
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
+// Delete notifications
+router.delete(
+  "/api/deleteNotification/:id",
+  auth.userAuth,
+  async (req, res) => {
+    try {
+      const notification = await req.user.notifications.find(
+        (el) => el._id == req.params.id
+      );
+      req.user.notifications.splice(
+        req.user.notifications.indexOf(notification),
+        1
+      );
+      req.user.save();
+      res.status(200).send({ message: "Success" });
+    } catch (e) {
+      res.status(400).send(e.message);
+    }
+  }
+);
+
+// Mark read notifications
+router.patch("/api/markRead/:id", auth.userAuth, async (req, res) => {
+  try {
+    const notification = await req.user.notifications.find(
+      (el) => el._id == req.params.id
+    );
+    notification.read = true;
+    req.user.save();
+    res.status(200).send({ message: "Success" });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
 module.exports = router;
