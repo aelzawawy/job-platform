@@ -186,7 +186,7 @@
                                 </div>
 
                                 <div class="card-body d-flex">
-                                    <div class="about">{{user.about}}</div>
+                                    <div class="about" [innerHTML]="user.about"></div>
                                     <div class="skills">
                                         <mat-chip-list class="chipList">
                                             <mat-chip class="chip" *ngFor="let skill of user.skills">
