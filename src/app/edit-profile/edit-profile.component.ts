@@ -1,14 +1,19 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { UserService } from 'src/app/services/user.service';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { User } from 'src/app/interfaces/user';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   MatSnackBar,
-  MatSnackBarRef,
   MatSnackBarHorizontalPosition,
+  MatSnackBarRef,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { User } from 'src/app/interfaces/user';
+import { UserService } from 'src/app/services/user.service';
+import { JobsService } from '../services/jobs.service';
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './edit-profile.component.html',
@@ -17,11 +22,13 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export class EditProfileComponent implements OnInit {
   constructor(
     private userService: UserService,
+    private jobsService: JobsService,
+    private router: Router,
     private _snackBar: MatSnackBar
   ) {}
   public Editor = ClassicEditor;
   public config = {
-    placeholder: `Format your profile`,
+    placeholder: `Format your about section...`,
   };
 
   // emailFormControl = new FormControl('', [Validators.email]);
@@ -34,11 +41,38 @@ export class EditProfileComponent implements OnInit {
     email: '',
     phone: '',
     headline: '',
-    about: "<h2>remove extra lines before saving!</h2><h2>who you are?</h2><p>…………………………………..</p><p>…………………………………..</p><h2>skills:</h2><ul><li>…………………………….</li><li>…………………………….</li><li>…………………………….</li></ul><h2>work experience:</h2><p>…………………………………..</p><p>………………………………….</p>",
+    industry: '',
+    skills: [''],
+    about: '',
   };
   durationInSeconds = 5;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  announcer = inject(LiveAnnouncer);
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  addOnBlur = true;
+
+  add(event: MatChipInputEvent) {
+    const value = (event.value || '').trim();
+    if (value) {
+      this.body.skills?.push(value);
+    }
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  close() {
+    // this.closeEdit.emit();
+    // this.jobsService.closeApplicants$.next(true);
+    this.router.navigateByUrl(`/profile`);
+  }
+
+  remove(skill: any, index: number) {
+    if (index >= 0) {
+      this.body.skills?.splice(index, 1);
+      this.announcer.announce(`Removed ${skill}`);
+    }
+  }
 
   save() {
     this.userService.editProfile(this.body).subscribe({
@@ -48,6 +82,7 @@ export class EditProfileComponent implements OnInit {
           verticalPosition: this.verticalPosition,
           duration: this.durationInSeconds * 500,
         });
+        localStorage.setItem('user', JSON.stringify(res));
         this.userService.passNewBody(this.body);
       },
       error: (err: any) => {
@@ -55,40 +90,20 @@ export class EditProfileComponent implements OnInit {
       },
     });
   }
+
   ngOnInit(): void {
-    this.userService.profile().subscribe({
-      next: (res: any) => {
-        this.body.name = res.name;
-        this.body.location!.address = res.location.address;
-        this.body.email = res.email;
-        this.body.phone = res.phone;
-        this.body.headline = res.headline;
-        this.body.about = res.about || this.body.about;
+    const user = JSON.parse(localStorage['user'] || '[]');
+    this.body = {
+      name: user.name,
+      email: user.email,
+      location: {
+        address: user.location.address,
       },
-      error: (err: any) => {
-        console.log(err);
-      },
-    });
+      headline: user.headline,
+      industry: user.industry,
+      about: user.about || '',
+      skills: user.skills,
+      phone: user.phone,
+    };
   }
 }
-
-// @Component({
-//   selector: 'notification-component',
-//   template: `
-//     <span class="notification" matSnackBarLabel> Saved successfuly!</span>
-//   `,
-//   styles: [
-//     `
-//       :host {
-//         display: flex;
-//         justify-content: space-between;
-//       }
-//       .notification {
-//         color: green;
-//       }
-//     `,
-//   ],
-// })
-// export class successMsg {
-//   snackBarRef = inject(MatSnackBarRef);
-// }

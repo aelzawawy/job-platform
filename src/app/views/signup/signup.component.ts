@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
 @Component({
@@ -14,7 +14,7 @@ export class SignupComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
   signupForm = this.fb.group({
@@ -24,7 +24,7 @@ export class SignupComponent implements OnInit {
     confirm_password: ['', [Validators.required]],
   });
 
-  missingName:boolean = false
+  missingName: boolean = false;
   invalidLogin = false;
   invalidEmail = false;
   invalidPass = false;
@@ -34,9 +34,9 @@ export class SignupComponent implements OnInit {
   nameMsg = '';
   passwordConfirm = '';
   emailMsg = '';
-  loading:boolean = false
+  loading: boolean = false;
   signup(data: any) {
-    if(this.signupForm.status == 'INVALID') return;
+    if (this.signupForm.status == 'INVALID') return;
     this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {
@@ -50,24 +50,30 @@ export class SignupComponent implements OnInit {
       },
       error: (err: any) => {
         this.loading = false;
-        console.log(err)
+        console.log(err);
         if (err.error.errors?.email) {
           this.invalidEmail = true;
-          this.emailMsg = "Enter your email";
+          this.emailMsg = 'Enter your email';
         }
         if (Boolean(err.error.errors?.name)) {
           this.missingName = true;
-          this.nameMsg = "Enter your name";
+          this.nameMsg = 'Enter your name';
         } else if (err.error.errors?.password) {
           this.invalidPass = true;
           this.passMsg = err.error.errors.password.message;
-        }else if (this.signupForm.value.confirm_password == '' && !err.error.errors?.password) {
+        } else if (
+          this.signupForm.value.confirm_password == '' &&
+          !err.error.errors?.password
+        ) {
           this.invalidPasswordConfirm = true;
-          this.passwordConfirm = 'Enter your password again!'
-        }else if (err.error.errors?.confirm_password && this.signupForm.value.confirm_password != '') {
+          this.passwordConfirm = 'Enter your password again!';
+        } else if (
+          err.error.errors?.confirm_password &&
+          this.signupForm.value.confirm_password != ''
+        ) {
           this.invalidPasswordConfirm = true;
-          this.passwordConfirm = err.error.errors?.confirm_password.message
-        }else {
+          this.passwordConfirm = err.error.errors?.confirm_password.message;
+        } else {
           this.invalidPass = false;
           this.invalidEmail = false;
         }
@@ -75,22 +81,21 @@ export class SignupComponent implements OnInit {
     });
   }
 
-  show_pass:boolean = false
-  pass_state = '<span class="material-symbols-outlined">visibility</span>'
-  pass_type = 'password'
-  showPass(event:any){
+  show_pass: boolean = false;
+  pass_state = '<span class="material-icons">visibility</span>';
+  pass_type = 'password';
+  showPass(event: any) {
     this.show_pass = !this.show_pass;
-    if(this.show_pass == true){
+    if (this.show_pass == true) {
       this.pass_type = 'text';
-      this.pass_state = '<span class="material-symbols-outlined">visibility_off</span>';
-    }else{
+      this.pass_state = '<span class="material-icons">visibility_off</span>';
+    } else {
       this.pass_type = 'password';
-      this.pass_state = '<span class="material-symbols-outlined">visibility</span>';
+      this.pass_state = '<span class="material-icons">visibility</span>';
     }
   }
 
-  
-  routePath = this.route.snapshot.url[0].path
+  routePath = this.route.snapshot.url[0].path;
   ngOnInit(): void {
     if (localStorage['token'] && this.routePath == 'signup') {
       this.router.navigateByUrl('/');

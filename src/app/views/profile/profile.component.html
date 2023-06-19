@@ -1,4 +1,4 @@
-<div class="container sub">
+<div class="container">
     <app-loader1 *ngIf="loading"></app-loader1>
     <div *ngIf="!loading" class="bgPic" [class.isHandset]="(isHandset$ | async)">
         <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
@@ -38,54 +38,67 @@
     </div>
     <div *ngIf="!loading" class="head">
         <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
-        
+
         <div class="actions">
-            <a mat-raised-button *ngIf="user.resume && !loading && !(isHandset$|async)" id="resume"
+            <a mat-raised-button *ngIf="user.resume && !loading" id="resume"
                 href="data:application/pdf;base64,{{user.resume}}" download="resume"><span>Resume</span><span
-                    class="material-symbols-outlined">
+                    class="material-icons">
                     download
                 </span></a>
-            <a mat-fab title="Download resume" *ngIf="user.resume && !loading && (isHandset$|async)" style="border-radius: 50px;" id="resume"
-                href="data:application/pdf;base64,{{user.resume}}" download="resume"><span
-                    class="material-symbols-outlined">
-                    download
-                </span>
-            </a>
             <div *ngIf="toView  && !loading" class="uploadResume">
                 <input style="display:none" accept=".pdf" type="file" name="resume" id="upload-resume"
                     (change)="uploadResume($event)">
                 <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
                     <span>Upload Resume</span>
-                    <span class="material-symbols-outlined">check</span>
+                    <span class="material-icons">check</span>
                 </label>
             </div>
             <button *ngIf="toView" title="Edit_Info!" mat-fab color="primary" aria-label="Edit profile"
-                class="editProfile" (click)="openEdit()">
+                class="editProfile" [attr.isMobile]="(isHandset$ | async)" (click)="openEdit()">
                 <mat-icon>edit</mat-icon>
             </button>
             <button *ngIf="!toView" title="Send a message?" mat-raised-button color="primary" aria-label="Send message"
                 class="sendMsg" (click)="ContactUser(user)">
-                <span *ngIf="!(isHandset$|async)">Reach to {{user.name?.split(' ')?.splice(0,1)}} </span>
+                <span>Message {{user.name?.split(' ')?.splice(0,1)}} </span>
                 <span><mat-icon>send</mat-icon></span>
             </button>
         </div>
     </div>
 
-    <div class="headline">
+    <div *ngIf="!loading" class="headline">
         {{user.headline}}
     </div>
-    
+
     <div *ngIf="!loading" class="body">
         <div class="body__left card">
             <h3 *ngIf="!user.about && !loading && toView">Please complete your profile...</h3>
-            <p *ngIf="!user.about && !loading && toView" style="font-size: 1.5rem;">Format the about section so that it includes your skills and experience to make it easy for employers to find you.</p>
+            <p *ngIf="!user.about && !loading && toView" style="font-size: 1.5rem;">Format the about section so that it
+                includes your skills and experience to make it easy for employers to find you.</p>
             <div class="body__left--about" [innerHTML]="user.about">
             </div>
         </div>
         <div class="body__right card">
-            <a href="mailto:{{user.email}}">{{user.email}}</a>
-            <p style="text-transform: capitalize;">{{user.location?.address}}</p>
+            <span *ngIf="user.email"><span class='material-icons'>email</span><a class="email"
+                    href="mailto:{{user.email}}">{{user.email}}</a></span>
+            <p *ngIf="user.location?.address" style="text-transform: capitalize;"><span
+                    class='material-icons'>location_on</span>
+                {{user.location?.address}}</p>
+            <p *ngIf="user.phone"><span class='material-icons'>phone</span> {{user.phone}}</p>
+            <div *ngIf=" user.skills?.length != 0 && !loading" class="skills">
+                <hr style="margin: 0px; margin-top: 1rem;" *ngIf="user.skills?.length != 0">
+                <mat-label>Skillset:</mat-label>
+                <mat-chip-list class="chipList">
+                    <mat-chip class="chip" *ngFor="let skill of user.skills">
+                        {{skill}}
+                    </mat-chip>
+                </mat-chip-list>
+            </div>
         </div>
     </div>
 
+    <div *ngIf="(isHandset$ | async) && !delayedClose" class="edit_wrapper">
+        <div class="edit_backdrop" [class.backdrop_fadeIn]="showEdit"></div>
+        <app-edit-profile [class.slideIn]="showEdit" [class.slideOut]="!showEdit"
+            class="edit_slider"></app-edit-profile>
+    </div>
 </div>

@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewEncapsulation} from '@angular/core';
-import { JobsService } from 'src/app/services/jobs.service';
-import { User } from 'src/app/interfaces/user';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, filter, skip, take } from 'rxjs';
 import { JobPost } from 'src/app/interfaces/job-post';
-import {MatDialog} from '@angular/material/dialog';
+import { User } from 'src/app/interfaces/user';
 import { JobApplicationsComponent } from 'src/app/job-applications/job-applications.component';
-import { Router, ActivatedRoute} from '@angular/router';
-import { Observable } from 'rxjs';
+import { JobsService } from 'src/app/services/jobs.service';
 import { ObserverService } from 'src/app/services/observer.service';
 @Component({
   selector: 'app-job-posts',
@@ -19,7 +19,7 @@ export class JobPostsComponent implements OnInit {
     public dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
-    private observer: ObserverService,
+    private observer: ObserverService
   ) {
     this.isHandset$ = this.observer.isHandset$;
     this.isHandsetMd$ = this.observer.isHandsetMd$;
@@ -27,30 +27,46 @@ export class JobPostsComponent implements OnInit {
   isHandset$!: Observable<boolean>;
   isHandsetMd$!: Observable<boolean>;
   posts: JobPost[] = [];
-  user:User = {};
+  user: User = {};
   job: JobPost = {};
   ismobile: boolean = false;
   loading: boolean = false;
   loadingPost: boolean = false;
+  showApplocations: boolean = false;
+  delayedClose: boolean = true;
   public config = {
     placeholder: 'Job description',
+  };
+
+  closeApplications() {
+    this.showApplocations = false;
+    setTimeout(() => {
+      this.delayedClose = true;
+    }, 400);
+    this.dialog.closeAll();
+  }
+  close_click_outside(e: any) {
+    if (e.target.closest('.chipList')) return;
+    if (!e.target.closest('.filters_slider')) {
+      this.closeApplications();
+    }
   }
 
-  updatePost(id:any, index:number) {
-    this.router.navigate(['/jobs-form'], {queryParams: {update_post: id}})
-    this.jobsService.toUpdate = this.posts[index]
+  updatePost(id: any, index: number) {
+    this.router.navigate(['/jobs-form'], { queryParams: { update_post: id } });
+    this.jobsService.toUpdate = this.posts[index];
   }
 
-  delJob(id:any, i:number){
+  delJob(id: any, i: number) {
     this.jobsService.delJOb(id).subscribe({
-      next:()=> {
+      next: () => {
         this.posts.splice(i, 1);
         this.job = this.posts[0];
       },
-      error(err:any){
+      error(err: any) {
         console.log(err);
-      }
-    })
+      },
+    });
   }
 
   // Salary formatting
@@ -62,15 +78,24 @@ export class JobPostsComponent implements OnInit {
   };
 
   // Get job applicants
-  applicants(applications:any, jobId:any, index:any){
-    this.jobsService.passJob(this.posts[index])
+  applicants(jobId: any) {
+    if (jobId) this.jobsService.jobId$.next(jobId);
+    if (this.ismobile) {
+      this.showApplocations = true;
+      this.delayedClose = false;
+    } else {
+      this.openDialog();
+    }
+  }
+  openDialog() {
+    this.dialog.closeAll();
     const dialog = this.dialog.open(JobApplicationsComponent, {
-      width: '400px',
-      height: '500px'
-    })
-    dialog.afterClosed().subscribe(result => {
+      width: '450px',
+      height: '500px',
     });
-
+    dialog.afterClosed().subscribe((result) => {
+      this.jobsService.showApplicants$.next(false);
+    });
   }
 
   // Date formatting
@@ -79,37 +104,27 @@ export class JobPostsComponent implements OnInit {
       Math.round(Math.abs(postDate - now) / (1000 * 60 * 60 * 24));
     const PassedDays = calcPassedDays(new Date(), date);
 
-    if (PassedDays === 0) return `Today ${new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: '2-digit'
-    }).format(date)}`;
+    if (PassedDays === 0)
+      return `Today ${new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(date)}`;
 
-    if (PassedDays === 1) return `Yesterday ${new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: '2-digit'
-    }).format(date)}`;
-    
-   return `${PassedDays} days ago`;
+    if (PassedDays === 1)
+      return `Yesterday ${new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(date)}`;
+
+    return `${PassedDays} days ago`;
   };
 
-  // Display posts
-  // jobPosts() {
-  //   this.loading = true
-  //   this.jobsService.getPosts().subscribe({
-  //     next: (res: any) => {
-  //       this.posts = res.reverse();
-  //       if(this.posts.length != 0 && !this.ismobile) this.job = this.posts[0]
-  //       this.loading = false
-  //     }
-  //   });
-  // }
-
   // Details function
-  index = 0
-  showDetails(e:any, id: any, i: number) {
-    if(!e) return;
-    const card = (e.target as HTMLElement).closest('.card')
-    if(card != e.target) return;
+  index = 0;
+  showDetails(e: any, id: any, i: number) {
+    if (!e) return;
+    const card = (e.target as HTMLElement).closest('.card');
+    if (card != e.target) return;
     this.index = i;
     if (!this.ismobile) {
       this.loadingPost = true;
@@ -123,21 +138,43 @@ export class JobPostsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loading = true
-    this.jobsService.getPosts().subscribe({
-      next: async(res: any) => {
-        this.posts = await res.reverse();
-        if(this.posts.length != 0 && !this.ismobile) this.job = this.posts[0]
-        this.loading = false
-      }
-    });
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
-      
-      if(!this.ismobile){
-        this.showDetails(null,null,0)
+      if (!this.ismobile) {
+        this.showDetails(null, null, 0);
       }
-      
+    });
+    this.jobsService.jobs$
+      .pipe(filter((res) => Object.keys(res[0] || []).length != 0))
+      .subscribe((res) => {
+        this.posts = res;
+        this.job = this.posts[0];
+      });
+    this.jobsService.loadingMyPosts$.subscribe((res) => {
+      this.loading = this.loadingPost = res;
+    });
+    this.jobsService.showApplicants$
+      .pipe(
+        filter((res) => res != false),
+        take(1)
+      )
+      .subscribe((res) => {
+        this.jobsService.jobId$.subscribe((id) => {
+          const currIndex = this.posts.findIndex((el) => el._id == id);
+          this.index = currIndex;
+          this.job = this.posts[currIndex];
+        });
+        if (this.ismobile) {
+          this.showApplocations = true;
+        } else {
+          this.openDialog();
+        }
+      });
+
+    this.jobsService.closeApplicants$.subscribe((res) => {
+      if (res) {
+        this.closeApplications();
+      }
     });
   }
 }

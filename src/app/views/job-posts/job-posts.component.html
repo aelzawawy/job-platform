@@ -1,19 +1,23 @@
 <div class="container sub" [class.container-max-width]="(isHandsetMd$ | async)">
-    <h3 *ngIf="posts.length == 0 && !loading">You haven't posted any jobs yet!</h3>
     <div class="content" style="transform: translateY(12px);">
+        <h3 *ngIf="posts.length == 0 && !loading">You haven't posted any jobs yet!</h3>
         <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
             <app-loader1 *ngIf="loading"></app-loader1>
             <li *ngFor="let post of posts; let i = index">
-                <div *ngIf="!loading" (click)="showDetails($event, post._id, i)" class="card" [class.selected]="index == i">
+                <div *ngIf="!loading && posts.length != 0" (click)="showDetails($event, post._id, i)" class="card"
+                    [class.selected]="index == i">
                     <div class="card--options">
-                        <button mat-icon-button [matMenuTriggerFor]="menu"><span class="material-symbols-outlined">more_vert</span></button>
+                        <button mat-icon-button [matMenuTriggerFor]="menu"><span
+                                class="material-icons">more_vert</span></button>
                         <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
                             <button mat-menu-item (click)="updatePost(post._id, i)">
-                                <span class="material-symbols-outlined">edit</span>
+                                <span class="material-icons"
+                                    style="position: relative;top: 6px; padding-right: 5px;">edit</span>
                                 <span>Edit</span>
                             </button>
                             <button mat-menu-item (click)="delJob(post._id, i)">
-                                <span class="material-symbols-outlined">delete</span>
+                                <span class="material-icons"
+                                    style="position: relative;top: 6px; padding-right: 5px;">delete</span>
                                 <span>Delete</span>
                             </button>
                         </mat-menu>
@@ -28,7 +32,8 @@
                             <p class="detail-row--item" *ngIf="post.remote">Remote</p>
                         </div>
                         <p class="post-date">{{post.date | date:'short'}}</p>
-                        <button title="Applications" class="abs-pos" mat-mini-fab (click)="applicants(post.applictions, post._id, i)"><mat-icon>group</mat-icon></button>
+                        <button title="Applications" class="abs-pos" mat-mini-fab
+                            (click)="applicants(post._id)"><mat-icon>group</mat-icon></button>
                     </div>
                 </div>
             </li>
@@ -37,5 +42,11 @@
             <app-loader1 *ngIf="loadingPost"></app-loader1>
             <app-job-details *ngIf="!loadingPost" [job]="job"></app-job-details>
         </div>
+    </div>
+    <div *ngIf="(isHandset$ | async) && !delayedClose" class="applications_wrapper"
+        (click)="close_click_outside($event)">
+        <div class="applications_backdrop" [class.backdrop_fadeIn]="showApplocations"></div>
+        <app-job-applications [class.slideIn]="showApplocations" [class.slideOut]="!showApplocations"
+            class="applications_slider" (closeApplications)="closeApplications()"></app-job-applications>
     </div>
 </div>

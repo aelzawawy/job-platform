@@ -16,7 +16,7 @@ export class SavedJobsComponent implements OnInit {
     private userService: UserService,
     private observer: ObserverService,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {
     this.isHandset$ = this.observer.isHandset$;
     this.isHandsetMd$ = this.observer.isHandsetMd$;
@@ -26,28 +26,9 @@ export class SavedJobsComponent implements OnInit {
   ngOnInit(): void {
     this.isHandset$.subscribe((state) => {
       this.ismobile = state;
-      // setTimeout(() => {
-      //   if (!this.ismobile) {
-      //     this.showDetails(this.posts[0]._id, 0);
-      //   }
-      // }, 100);
     });
-    this.loading = true
-    this.userService.profile().subscribe({
-      next: (res: any) => {
-        if(res.savedJobs.length == 0){
-          this.loading = false
-          return
-        }
-        this.posts = res.savedJobs.reverse();
-        this.job = this.posts[0];
-        this.job.saved = true
-        this.loading = false
-      },
-      error: (e: any) => {
-        console.log(e);
-      },
-    });
+    this.posts = JSON.parse(localStorage['savedJobs'] || '[]');
+    this.job = this.posts[0];
   }
 
   posts = new Array();
@@ -56,7 +37,6 @@ export class SavedJobsComponent implements OnInit {
   ismobile: boolean = false;
   loading: boolean = false;
   loadingPost: boolean = false;
-  jobPosts!: NodeListOf<HTMLElement>;
 
   unSave(id: string) {
     const index = this.posts.indexOf(this.posts.find((el) => el._id == id));
@@ -69,7 +49,7 @@ export class SavedJobsComponent implements OnInit {
   }
 
   // Details function
-  index:number = 0;
+  index: number = 0;
   showDetails(id: any, i: number) {
     this.index = i;
     if (!this.ismobile) {

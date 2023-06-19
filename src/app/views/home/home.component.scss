@@ -3,19 +3,17 @@
 }
 .container {
   margin: auto;
-  background-color: #fafafa;
   &.main {
     height: 100vh;
     overflow-y: scroll;
     scroll-behavior: smooth;
   }
-  // margin-bottom: -20px;
-  padding-bottom: 44px;
-  &.sub{
-    margin-top: 65px;
+  padding-bottom: 10px;
+  &.sub {
+    margin-top: 64.4px;
   }
   @media (max-width: 600px) {
-    &.sub{
+    &.sub {
       height: calc(100vh - 105px);
       margin-top: 56px;
       overflow-y: scroll;
@@ -51,8 +49,8 @@
     justify-content: center;
     font-family: monospace;
     z-index: 5;
-    @media (min-width: 600px){
-      &{
+    @media (min-width: 600px) {
+      & {
         transform: translateY(100px);
         opacity: 0;
         animation: fadeUp 1s 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
@@ -108,9 +106,6 @@
   animation: bounce 2s infinite;
   -webkit-transition: all 0.1s;
   transition: all 0.1s;
-  &:hover{
-    background-color: #c4c4c4;
-  }
   @media (max-width: 600px) {
     bottom: 49px;
     left: 95%;
@@ -194,14 +189,14 @@
         & input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus {
-          -webkit-text-fill-color: goldenrod;
+          -webkit-text-fill-color: rgb(221, 206, 169);
           -webkit-box-shadow: 0 0 0px 40rem rgb(38 38 38) inset;
         }
       }
     }
 
     ::placeholder {
-      color: goldenrod;
+      color: rgb(221, 206, 169);
     }
     &-label {
       color: goldenrod;
@@ -306,15 +301,23 @@ button.abs-pos {
         right: 0;
         z-index: 10;
       }
+      .post_snippet {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        margin-top: 10px;
+      }
     }
   }
   &__details {
-    max-height: 40rem;
+    height: 100%;
     position: sticky;
     top: 4rem;
     flex: 0.6;
     &.home {
       color: white;
+      top: 4.5rem;
     }
   }
 }
@@ -407,7 +410,7 @@ svg#freepik_stories-job-hunt {
 svg#freepik_stories-job-hunt:not(.animated) .animable {
   opacity: 0;
   @media (max-width: 600px) {
-    &{
+    & {
       opacity: 1;
     }
   }

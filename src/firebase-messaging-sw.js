@@ -21,7 +21,7 @@ messaging.onBackgroundMessage(function (payload) {
     body: payload.data.body,
     icon: "./assets/icons/icon-512x512.png",
     data: {
-      pathname: payload.data.pathname
+      pathname: payload.data.pathname,
     },
   };
   self.registration.showNotification(notificationTitle, notificationOptions);

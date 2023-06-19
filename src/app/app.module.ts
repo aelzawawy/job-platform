@@ -21,18 +21,11 @@ import { JobsService } from './services/jobs.service';
 import { MessagingComponent } from './views/messaging/messaging.component';
 import { JobDetailsComponent } from './views/job-details/job-details.component';
 import { MaterialModule } from 'src/app/material/material.module';
-import { MatDialogModule } from '@angular/material/dialog';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { JobApplicationsComponent } from './job-applications/job-applications.component';
 import { SavedJobsComponent } from './views/saved-jobs/saved-jobs.component';
 import { AppNavigationComponent } from './app-navigation/app-navigation.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-// import { JobsComponent } from './views/jobs/jobs.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { JobPostsFormComponent } from './views/job-posts-form/job-posts-form.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
@@ -40,11 +33,12 @@ import { MapBoxComponent } from './map-box/map-box.component';
 import { Loader1Component } from './loaders/loader1/loader1.component';
 import { Loader2Component } from './loaders/loader2/loader2.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from "../environments/environment";
-import { initializeApp } from "firebase/app";
+import { environment } from '../environments/environment';
+import { initializeApp } from 'firebase/app';
 import { NotificationsComponent } from './views/notifications/notifications.component';
 import { DateAgoPipe } from './pipes/date-ago.pipe';
 import { DeleteChatComponent } from './delete-chat/delete-chat.component';
+import { UserSearchComponent } from './views/user-search/user-search.component';
 initializeApp(environment.firebase);
 @NgModule({
   declarations: [
@@ -71,6 +65,7 @@ initializeApp(environment.firebase);
     NotificationsComponent,
     DateAgoPipe,
     DeleteChatComponent,
+    UserSearchComponent,
   ],
   // entryComponents: [MessagingComponent],
   imports: [
@@ -81,20 +76,14 @@ initializeApp(environment.firebase);
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    MatDialogModule,
     LayoutModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatListModule,
     CKEditorModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:1000'
-    })
+      registrationStrategy: 'registerWhenStable:1000',
+    }),
   ],
   providers: [
     AuthService,
@@ -102,11 +91,11 @@ initializeApp(environment.firebase);
     JobsService,
     // Multi provider service for tokens
     {
-      provide:HTTP_INTERCEPTORS,
+      provide: HTTP_INTERCEPTORS,
       useClass: TokenIntercepterService,
-      multi: true
+      multi: true,
     },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

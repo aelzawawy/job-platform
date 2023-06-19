@@ -30,60 +30,54 @@ export class JobDetailsComponent implements OnInit, OnChanges {
     private _snackBar: MatSnackBar,
     private observer: ObserverService,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {
     this.isHandset$ = this.observer.isHandset$;
     this.isHandsetMd$ = this.observer.isHandsetMd$;
   }
- 
+
   isHandset$!: Observable<boolean>;
   isHandsetMd$!: Observable<boolean>;
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params)=>{
-      if(params.get('id')){
+    this.route.paramMap.subscribe((params) => {
+      if (params.get('id')) {
+        this.loading = true;
+        this.jobsService.getPassedJob().subscribe(async (res) => {
+          this.job =
+            Object.keys(res).length != 0
+              ? res
+              : JSON.parse(localStorage['openedPost'] || '[]');
+          if (localStorage['token']) this.checkSaved(res._id);
+          this.loading = false;
+        });
         this.isHandset$.subscribe((state) => {
           this.ismobile = state;
           setTimeout(() => {
-            if(!this.ismobile && params.get('id')){
-              this.router.navigate([`/`]);
+            if (!this.ismobile && params.get('id')) {
+              this.new_window = true;
             }
           }, 0);
         });
-        this.loading = true;
-        this.jobsService.getPassedJob().subscribe(async (res) => {
-          this.job = Object.keys(res).length != 0? res : JSON.parse(localStorage['openedPost'] || '[]')
-          if(localStorage['token']) this.checkSaved(res._id);
-          this.loading = false;
-        })
       }
-    })
+    });
   }
-  isSaved!:boolean
-  loading:boolean = false
-  ismobile!:boolean
-  myId = localStorage['id']
+  isSaved!: boolean;
+  loading: boolean = false;
+  new_window: boolean = false;
+  ismobile!: boolean;
+  myId = localStorage['id'];
   @Input() job: JobPost = {};
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['job'] && localStorage['token']) {
-    //* The ngOnChanges() hook is a good choice for this, since it is called whenever an @Input property changes.
-    if(localStorage['token']) this.checkSaved(this.job._id);
+      //* The ngOnChanges() hook is a good choice for this, since it is called whenever an @Input property changes.
+      if (localStorage['token']) this.checkSaved(this.job._id);
     }
   }
 
-  async checkSaved(id:any){
-    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]')
-    this.isSaved = savedJobs.some((el:any) => el._id == id)
-    // if (this.loggedIn()){
-    //   this.jobsService.checkSaved(id).subscribe({
-    //     next: (res: any) => {
-    //       this.isSaved = res;
-    //     },
-    //     error: (e: any) => {
-    //       console.log(e);
-    //     },
-    //   });
-    // }
+  async checkSaved(id: any) {
+    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]');
+    this.isSaved = savedJobs.some((el: any) => el._id == id);
   }
   loggedIn(): boolean {
     if (localStorage['token']) {
@@ -91,9 +85,10 @@ export class JobDetailsComponent implements OnInit, OnChanges {
     }
     return false;
   }
-  // @Output() savePost = new EventEmitter<any>();
+
   @Output() unSave = new EventEmitter<string>();
   @Output() doSave = new EventEmitter<JobPost>();
+
   durationInSeconds = 5;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';

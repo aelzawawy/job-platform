@@ -24,7 +24,12 @@ export class MapBoxComponent implements OnInit {
   @Input() flyToo!: [number, number];
 
   ngOnInit(): void {}
-
+  loggedIn(): boolean {
+    if (localStorage['token']) {
+      return true;
+    }
+    return false;
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes['locations']) {
       if (navigator.geolocation) {
@@ -37,16 +42,29 @@ export class MapBoxComponent implements OnInit {
           });
         });
       }
-      if (this.locations.length != 0) {
-        this.initializeMap();
-      }
+      this.initializeMap();
     }
     if (changes['flyToo'] && this.locations.length != 0) {
       this.map.flyTo({
         center: changes['flyToo'].currentValue,
-        zoom: 7,
+        zoom: 9,
       });
-      
+      const loc = this.locations.find(
+        (loc) => loc.coords == changes['flyToo'].currentValue
+      );
+      // Wait for the map to finish moving
+      this.map.once('moveend', (e) => {
+        new mapboxgl.Popup({
+          offset: 30,
+        })
+          .setLngLat(changes['flyToo'].currentValue)
+          .setHTML(
+            localStorage['token']
+              ? `<p style="margin: 0; font-size: 24px"><strong>${loc?.title}</strong></p><p style="margin: 0;">${loc?.address}</p>`
+              : `<p style="margin: 0; font-size: 24px"><strong>Please login for details!</strong></p>`
+          )
+          .addTo(this.map);
+      });
     }
   }
   private initializeMap() {
@@ -64,15 +82,15 @@ export class MapBoxComponent implements OnInit {
     //! If on mobile and touching one finger
     if (/Mobi/.test(navigator.userAgent)) {
       this.map.dragPan.disable();
-      this.map.getContainer().addEventListener('touchmove', (e) =>  {
+      this.map.getContainer().addEventListener('touchmove', (e) => {
         if (e.touches.length === 1) {
           this.map.dragPan.disable();
-        }else{
+        } else {
           this.map.dragPan.enable();
         }
       });
     }
-    
+
     this.map.addControl(new mapboxgl.NavigationControl());
     // todo Create markers
     this.locations.forEach((loc: any) => {
@@ -83,7 +101,7 @@ export class MapBoxComponent implements OnInit {
         element: el,
         anchor: 'bottom',
       })
-        .setLngLat(loc.coords)
+        .setLngLat(loc.coords || [0, 0])
         .addTo(this.map)
         .setPopup(
           new mapboxgl.Popup({
@@ -98,11 +116,13 @@ export class MapBoxComponent implements OnInit {
       marker.getElement().addEventListener('click', (e) => {
         marker.getPopup().addTo(this.map);
       });
-
       //todo Extend map bound to include current location
       bounds.extend(loc.coords);
     });
-    
-    this.map.fitBounds(bounds);
+
+    if (this.locations.length != 0)
+      this.map.fitBounds(bounds, {
+        maxZoom: 7,
+      });
   }
 }

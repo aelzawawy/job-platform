@@ -1,4 +1,9 @@
-<h4>Edit info...</h4>
+<div class="title">
+    <span class="display-6">Edit info...</span>
+    <button mat-icon-button (click)="close()">
+        <span class='material-icons'>close</span>
+    </button>
+</div>
 <form class="form">
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Name</mat-label>
@@ -6,14 +11,31 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Email</mat-label>
-        <input name="email" type="email" matInput [(ngModel)]="body.email" placeholder="Ex. pat@example.com">
+        <input name="email" type="email" matInput [(ngModel)]="body.email" placeholder="Ex. pat@example.com"
+            disabled="true">
     </mat-form-field>
     <mat-form-field appearance="outline" class="form-field">
         <mat-label>Headline</mat-label>
         <input name="headline" matInput type="text" [(ngModel)]="body.headline">
     </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field">
+        <mat-label>industry</mat-label>
+        <input name="industry" matInput type="text" [(ngModel)]="body.industry">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Skills</mat-label>
+        <mat-chip-list #chipList>
+            <mat-chip *ngFor="let skill of body.skills; let i = index" (removed)="remove(skill, i)">
+                {{skill}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input placeholder="New skill..." [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)" />
+        </mat-chip-list>
+    </mat-form-field>
     <div class="form-field">
-        <ckeditor matInput id="about" [editor]="Editor" name="about" [(ngModel)]="body.about">
+        <ckeditor matInput id="about" [editor]="Editor" [config]="config" name="about" [(ngModel)]="body.about">
         </ckeditor>
         <div class="field--underline"></div>
     </div>

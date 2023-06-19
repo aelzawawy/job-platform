@@ -1,1 +1,71 @@
-@import '../home/home.component';
+@import "../home/home.component";
+// .applications {
+//   position: fixed;
+//   top: 56px;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   padding: 10px;
+//   background-color: white;
+// }
+.applications_wrapper {
+  z-index: 105;
+  & .applications_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #001e00;
+    z-index: 110;
+    overflow: hidden;
+    opacity: 0;
+
+    &.backdrop_fadeIn {
+      animation: fadeIn 0.7s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+      opacity: 0;
+    }
+  }
+  @keyframes fadeIn {
+    to {
+      opacity: 0.3;
+    }
+  }
+  & > .applications_slider {
+    position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    background-color: white;
+    top: 20%;
+    bottom: 0%;
+    right: 0%;
+    left: 0%;
+    z-index: 120;
+    padding-bottom: 50px;
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 0 20px;
+    }
+    &.slideIn {
+      transform: translateY(100%);
+      animation: slideIntoView 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    &.slideOut {
+      transform: translateY(0%);
+      animation: slideout 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes slideIntoView {
+      to {
+        transform: translateY(0%);
+      }
+    }
+    @keyframes slideout {
+      to {
+        transform: translateY(100%);
+      }
+    }
+  }
+}

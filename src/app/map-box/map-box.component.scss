@@ -1,14 +1,22 @@
-.map{
-    position: sticky;
-    width: 100%;
-    height:100vh;
-    top: 0px;
+.map {
+  position: sticky;
+  width: 100%;
+  height: 100vh;
+  top: 0px;
+  @media (width > 960px) {
+    &[loggedIn="true"] {
+      width: calc(100vw - 200px);
+    }
+  }
+  @media (width < 960px) {
+    width: 100vw;
+  }
 }
-.marker{
-    background-image: url('../../assets/pin.png');
-    background-size: cover;
-    width: 40px;
-    height: 40px;
+.marker {
+  background-image: url("../../assets/pin.png");
+  background-size: cover;
+  width: 40px;
+  height: 40px;
 }
 // @media (min-width: 1200px) {
 //     .map{

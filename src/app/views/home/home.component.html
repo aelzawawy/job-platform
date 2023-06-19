@@ -10,9 +10,9 @@
             <p *ngIf="loggedIn()">whether you're someone with talent looking for a job or a business owner reaching for
                 talents nearby,<span>reach for it.</span></p>
         </div>
-        <svg [class.animated]="loadingSvg && !(isHandset$ | async)" id="freepik_stories-job-hunt" xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 500 500" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
-            xmlns:svgjs="http://svgjs.com/svgjs">
+        <svg [class.animated]="loadingSvg && !(isHandset$ | async)" id="freepik_stories-job-hunt"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" version="1.1"
+            xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
             <g id="freepik--Floor--inject-284" class="animable" style="transform-origin: 249.045px 307.924px;">
                 <path id="freepik--floor--inject-284"
                     d="M407.33,398.84c-87.42,50.22-229.15,50.22-316.57,0S3.35,267.21,90.76,217s229.16-50.21,316.57,0S494.75,348.63,407.33,398.84Z"
@@ -863,8 +863,8 @@
             </defs>
         </svg>
     </div>
-    
-    <a   href="#search" class="scroll-down"></a>
+
+    <a matRipple [class.mat-elevation-z10]="true" title="Scroll down" href="#search" class="scroll-down"></a>
     <app-map-box #map [locations]="jobLocations" [flyToo]="flyToo"></app-map-box>
 
     <div id="search" class="container inner" [class.container-max-width]="(isHandsetMd$ | async)">
@@ -921,7 +921,8 @@
                     <span>-</span>
                     <span [ngClass]="{'active': sortByDate}" (click)="sort($event)" class="link"> date</span>
                     <span style="flex:1;"></span>
-                    <button title="Undo search!" mat-icon-button (click)="undoSearch()" class="link"><span class="material-symbols-outlined link">undo</span></button>
+                    <button title="Undo search!" mat-icon-button (click)="undoSearch()" class="link"><span
+                            class="material-icons link">undo</span></button>
                 </div>
                 <li *ngFor="let post of posts; let i = index">
                     <div *ngIf="i != posts.length-1" (click)="showDetails(post._id, i)" class="card home"
@@ -934,6 +935,8 @@
                                 <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
                                 <p class="detail-row--item">{{post.type}}</p>
                                 <p class="detail-row--item" *ngIf="post.remote">Remote</p>
+                            </div>
+                            <div class="post_snippet" [innerHTML]="post.description">
                             </div>
                             <p class="post-date">Posted {{post.date | date:'short'}}</p>
                         </div>
@@ -949,6 +952,8 @@
                                 <p class="detail-row--item">{{post.type}}</p>
                                 <p class="detail-row--item" *ngIf="post.remote">Remote</p>
                             </div>
+                            <div class="post_snippet" [innerHTML]="post.description">
+                            </div>
                             <p class="post-date">Posted {{post.date | date:'short'}}</p>
                         </div>
                     </div>
@@ -957,7 +962,8 @@
             </ul>
             <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details home">
                 <app-loader1 *ngIf="loadingPost"></app-loader1>
-                <app-job-details *ngIf="!loadingPost" (unSave)="unSave($event)" (doSave)="doSave($event)" [job]="job"></app-job-details>
+                <app-job-details *ngIf="!loadingPost" (unSave)="unSave($event)" (doSave)="doSave($event)"
+                    [job]="job"></app-job-details>
             </div>
         </div>
     </div>

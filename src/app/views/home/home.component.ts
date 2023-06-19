@@ -105,42 +105,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
         threshold: 1,
       }
     );
-
-    // this.mapObserver = new IntersectionObserver(
-    //   (entries) => {
-    //     entries.forEach((e) => {
-    //       console.log(e.isIntersecting)
-    //       this.navBar = document.querySelector('.mat-toolbar') as HTMLElement;
-    //       this.navBar.classList.toggle('transparent', e.isIntersecting);
-    //       if (e.isIntersecting) {
-            
-    //       }
-    //     });
-    //   },
-    //   {
-    //     threshold: 1,
-    //   }
-    // );
-
-    if (localStorage['token']) {
-      this.userService.getContacts().subscribe({
-        next: (res: any) => {
-          localStorage.setItem('contacts', JSON.stringify(res));
-        },
-        error: (err: any) => {
-          console.log(err);
-        },
-      });
-
-      this.userService.profile().subscribe({
-        next: (res: any) => {
-          localStorage.setItem('savedJobs', JSON.stringify(res.savedJobs.reverse()));
-        },
-        error: (e: any) => {
-          console.log(e);
-        },
-      });
-    }
   }
 
   ngAfterViewInit(): void {
@@ -239,8 +203,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
         this.posts = this.posts.concat(res.posts);
         this.totalPages = res.totalPages;
-        this.loading = false;
         this.passLocations();
+        this.loading = false;
         // this.mapObserver.observe(this.map.nativeElement);
         if (this.queryBody.page == 1 && !this.ismobile) {
           this.index = 0;
@@ -272,16 +236,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   unSave(id: string) {
-    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]')
-    const index = savedJobs.indexOf(savedJobs.find((el:any) => el._id == id));
+    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]');
+    const index = savedJobs.indexOf(savedJobs.find((el: any) => el._id == id));
     if (index != -1) {
       savedJobs.splice(index, 1);
       localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
     }
   }
-  doSave(job:JobPost){
-    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]')
-    savedJobs.push(job);
+  doSave(job: JobPost) {
+    const savedJobs = JSON.parse(localStorage['savedJobs'] || '[]');
+    savedJobs.unshift(job);
     localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
   }
 

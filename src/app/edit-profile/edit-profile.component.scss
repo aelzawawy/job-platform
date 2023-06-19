@@ -1,11 +1,17 @@
-.form{
-    & .form-field{
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    & button{
-        width: 100%;
-        margin-block: 20px;
-        font-size: 1.5rem;
-    }
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+.form {
+  & .form-field {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  & button {
+    width: 100%;
+    margin-block: 20px;
+    font-size: 1.5rem;
+  }
 }

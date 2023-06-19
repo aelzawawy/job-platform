@@ -6,6 +6,7 @@ import { UserService } from 'src/app/services/user.service';
 import { JobPost } from 'src/app/interfaces/job-post';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Router, ActivatedRoute } from '@angular/router';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-job-posts-form',
@@ -100,7 +101,10 @@ export class JobPostsFormComponent implements OnInit {
       } else {
         this.jobsService.postJob(body).subscribe({
           next: (res: any) => {
+            console.log(res);
+            this.posts = this.jobsService.jobs$.getValue();
             this.posts.unshift(res);
+            this.jobsService.jobs$.next(this.posts);
             this.router.navigateByUrl('/jobPosts');
           },
           error: (err: any) => {

@@ -6,7 +6,7 @@ import { UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'app-employers-signup',
   templateUrl: './employers-signup.component.html',
-  styleUrls: ['./employers-signup.component.scss']
+  styleUrls: ['./employers-signup.component.scss'],
 })
 export class EmployersSignupComponent implements OnInit {
   constructor(
@@ -27,18 +27,18 @@ export class EmployersSignupComponent implements OnInit {
   invalidEmail = false;
   invalidPass = false;
   invalidPasswordConfirm = false;
-  missingName:boolean = false;
+  missingName: boolean = false;
   nameMsg = '';
   passMsg = '';
   passwordConfirm = '';
   emailMsg = '';
   show_Pass = false;
   pass_type = 'password';
-  pass_state = '<span class="material-symbols-outlined">visibility</span>'
-  pattern: RegExp = /(?<=Path).*/
-  loading:boolean = false
+  pass_state = '<span class="material-icons">visibility</span>';
+  pattern: RegExp = /(?<=Path).*/;
+  loading: boolean = false;
   signup(data: any) {
-    if(this.signupForm.status == 'INVALID') return;
+    if (this.signupForm.status == 'INVALID') return;
     this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {
@@ -52,24 +52,30 @@ export class EmployersSignupComponent implements OnInit {
       },
       error: (err: any) => {
         this.loading = false;
-        console.log(err)
+        console.log(err);
         if (err.error.errors?.email) {
           this.invalidEmail = true;
-          this.emailMsg = "Enter your email";
+          this.emailMsg = 'Enter your email';
         }
         if (Boolean(err.error.errors?.name)) {
           this.missingName = true;
-          this.nameMsg = "Enter your name";
+          this.nameMsg = 'Enter your name';
         } else if (err.error.errors?.password) {
           this.invalidPass = true;
           this.passMsg = err.error.errors.password.message;
-        }else if (this.signupForm.value.confirm_password == '' && !err.error.errors?.password) {
+        } else if (
+          this.signupForm.value.confirm_password == '' &&
+          !err.error.errors?.password
+        ) {
           this.invalidPasswordConfirm = true;
-          this.passwordConfirm = 'Enter your password again!'
-        }else if (err.error.errors?.confirm_password && this.signupForm.value.confirm_password != '') {
+          this.passwordConfirm = 'Enter your password again!';
+        } else if (
+          err.error.errors?.confirm_password &&
+          this.signupForm.value.confirm_password != ''
+        ) {
           this.invalidPasswordConfirm = true;
-          this.passwordConfirm = err.error.errors?.confirm_password.message
-        }else {
+          this.passwordConfirm = err.error.errors?.confirm_password.message;
+        } else {
           this.invalidPass = false;
           this.invalidEmail = false;
         }
@@ -77,14 +83,14 @@ export class EmployersSignupComponent implements OnInit {
     });
   }
 
-  showPass(event:any){
+  showPass(event: any) {
     this.show_Pass = !this.show_Pass;
-    if(this.show_Pass == true){
+    if (this.show_Pass == true) {
       this.pass_type = 'text';
-      this.pass_state = '<span class="material-symbols-outlined">visibility_off</span>';
-    }else{
+      this.pass_state = '<span class="material-icons">visibility_off</span>';
+    } else {
       this.pass_type = 'password';
-      this.pass_state = '<span class="material-symbols-outlined">visibility</span>';
+      this.pass_state = '<span class="material-icons">visibility</span>';
     }
   }
   ngOnInit(): void {}

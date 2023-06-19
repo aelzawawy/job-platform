@@ -1,0 +1,27 @@
+<div class="container">
+    <mat-list class="notifications-list">
+        <div *ngIf="notifications.length == 0" class="notifications-list--item default">
+            <div class="body">
+                Still nothing new as of yet ¯\_(ツ)_/¯.
+            </div>
+        </div>
+        <div matRipple *ngFor="let el of notifications; let i=index" class="notifications-list--item"
+            [class.unread]="!el.read" (click)="read_notification($event, i, el._id, el.path, el.jobId)">
+            <div class="body">
+                {{el.body}}
+            </div>
+            <span class="meta">{{+el.time | dateAgo}}</span>
+            <div class="options">
+                <button mat-icon-button [matMenuTriggerFor]="menu"><span
+                        class="material-icons">more_horiz</span></button>
+                <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
+                    <button mat-menu-item (click)="delNotification(el._id, i)">
+                        <span class="material-icons"
+                            style="position: relative;top: 6px;padding-right: 5px;">delete</span>
+                        <span>Remove</span>
+                    </button>
+                </mat-menu>
+            </div>
+        </div>
+    </mat-list>
+</div>

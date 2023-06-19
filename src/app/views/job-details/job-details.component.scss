@@ -1,20 +1,38 @@
+.container {
+  @media (width <= 770px) {
+    & {
+      margin-top: 51px;
+    }
+  }
+  @media (width < 600px) {
+    & {
+      height: calc(100vh - 105px);
+      padding-inline: 0px;
+      margin-top: 56px;
+    }
+  }
+  &[new_window="true"] {
+    margin-top: 66px;
+    height: 100vh;
+  }
+}
 .card {
   position: relative;
-  height: calc(100vh - 105px);
+  height: calc(100vh - 85px);
   min-height: 500px;
   overflow-y: auto;
   background-color: inherit;
   backdrop-filter: blur(7px);
   color: inherit;
-  flex: .6;
+  flex: 0.6;
   @media (max-width: 600px) {
-    &{
+    & {
       height: calc(100vh - 105px);
       margin-top: 56px;
       overflow-y: scroll;
     }
   }
-  &.no_backgound_border{
+  &.no_backgound_border {
     color: black;
     background-color: transparent;
     border: none;
@@ -23,27 +41,26 @@
     padding: 1rem;
     padding-block: 1.5rem;
     box-shadow: 0rem 0.1rem 0.6rem goldenrod;
-    &--right{
+    &--right {
       display: flex;
       gap: 10px;
       padding-top: 10px;
-      & > button:first-of-type{
+      & > button:first-of-type {
         background-color: goldenrod;
         color: white;
       }
-      & > button:nth-of-type(2){
+      & > button:nth-of-type(2) {
         font-size: 1.2rem;
         color: goldenrod;
-        border:solid 1px goldenrod;
-
+        border: solid 1px goldenrod;
       }
-      & .apply{
+      & .apply {
         padding-inline: 2rem;
         font-size: 1.2rem;
       }
     }
   }
-  &-body{
+  &-body {
     height: 500px;
     & .detail-row {
       display: flex;
@@ -68,19 +85,19 @@
     }
   }
 }
-.job-location{
-    display: flex;
-    gap: 5px;
-    & span{
-        position: relative;
-        top: -2px;
-        display: block;
-        width: 11px;
-    }
+.job-location {
+  display: flex;
+  gap: 5px;
+  & span {
+    position: relative;
+    top: -2px;
+    display: block;
+    width: 11px;
+  }
 }
 .dot-spinner {
   --uib-size: 2.8rem;
-  --uib-speed: .9s;
+  --uib-speed: 0.9s;
   --uib-color: #5e5e5e;
   position: relative;
   display: flex;
@@ -106,7 +123,7 @@
 }
 
 .dot-spinner__dot::before {
-  content: '';
+  content: "";
   height: 20%;
   width: 20%;
   border-radius: 50%;
