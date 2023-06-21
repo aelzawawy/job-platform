@@ -18,9 +18,8 @@
                         <form [formGroup]='signupForm' (ngSubmit)="signup(signupForm.value)">
                             <div class="form-outline mb-4">
                                 <input type="text" [class.active]="signupForm.value.name !=''"
-                                (ngModelChange)="missingName = false"
-                                    class="form-control form-control-lg" formControlName="name" required minlength="3"
-                                    type="text" id="name" />
+                                    (ngModelChange)="missingName = false" class="form-control form-control-lg"
+                                    formControlName="name" required minlength="3" type="text" id="name" />
                                 <label class="form-label" for="name">Your Name</label>
                                 <div class="message d-flex">
                                     <p
@@ -37,7 +36,8 @@
                                     type="email" id="email" />
                                 <label class="form-label" for="email">Your Email</label>
                                 <div class="message d-flex">
-                                    <p *ngIf="!signupForm.controls.email.untouched && signupForm.value.email == ''">Enter you email</p>
+                                    <p *ngIf="!signupForm.controls.email.untouched && signupForm.value.email == ''">
+                                        Enter you email</p>
                                     <p class="message" *ngIf="invalidEmail">{{emailMsg}}</p>
                                 </div>
                             </div>

@@ -49,7 +49,7 @@
                                 src="data:image/png;base64,{{currContact.image}}" alt="profile picture">
                             <div class="nameWrapper">
                                 <span class="name">{{currContact.name}}</span>
-                                <p *ngIf="!currContact.online" class="meta">Active
+                                <p *ngIf="!currContact.online && currContact.lastActive" class="meta">Active
                                     <strong>{{currContact.lastActive|dateAgo}}</strong> ago
                                 </p>
                                 <p *ngIf="currContact.online" class="meta">Online</p>

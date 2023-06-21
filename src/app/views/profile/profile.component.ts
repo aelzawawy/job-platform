@@ -182,6 +182,7 @@ export class ProfileComponent implements OnInit {
           });
         }
       } else {
+        this.dialog.closeAll();
         this.showEdit = false;
         setTimeout(() => {
           this.delayedClose = true;

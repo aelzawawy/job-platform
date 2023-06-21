@@ -80,7 +80,13 @@ export class UserSearchComponent implements OnInit, OnChanges, OnDestroy {
             new Set(this.industries.concat([`${user.industry}`]))
           );
           this.searchOptions = Array.from(
-            new Set([...this.searchOptions, ...this.skills, user.name || ''])
+            new Set([
+              ...this.searchOptions,
+              ...this.skills,
+              ...(user.headline?.split(' | ') || []),
+              user.name || '',
+              user.industry || '',
+            ])
           );
         });
       });

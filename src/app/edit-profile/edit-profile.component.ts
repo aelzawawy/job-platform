@@ -84,6 +84,7 @@ export class EditProfileComponent implements OnInit {
         });
         localStorage.setItem('user', JSON.stringify(res));
         this.userService.passNewBody(this.body);
+        this.router.navigateByUrl(`/profile`);
       },
       error: (err: any) => {
         console.log(err);

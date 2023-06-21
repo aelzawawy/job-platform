@@ -57,6 +57,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     radius: undefined,
     unit: '',
     sort: '',
+    remote: '',
   };
   queryBody = {
     page: 1,
@@ -136,6 +137,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.observe = true;
     this.queryBody.page = 1;
     this.jobPosts();
+    const switchs = document.querySelectorAll('.switch');
+    switchs.forEach((el: any) => (el.checked = false));
   }
 
   //! Send locations to mapBox component
@@ -151,13 +154,34 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   //todo Search functions
+  setToEGYPT(e: any) {
+    this.search.location = e.target.checked ? e.target.dataset.value : '';
+    if (!e.target.checked) {
+      this.undoSearch();
+      return;
+    } else {
+      this.search_Warning = false;
+      this.jobSearch();
+    }
+  }
+  setToRemote(e: any) {
+    this.search.remote = e.target.checked ? e.target.dataset.value : '';
+    if (!e.target.checked) {
+      this.undoSearch();
+      return;
+    } else {
+      this.search_Warning = false;
+      this.jobSearch();
+    }
+  }
+
   sort(e: any) {
     if (this.search.sort == 'date') return;
     this.sortByDate = true;
     this.search.sort = 'date';
     this.jobSearch();
   }
-  resetSort(e: any) {
+  resetSort() {
     if (this.search.sort == '') return;
     this.sortByDate = false;
     this.search.sort = '';
@@ -166,7 +190,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   sortByDate: boolean = false;
   searching: boolean = false;
   jobSearch() {
-    if (this.search.search_terms == '' && this.search.location == '') {
+    if (
+      this.search.search_terms == '' &&
+      this.search.location == '' &&
+      this.search.remote == ''
+    ) {
       this.search_Warning = true;
       return;
     }

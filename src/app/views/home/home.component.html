@@ -910,14 +910,25 @@
                     </mat-select>
                 </mat-form-field>
             </div> -->
-                <button type="submit" mat-raised-button class="search-form-submit">Find Jobs</button>
+                <div class="in_form_wrapper">
+                    <button [class.mat-elevation-z1]="true" type="submit" mat-raised-button class=".submit">Find
+                        Jobs</button>
+                    <div class="switch_wrapper">
+                        <input [class.mat-elevation-z1]="true" type="checkbox" name="location" class="switch"
+                            data-value="egypt" (click)="setToEGYPT($event)">
+                        <span class="ml-5">Egypt only</span>
+                        <input [class.mat-elevation-z1]="true" type="checkbox" name="location" class="switch"
+                            data-value="remote" (click)="setToRemote($event)">
+                        <span class="ml-5">Remote only</span>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="content">
             <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
                 <div *ngIf="!loading && searching" class="sortBox">
                     <p>Sort by:</p>
-                    <span [ngClass]="{'active': !sortByDate}" class="link" (click)="resetSort($event)">relevance</span>
+                    <span [ngClass]="{'active': !sortByDate}" class="link" (click)="resetSort()">relevance</span>
                     <span>-</span>
                     <span [ngClass]="{'active': sortByDate}" (click)="sort($event)" class="link"> date</span>
                     <span style="flex:1;"></span>

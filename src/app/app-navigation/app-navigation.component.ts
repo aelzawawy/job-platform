@@ -56,9 +56,6 @@ export class AppNavigationComponent implements OnInit {
   searching = true;
 
   ngOnInit(): void {
-    // document.addEventListener('click', (e) => {
-    //   console.log(e.target);
-    // });
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.active = event.url.includes('/profile');
@@ -67,7 +64,6 @@ export class AppNavigationComponent implements OnInit {
         this.notifications = event.url.includes('/notifications');
         this.home = event.url == '/';
 
-        // this.closeFilters();
         this.close_dialog(true);
       }
     });
@@ -94,7 +90,9 @@ export class AppNavigationComponent implements OnInit {
             new Set([
               ...this.searchOptions,
               ...(user.skills || []),
+              ...(user.headline?.split(' | ') || []),
               user.name || '',
+              user.industry || '',
             ])
           );
         });

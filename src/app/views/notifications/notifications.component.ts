@@ -87,7 +87,7 @@ export class NotificationsComponent implements OnInit {
         },
       });
       this.jobsService.jobId$.next(jobId);
-      this.jobsService.showApplicants$.next(true);
+      this.jobsService.openPost$.next(true);
       if (path.includes('/job/')) {
         this.jobsService.jobById(id).subscribe({
           next: (res: any) => {

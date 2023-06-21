@@ -137,7 +137,7 @@
       <button mat-button *ngIf="loggedIn() && !(isHandset$ | async)" routerLinkActive="active" class="profile-box"
         [class.active]="active" [matMenuTriggerFor]="menu" (click)="expanded = !expanded">
         <img *ngIf="!loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
-        <span>{{user.name}}</span>
+        <span style="text-transform: capitalize;">{{user.name}}</span>
         <span class='material-icons' [class.rotate]="expanded">expand_more</span>
       </button>
 

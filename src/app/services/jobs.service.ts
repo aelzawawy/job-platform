@@ -17,6 +17,7 @@ export class JobsService {
   public loadingMyPosts$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public jobId$: BehaviorSubject<string> = new BehaviorSubject('');
   public showApplicants$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public openPost$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public closeApplicants$: BehaviorSubject<boolean> = new BehaviorSubject(
     false
   );
@@ -84,7 +85,7 @@ export class JobsService {
 
   searchApi(query: any) {
     return this.http.get(
-      `${this.url}job-search?search_terms=${query.search_terms}&location=${query.location}&sort=${query.sort}`
+      `${this.url}job-search?search_terms=${query.search_terms}&location=${query.location}&sort=${query.sort}&remote=${query.remote}`
     );
   }
   // geoSearch(body: any) {
