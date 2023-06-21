@@ -3,7 +3,7 @@ const router = express.Router();
 const JobPost = require("../models/jobPost");
 const auth = require("../middleware/auth");
 const User = require("../models/user");
-const findQualifiedUsers = require("../utils/findQualifiedUsers");
+// const findQualifiedUsers = require("../utils/findQualifiedUsers");
 const getLocation = require("../utils/locationApi");
 const pushNotification = require("../utils/fcm/admin");
 
@@ -546,6 +546,7 @@ router.get("/api/job-search", async (req, res) => {
 
     res.status(200).send(posts);
   } catch (e) {
+    console.log(e.message);
     res.status(400).send(e.message);
   }
 });
