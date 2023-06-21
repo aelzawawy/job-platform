@@ -3,10 +3,8 @@ const router = express.Router();
 const JobPost = require("../models/jobPost");
 const auth = require("../middleware/auth");
 const User = require("../models/user");
-const searchAPI = require("../utils/jobs-api");
+const findQualifiedUsers = require("../utils/findQualifiedUsers");
 const getLocation = require("../utils/locationApi");
-const { Configuration, OpenAIApi } = require("openai");
-const natural = require("natural");
 const pushNotification = require("../utils/fcm/admin");
 
 // Add Job Posts
@@ -37,9 +35,9 @@ router.post(
         //! Find users within radius to notify them
         const radius = 100; // in KM
         const [lat, lng] = data.coords;
-        cosnt = radius_in_radians = (radius * 1) / 6378.1;
+        const radius_in_radians = (radius * 1) / 6378.1;
         const users_within = await User.find({
-          id: { $ne: req.user._id },
+          id: { $ne: req.user._id.toString() },
           location: {
             $geoWithin: { $centerSphere: [[lat, lng], radius_in_radians] },
           },
@@ -63,6 +61,13 @@ router.post(
           }
           user.save();
         });
+        // findQualifiedUsers(jobPost, users_within, async (error, res) => {
+        //   try {
+        //     console.log(res);
+        //   } catch (error) {
+        //     console.log(error);
+        //   }
+        // });
       });
     } catch (e) {
       res.status(400).send(e.message);
@@ -119,8 +124,8 @@ router.patch(
     try {
       const _id = req.params.id;
       const jobPost = await JobPost.findOne({
-        _id: _id,
-        employer: req.user._id,
+        _id,
+        employer: req.user._id.toString(),
       });
       if (!jobPost) {
         return res.status(403).send({ message: "Unauthorized" });
@@ -165,8 +170,13 @@ router.delete(
   async (req, res) => {
     try {
       const _id = req.params.id;
-      const jobPost = await JobPost.findOneAndDelete({ _id });
-      if (!jobPost) return res.status(404).send({ message: "Not found!" });
+      const jobPost = await JobPost.findOneAndDelete({
+        _id,
+        employer: req.user._id.toString(),
+      });
+      if (!jobPost) {
+        return res.status(404).send({ message: "Not found!" });
+      }
       res.status(200).send(jobPost);
     } catch (e) {
       res.status(400).send(e.message);
@@ -180,11 +190,12 @@ router.get("/api/apply/:id", auth.userAuth, async (req, res) => {
     const _id = req.params.id;
     const jobPost = await JobPost.findById(_id);
     const employer = await User.findById(jobPost.employer);
-    if (!jobPost || !jobPost.available)
+    if (!jobPost || !jobPost.available) {
       return res.send({ message: "job is not available anymore." });
-    if (req.user._id.toString() == jobPost.employer._id.toString())
+    }
+    if (req.user._id.toString() == jobPost.employer._id.toString()) {
       return res.send({ message: "You posted this one, so you can't apply!!" });
-
+    }
     exists = function () {
       if (jobPost.applictions.length != 0) {
         for (let user of jobPost.applictions) {
@@ -239,7 +250,13 @@ router.get(
   auth.employerAuth,
   async (req, res) => {
     try {
-      const jobPost = await JobPost.findById(req.params.jobId);
+      const jobPost = await JobPost.findOne({
+        _id: req.params.jobId,
+        employer: req.user._id.toString(),
+      });
+      if (!jobPost) {
+        return res.status(403).send({ message: "Unauthorized" });
+      }
       const application = jobPost.applictions.find(
         (application) => application._id == req.params.applicationId.toString()
       );
@@ -329,7 +346,13 @@ router.get(
   auth.employerAuth,
   async (req, res) => {
     try {
-      const jobPost = await JobPost.findById(req.params.jobId);
+      const jobPost = await JobPost.findOne({
+        _id: req.params.jobId,
+        employer: req.user._id.toString(),
+      });
+      if (!jobPost) {
+        return res.status(403).send({ message: "Unauthorized" });
+      }
       const application = jobPost.applictions.find(
         (application) => application._id == req.params.applicationId.toString()
       );
@@ -475,20 +498,52 @@ router.get("/api/unSave/:id", auth.userAuth, async (req, res) => {
 router.get("/api/job-search", async (req, res) => {
   try {
     const { search_terms, location, sort, remote } = req.query;
-    const posts = await JobPost.find(
-      {
-        $text: {
-          $search: `${search_terms.trim()} ${location.trim()}`,
-          $caseSensitive: false,
+    let posts;
+    if (!remote) {
+      posts = await JobPost.find(
+        {
+          $text: {
+            $search: `${search_terms.trim()} ${location.trim()}`,
+            $caseSensitive: false,
+          },
         },
-      },
-      {
-        score: { $meta: "textScore" },
-      }
-    ).sort(sort ? { date: -1 } : { score: { $meta: "textScore" } });
-    if (remote) {
-      posts = posts.filter((post) => post.remote);
+        {
+          score: { $meta: "textScore" },
+        }
+      ).sort(sort ? { date: -1 } : { score: { $meta: "textScore" } });
     }
+
+    if (remote && !location && !search_terms) {
+      posts = await JobPost.find({ remote: true }).sort(
+        sort ? { date: -1 } : {}
+      );
+    } else if (!remote && location) {
+      posts = await JobPost.find(
+        {
+          $text: {
+            $search: `${search_terms.trim()} ${location.trim()}`,
+            $caseSensitive: false,
+          },
+        },
+        {
+          score: { $meta: "textScore" },
+        }
+      ).sort(sort ? { date: -1 } : { score: { $meta: "textScore" } });
+    } else if (remote && location) {
+      posts = await JobPost.find(
+        {
+          remote: true,
+          $text: {
+            $search: `${search_terms.trim()} ${location.trim()}`,
+            $caseSensitive: false,
+          },
+        },
+        {
+          score: { $meta: "textScore" },
+        }
+      ).sort(sort ? { date: -1 } : { score: { $meta: "textScore" } });
+    }
+
     res.status(200).send(posts);
   } catch (e) {
     res.status(400).send(e.message);
