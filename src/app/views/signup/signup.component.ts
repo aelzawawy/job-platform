@@ -24,19 +24,15 @@ export class SignupComponent implements OnInit {
     confirm_password: ['', [Validators.required]],
   });
 
-  missingName: boolean = false;
-  invalidLogin = false;
-  invalidEmail = false;
-  invalidPass = false;
-  invalidPasswordConfirm = false;
-
-  passMsg = '';
-  nameMsg = '';
-  passwordConfirm = '';
-  emailMsg = '';
   loading: boolean = false;
+  err = '';
+  isErr = false;
   signup(data: any) {
-    if (this.signupForm.status == 'INVALID') return;
+    if (
+      this.signupForm.status == 'INVALID' ||
+      this.signupForm.value.confirm_password !== this.signupForm.value.password
+    )
+      return;
     this.loading = true;
     this.authService.signUP(data).subscribe({
       next: (res: any) => {
@@ -50,33 +46,8 @@ export class SignupComponent implements OnInit {
       },
       error: (err: any) => {
         this.loading = false;
-        console.log(err);
-        if (err.error.errors?.email) {
-          this.invalidEmail = true;
-          this.emailMsg = 'Enter your email';
-        }
-        if (Boolean(err.error.errors?.name)) {
-          this.missingName = true;
-          this.nameMsg = 'Enter your name';
-        } else if (err.error.errors?.password) {
-          this.invalidPass = true;
-          this.passMsg = err.error.errors.password.message;
-        } else if (
-          this.signupForm.value.confirm_password == '' &&
-          !err.error.errors?.password
-        ) {
-          this.invalidPasswordConfirm = true;
-          this.passwordConfirm = 'Enter your password again!';
-        } else if (
-          err.error.errors?.confirm_password &&
-          this.signupForm.value.confirm_password != ''
-        ) {
-          this.invalidPasswordConfirm = true;
-          this.passwordConfirm = err.error.errors?.confirm_password.message;
-        } else {
-          this.invalidPass = false;
-          this.invalidEmail = false;
-        }
+        this.isErr = true;
+        this.err = err.error;
       },
     });
   }

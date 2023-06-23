@@ -86,8 +86,7 @@ export class NotificationsComponent implements OnInit {
           console.log(e);
         },
       });
-      this.jobsService.jobId$.next(jobId);
-      this.jobsService.openPost$.next(true);
+
       if (path.includes('/job/')) {
         this.jobsService.jobById(id).subscribe({
           next: (res: any) => {
@@ -96,6 +95,10 @@ export class NotificationsComponent implements OnInit {
           },
           error: (e: any) => [console.log(e)],
         });
+      } else {
+        this.jobsService.showApplicants$.next(true);
+        this.jobsService.jobId$.next(jobId);
+        this.router.navigateByUrl('jobPosts');
       }
     }
   }

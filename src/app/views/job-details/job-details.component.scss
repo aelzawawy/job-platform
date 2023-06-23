@@ -43,20 +43,44 @@
     box-shadow: 0rem 0.1rem 0.6rem goldenrod;
     &--right {
       display: flex;
-      gap: 10px;
       padding-top: 10px;
-      & > button:first-of-type {
-        background-color: goldenrod;
-        color: white;
+      justify-content: space-between;
+      gap: 10px;
+      .job_actions {
+        display: flex;
+        gap: 10px;
+        & > button:first-of-type {
+          background-color: goldenrod;
+          color: white;
+        }
+        & > button:nth-of-type(2) {
+          font-size: 1.2rem;
+          color: goldenrod;
+          border: solid 1px goldenrod;
+        }
+        & .apply {
+          padding-inline: 2rem;
+          font-size: 1.2rem;
+        }
       }
-      & > button:nth-of-type(2) {
-        font-size: 1.2rem;
-        color: goldenrod;
-        border: solid 1px goldenrod;
+      a {
+        text-decoration: none;
+        color: inherit;
+        font-size: 1.5em;
+        & span {
+          transform: translateY(-2px);
+        }
       }
-      & .apply {
-        padding-inline: 2rem;
-        font-size: 1.2rem;
+      .employer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 5px;
+        .profile-pic {
+          width: 35px;
+          aspect-ratio: 1/1;
+          border-radius: 50%;
+        }
       }
     }
   }

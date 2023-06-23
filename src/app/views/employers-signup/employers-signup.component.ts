@@ -23,15 +23,8 @@ export class EmployersSignupComponent implements OnInit {
     confirm_password: [''],
     roles: ['employer', [Validators.required]],
   });
-  invalidLogin = false;
-  invalidEmail = false;
-  invalidPass = false;
-  invalidPasswordConfirm = false;
-  missingName: boolean = false;
-  nameMsg = '';
-  passMsg = '';
-  passwordConfirm = '';
-  emailMsg = '';
+  err = '';
+  isErr = false;
   show_Pass = false;
   pass_type = 'password';
   pass_state = '<span class="material-icons">visibility</span>';
@@ -52,33 +45,8 @@ export class EmployersSignupComponent implements OnInit {
       },
       error: (err: any) => {
         this.loading = false;
-        console.log(err);
-        if (err.error.errors?.email) {
-          this.invalidEmail = true;
-          this.emailMsg = 'Enter your email';
-        }
-        if (Boolean(err.error.errors?.name)) {
-          this.missingName = true;
-          this.nameMsg = 'Enter your name';
-        } else if (err.error.errors?.password) {
-          this.invalidPass = true;
-          this.passMsg = err.error.errors.password.message;
-        } else if (
-          this.signupForm.value.confirm_password == '' &&
-          !err.error.errors?.password
-        ) {
-          this.invalidPasswordConfirm = true;
-          this.passwordConfirm = 'Enter your password again!';
-        } else if (
-          err.error.errors?.confirm_password &&
-          this.signupForm.value.confirm_password != ''
-        ) {
-          this.invalidPasswordConfirm = true;
-          this.passwordConfirm = err.error.errors?.confirm_password.message;
-        } else {
-          this.invalidPass = false;
-          this.invalidEmail = false;
-        }
+        this.isErr = true;
+        this.err = err.error;
       },
     });
   }
