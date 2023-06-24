@@ -72,8 +72,6 @@
     <div *ngIf="!loading" class="body">
         <div class="body__left card">
             <h3 *ngIf="!user.about && !loading && toView">Please complete your profile...</h3>
-            <p *ngIf="!user.about && !loading && toView" style="font-size: 1.5rem;">Format the about section so that it
-                includes your skills and experience to make it easy for employers to find you.</p>
             <div class="body__left--about" [innerHTML]="user.about">
             </div>
         </div>
@@ -84,7 +82,11 @@
                     class='material-icons'>location_on</span>
                 {{user.location?.address}}</p>
             <p *ngIf="user.phone"><span class='material-icons'>phone</span> {{user.phone}}</p>
-            <div *ngIf=" user.skills?.length != 0 && !loading" class="skills">
+            <p *ngIf="user.company_name && user.roles == 'employer'"><span class='material-icons'>company</span>
+                {{user.company_name}}</p>
+            <p *ngIf="user.company_website && user.roles == 'employer'"><span class='material-icons'>company
+                    website</span> {{user.company_website}}</p>
+            <div *ngIf=" user.skills?.length != 0 && !loading && user.roles == 'user'" class="skills">
                 <hr style="margin: 0px; margin-top: 1rem;" *ngIf="user.skills?.length != 0">
                 <mat-label>Skillset:</mat-label>
                 <mat-chip-list class="chipList">

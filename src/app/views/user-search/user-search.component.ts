@@ -72,23 +72,25 @@ export class UserSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.userService.users$
       .pipe(filter((res) => Object.keys(res[0]).length != 0))
       .subscribe((res) => {
-        res.map((user) => {
-          this.skills = Array.from(
-            new Set(this.skills.concat(user.skills || []))
-          );
-          this.industries = Array.from(
-            new Set(this.industries.concat([`${user.industry}`]))
-          );
-          this.searchOptions = Array.from(
-            new Set([
-              ...this.searchOptions,
-              ...this.skills,
-              ...(user.headline?.split(' | ') || []),
-              user.name || '',
-              user.industry || '',
-            ])
-          );
-        });
+        res
+          .filter((user) => user.roles !== 'employer')
+          .map((user) => {
+            this.skills = Array.from(
+              new Set(this.skills.concat(user.skills || []))
+            );
+            this.industries = Array.from(
+              new Set(this.industries.concat([`${user.industry}`]))
+            );
+            this.searchOptions = Array.from(
+              new Set([
+                ...this.searchOptions,
+                ...this.skills,
+                ...(user.headline?.split(' | ') || []),
+                user.name || '',
+                user.industry || '',
+              ])
+            );
+          });
       });
   }
 

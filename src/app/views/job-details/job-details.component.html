@@ -20,7 +20,7 @@
                                 fill="#767676" />
                         </svg></span>{{job.location?.address}}</p>
             </div>
-            <div class="card-head--right" *ngIf="job.employer?._id != myId || !loggedIn()">
+            <div class="card-head--right" *ngIf="job.employer?._id != myId || myRole !== 'employer'">
                 <div class="job_actions">
                     <button class="apply" title="Apply to job" mat-flat-button
                         (click)="applyJob(job._id)">Apply</button>
@@ -29,7 +29,7 @@
                         <mat-icon>{{isSaved || job.saved? 'bookmark' : 'bookmark_border'}}</mat-icon>
                     </button>
                 </div>
-                <a title="Employer" routerLink="/user/{{job.employer?._id}}">
+                <a *ngIf="loggedIn()" title="Employer" routerLink="/user/{{job.employer?._id}}">
                     <div class="employer">
                         <img class="profile-pic" src="data:image/png;base64,{{job.employer?.image}}"
                             alt="profile picture">

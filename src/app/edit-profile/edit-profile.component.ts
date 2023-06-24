@@ -26,9 +26,19 @@ export class EditProfileComponent implements OnInit {
     private router: Router,
     private _snackBar: MatSnackBar
   ) {}
+  durationInSeconds = 5;
+  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  announcer = inject(LiveAnnouncer);
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  addOnBlur = true;
+  myRole = '';
   public Editor = ClassicEditor;
   public config = {
-    placeholder: `Format your about section...`,
+    placeholder:
+      this.myRole === 'user'
+        ? `Tell us about you...`
+        : `Tell us about your company...`,
   };
 
   // emailFormControl = new FormControl('', [Validators.email]);
@@ -38,6 +48,8 @@ export class EditProfileComponent implements OnInit {
       address: '',
       coordinates: [0],
     },
+    company_name: '',
+    company_website: '',
     email: '',
     phone: '',
     headline: '',
@@ -45,12 +57,6 @@ export class EditProfileComponent implements OnInit {
     skills: [''],
     about: '',
   };
-  durationInSeconds = 5;
-  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
-  announcer = inject(LiveAnnouncer);
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  addOnBlur = true;
 
   add(event: MatChipInputEvent) {
     const value = (event.value || '').trim();
@@ -94,12 +100,15 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage['user'] || '[]');
+    this.myRole = user.roles;
     this.body = {
       name: user.name,
       email: user.email,
       location: {
         address: user.location.address,
       },
+      company_name: user.company?.name,
+      company_website: user.company?.website_link,
       headline: user.headline,
       industry: user.industry,
       about: user.about || '',

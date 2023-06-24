@@ -23,13 +23,16 @@ mat-list-item {
   justify-content: space-between;
   .info {
     height: fit-content;
+    user-select: none;
     &__name {
       font-size: 1.5rem;
       text-transform: capitalize;
     }
-    &__name::selection,
-    &__headline::selection {
-      background-color: transparent;
+    &__headline {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
     }
   }
   .main {

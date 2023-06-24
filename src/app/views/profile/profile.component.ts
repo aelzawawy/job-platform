@@ -41,7 +41,6 @@ export class ProfileComponent implements OnInit {
   delayedClose: boolean = true;
   showEdit: boolean = false;
   isMobile: boolean = false;
-
   profile() {
     this.loading = true;
     this.user = JSON.parse(localStorage['user'] || '[]');

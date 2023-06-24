@@ -46,8 +46,7 @@ export class JobPostsComponent implements OnInit {
     this.dialog.closeAll();
   }
   close_click_outside(e: any) {
-    if (e.target.closest('.chipList')) return;
-    if (!e.target.closest('.filters_slider')) {
+    if (!e.target.closest('.applications_slider')) {
       this.closeApplications();
     }
   }
@@ -166,11 +165,12 @@ export class JobPostsComponent implements OnInit {
         });
         if (this.ismobile) {
           this.showApplocations = true;
+          this.delayedClose = false;
         } else {
           this.openDialog();
         }
       });
-
+    this.jobsService.closeApplicants$.next(false);
     this.jobsService.closeApplicants$.subscribe((res) => {
       if (res) {
         this.closeApplications();

@@ -14,6 +14,8 @@ export interface User {
     address: string;
     coordinates?: [number];
   };
+  company_name?: '';
+  company_website?: '';
   contactList?: [
     {
       contact: string;

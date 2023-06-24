@@ -14,11 +14,11 @@ import {
   MatSnackBarRef,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { JobPost } from 'src/app/interfaces/job-post';
 import { JobsService } from 'src/app/services/jobs.service';
 import { ObserverService } from 'src/app/services/observer.service';
-import { Observable } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-job-details',
   templateUrl: './job-details.component.html',
@@ -60,12 +60,15 @@ export class JobDetailsComponent implements OnInit, OnChanges {
         });
       }
     });
+    if (localStorage['token'])
+      this.myRole = JSON.parse(localStorage['user']).roles;
   }
   isSaved!: boolean;
   loading: boolean = false;
   new_window: boolean = false;
   ismobile!: boolean;
   myId = localStorage['id'];
+  myRole = '';
   @Input() job: JobPost = {};
 
   ngOnChanges(changes: SimpleChanges) {

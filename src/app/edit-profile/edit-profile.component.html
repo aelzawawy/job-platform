@@ -18,11 +18,19 @@
         <mat-label>Headline</mat-label>
         <input name="headline" matInput type="text" [(ngModel)]="body.headline">
     </mat-form-field>
-    <mat-form-field appearance="outline" class="form-field">
+    <mat-form-field *ngIf="myRole === 'user'" appearance="outline" class="form-field">
         <mat-label>industry</mat-label>
         <input name="industry" matInput type="text" [(ngModel)]="body.industry">
     </mat-form-field>
-    <mat-form-field appearance="outline" class="form-field">
+    <mat-form-field *ngIf="myRole === 'employer'" appearance="outline" class="form-field">
+        <mat-label>company name</mat-label>
+        <input name="company-name" matInput type="text" [(ngModel)]="body.company_name">
+    </mat-form-field>
+    <mat-form-field *ngIf="myRole === 'employer'" appearance="outline" class="form-field">
+        <mat-label>company website</mat-label>
+        <input name="company-website" matInput type="text" [(ngModel)]="body.company_website">
+    </mat-form-field>
+    <mat-form-field *ngIf="myRole === 'user'" appearance="outline" class="form-field">
         <mat-label>Skills</mat-label>
         <mat-chip-list #chipList>
             <mat-chip *ngFor="let skill of body.skills; let i = index" (removed)="remove(skill, i)">

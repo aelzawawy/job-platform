@@ -85,17 +85,19 @@ export class AppNavigationComponent implements OnInit {
     this.userService.users$
       .pipe(filter((res) => Object.keys(res[0]).length != 0))
       .subscribe((res) => {
-        res.map((user) => {
-          this.searchOptions = Array.from(
-            new Set([
-              ...this.searchOptions,
-              ...(user.skills || []),
-              ...(user.headline?.split(' | ') || []),
-              user.name || '',
-              user.industry || '',
-            ])
-          );
-        });
+        res
+          .filter((user) => user.roles !== 'employer')
+          .map((user) => {
+            this.searchOptions = Array.from(
+              new Set([
+                ...this.searchOptions,
+                ...(user.skills || []),
+                ...(user.headline?.split(' | ') || []),
+                user.name || '',
+                user.industry || '',
+              ])
+            );
+          });
       });
   }
 
