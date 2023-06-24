@@ -17,7 +17,7 @@ app.use(cors({ origin: "*" }));
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 // Data sanitization against XSS
-app.use(xss());
+// app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
