@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require("multer");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
-const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/email");
 const getLocation = require("../utils/locationApi");
@@ -226,7 +225,7 @@ router.patch("/api/resetPassword/:token", async (req, res) => {
 router.get("/api/users", auth.userAuth, async (req, res) => {
   try {
     const users = await User.find({ _id: { $ne: req.user._id } }).select(
-      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -passwordResetExpires -passwordResetToken"
     );
     res.send(users);
   } catch (err) {
@@ -239,7 +238,7 @@ router.get("/api/users/:id", auth.userAuth, (req, res) => {
   const _id = req.params.id; // get user id
   User.findById(_id)
     .select(
-      "-messages -notifications -contactList -savedJobs -verifyToken -verified"
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -passwordResetExpires -passwordResetToken"
     )
     .then((user) => {
       if (!user) return res.status(404).send("User not found");
@@ -260,7 +259,7 @@ router.get("/api/contacts", auth.userAuth, async (req, res) => {
   try {
     const ids = req.user.contactList.map((el) => el.contact);
     const contacts = await User.find({ _id: { $in: ids } }).select(
-      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+      "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -passwordResetExpires -passwordResetToken"
     );
     res.status(200).send(contacts);
   } catch (err) {
@@ -285,6 +284,10 @@ router.patch("/api/profile", auth.userAuth, async (req, res) => {
               ? req.body.location.address && data.name
               : data.name,
             coordinates: locationErr ? [] : data.coords,
+          },
+          company: {
+            name: req.body.company_name,
+            website_link: req.body.company_website,
           },
           headline: req.body.headline,
           about: req.body.about,
@@ -338,6 +341,7 @@ router.get("/api/user_search", auth.userAuth, async (req, res) => {
       {
         $match: {
           _id: { $ne: req.user._id },
+          roles: { $ne: "employer" },
           $text: {
             $search: `${search_terms.trim()}`,
             $caseSensitive: false,
@@ -444,7 +448,7 @@ router.get("/api/user_search", auth.userAuth, async (req, res) => {
         .flatMap((el) => el.ids);
 
       users = await User.find({ _id: { $in: ids } }).select(
-        "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+        "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -passwordResetExpires -passwordResetToken"
       );
 
       //!>>>> Filter by both
@@ -494,7 +498,7 @@ router.get("/api/user_search", auth.userAuth, async (req, res) => {
       );
 
       users = await User.find({ _id: { $in: ids_unique } }).select(
-        "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -roles -passwordResetExpires -passwordResetToken"
+        "-messages -notifications -contactList -savedJobs -verifyToken -verified -fcmToken -passwordResetExpires -passwordResetToken"
       );
     }
 
@@ -634,7 +638,6 @@ router.post(
       }
       res.status(200).send(message);
     } catch (err) {
-      console.log(err);
       res.status(400).send(err.message);
     }
   }

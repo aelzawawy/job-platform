@@ -2,11 +2,24 @@ require("dotenv").config();
 require("./src/db/mongoose");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
 
 const app = express();
 const port = process.env.PORT;
+
+app.use(helmet()); // To secure HTTP headers
 app.use(express.json()); // parse to obj (muust come before router)
 app.use(cors({ origin: "*" }));
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+// Data sanitization against XSS
+app.use(xss());
+// Prevent parameter pollution
+app.use(hpp());
 
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
