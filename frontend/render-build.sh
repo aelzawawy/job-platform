@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e  # Exit immediately if any command fails
 
-# Explicitly set Node.js version (alternative method)
-export NODE_VERSION=18.16.0
-echo "Using Node.js $NODE_VERSION"
-
 # Define the environment file path
 ENV_FILE="src/environments/environment.prod.ts"
 
