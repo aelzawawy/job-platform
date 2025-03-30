@@ -1,16 +1,38 @@
 #!/bin/bash
 set -e  # Exit immediately if any command fails
 
-# Define the environment file path
+# Evironment file path
 ENV_FILE="src/environments/environment.prod.ts"
 
 # Create directory if it doesn't exist
 mkdir -p src/environments
 
-# Create environment.prod.ts with placeholders if it doesn't exist
-if [ ! -f "$ENV_FILE" ]; then
-  echo "Creating $ENV_FILE with placeholders..."
-  cat > "$ENV_FILE" << 'EOL'
+# Create both environment files if they don't exist
+if [ ! -f "src/environments/environment.ts" ]; then
+  echo "Creating "src/environments/environment.ts" with placeholders..."
+  cat > "src/environments/environment.ts" << 'EOL'
+export const environment = {
+  production: true,
+  mapbox: {
+    accessToken: 'MAPBOX_TOKEN',
+  },
+  firebase: {
+    apiKey: 'FIREBASE_API_KEY',
+    authDomain: 'FIREBASE_AUTH_DOMAIN',
+    projectId: 'FIREBASE_PROJECT_ID',
+    storageBucket: 'FIREBASE_STORAGE_BUCKET',
+    messagingSenderId: 'FIREBASE_MESSAGING_SENDER_ID',
+    appId: 'FIREBASE_APP_ID',
+    measurementId: 'FIREBASE_MEASUREMENT_ID',
+    vapidKey: 'FIREBASE_VAPID_KEY'
+  }
+};
+EOL
+fi
+
+if [ ! -f "src/environments/environment.prod.ts" ]; then
+  echo "Creating "src/environments/environment.prod.ts" with placeholders..."
+  cat > "src/environments/environment.prod.ts" << 'EOL'
 export const environment = {
   production: true,
   mapbox: {
