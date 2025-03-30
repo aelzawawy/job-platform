@@ -1,0 +1,220 @@
+<app-loader2 *ngIf="loading"></app-loader2>
+<mat-sidenav-container *ngIf="!loading" class="sidenav-container">
+
+  <!-- >>>>>>>>>>>>>>>>>>>>>>                  Side Nav                   <<<<<<<<<<<<<<<<<<<<<<<<<< -->
+
+  <mat-sidenav #drawer class="sidenav mat-app-background" fixedInViewport
+    [attr.role]="(isHandsetMd$ | async) ? 'dialog' : 'navigation'"
+    [mode]="((isHandset$ | async) || (isHandsetMd$ | async)) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false && (isHandsetMd$ | async) === false && loggedIn()">
+    <div class="sidenav-logo"
+      *ngIf="(isHandsetMd$ | async) || !loggedIn() || (!(isHandsetMd$ | async) && !(isHandset$ | async) && loggedIn())">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:svgjs="http://svgjs.dev/svgjs" version="1.1" width="150" height="64" viewBox="0 0 1000 318">
+        <g transform="matrix(1,0,0,1,-0.6060606060606233,-0.04822565969064385)"><svg xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 396 126" data-background-color="#ffffff"
+            preserveAspectRatio="xMidYMid meet" height="318" width="1000">
+            <g id="tight-bounds" transform="matrix(1,0,0,1,0.2400000000000091,0.01910828025478395)"><svg
+                viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                <g><svg viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                    <g><svg viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                        <g id="textblocktransform"><svg viewBox="0 0 395.52 125.96178343949045"
+                            height="125.96178343949045" width="395.52" id="textblock">
+                            <g><svg viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                                <g transform="matrix(1,0,0,1,0,0)"><svg width="395.52"
+                                    viewBox="0.9500000000000002 -39 134.44 43.5" height="125.96178343949045"
+                                    data-palette-color="#000000">
+                                    <g class="undefined-text-0" data-fill-palette-color="primary" id="text-0">
+                                      <path
+                                        d="M8.85 0L8.85-1.5 22.65-1.5 16.6-18.1 19.4-19.7Q22.85-21.6 22.85-25.75L22.85-25.75Q22.85-33.5 11.05-33.5L11.05-33.5 6.45-33.5 6.45 0 4.95 0 4.95-35 11.05-35Q17.65-35 21-32.58 24.35-30.15 24.35-25.75L24.35-25.75Q24.35-20.75 20.15-18.4L20.15-18.4 18.45-17.45 24.8 0 8.85 0ZM50.55-3.95L51.65-2.95Q48.9 0.5 42.65 0.5 36.4 0.5 33.7-3.05 31-6.6 31-14.5 31-22.4 33.7-25.95 36.4-29.5 42.65-29.5L42.65-29.5Q49.9-29.5 52.5-24.75L52.5-24.75 40.25-14.5 37.9-14.5 50.55-25.05Q48.35-28 42.65-28L42.65-28Q40.15-28 38.45-27.48 36.75-26.95 35.32-25.53 33.9-24.1 33.2-21.38 32.5-18.65 32.5-14.5 32.5-10.35 33.2-7.63 33.9-4.9 35.32-3.48 36.75-2.05 38.45-1.53 40.15-1 42.65-1L42.65-1Q48.35-1 50.55-3.95L50.55-3.95ZM62.3 0L62.3-1.5 78.59-1.5 68.34-25.65 57.45 0 55.85 0 68.34-29.5 80.84 0 62.3 0ZM87.99-3.05Q85.29-6.6 85.29-14.5 85.29-22.4 87.99-25.95 90.69-29.5 96.94-29.5 103.19-29.5 105.94-26.05L105.94-26.05 104.84-25.05Q102.64-28 96.94-28L96.94-28Q94.44-28 92.74-27.48 91.04-26.95 89.62-25.53 88.19-24.1 87.49-21.38 86.79-18.65 86.79-14.5 86.79-10.35 87.49-7.63 88.19-4.9 89.62-3.48 91.04-2.05 92.74-1.53 94.44-1 96.94-1L96.94-1Q102.64-1 104.84-3.95L104.84-3.95 105.94-2.95Q103.19 0.5 96.94 0.5 90.69 0.5 87.99-3.05ZM131.39-29L131.39 0 129.89 0 129.89-14.5 114.89-14.5 114.89 0 113.39 0 113.39-29 114.89-29 114.89-16 129.89-16 129.89-29 131.39-29Z"
+                                        fill="#000000" data-fill-palette-color="primary" />
+                                    </g>
+                                  </svg></g>
+                              </svg></g>
+                          </svg></g>
+                      </svg></g>
+                  </svg></g>
+                <defs />
+              </svg>
+              <rect width="395.52" height="125.96178343949045" fill="none" stroke="none" visibility="hidden" />
+            </g>
+          </svg></g>
+      </svg>
+    </div>
+    <mat-nav-list style="margin-top: 50px;">
+      <mat-list-item routerLinkActive="active" title="Job Posts"
+        *ngIf="user.roles == 'employer' && ((isHandset$ | async) || (isHandsetMd$ | async))" routerLink="/jobPosts"
+        (click)="drawer.toggle()">
+        <mat-icon mat-list-icon>folder</mat-icon>
+        <span>JobPosts</span>
+      </mat-list-item>
+      <mat-list-item routerLinkActive="active" title="Job Posts"
+        *ngIf="user.roles == 'employer' && !(isHandset$ | async) && !(isHandsetMd$ | async)" routerLink="/jobPosts">
+        <mat-icon mat-list-icon>folder</mat-icon>
+        <span>JobPosts</span>
+      </mat-list-item>
+      <mat-list-item *ngIf="(isHandset$ | async) || (isHandsetMd$ | async)" routerLinkActive="active"
+        title="Saved Posts" routerLink="/saved-jobs" (click)="drawer.toggle()">
+        <mat-icon mat-list-icon>collections_bookmark</mat-icon>
+        <span>Saved Jobs</span>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="!(isHandset$ | async) && !(isHandsetMd$ | async)" routerLinkActive="active"
+        title="Saved Posts" routerLink="/saved-jobs">
+        <mat-icon mat-list-icon>collections_bookmark</mat-icon>
+        <span>Saved Jobs</span>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="user.roles == 'employer' && ((isHandset$ | async) || (isHandsetMd$ | async))"
+        routerLinkActive="active" title="Post a job" routerLink="/jobs-form" (click)="drawer.toggle()">
+        <mat-icon mat-list-icon>post_add</mat-icon>
+        <span>Post a job</span>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="user.roles == 'employer' && !(isHandset$ | async) && !(isHandsetMd$ | async)"
+        routerLinkActive="active" title="Post a job" routerLink="/jobs-form">
+        <mat-icon mat-list-icon>post_add</mat-icon>
+        <span>Post a job</span>
+      </mat-list-item>
+
+      <mat-list-item *ngIf=" (isHandset$ | async) && loggedIn()" title="Logout" (click)="logOut()"
+        (click)="drawer.toggle()">
+        <span class="material-icons" id="logout">
+          logout
+        </span>
+        <span>Logout</span>
+      </mat-list-item>
+    </mat-nav-list>
+
+  </mat-sidenav>
+
+  <!-- >>>>>>>>>>>>>>>>>>>>>>                  MAIN                   <<<<<<<<<<<<<<<<<<<<<<<<<< -->
+
+  <mat-sidenav-content class="appContainer" style="height: 100vh; overflow: hidden;">
+    <mat-toolbar [attr.loggedIn]="loggedIn()" [class.setWidth]="loggedIn()">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+        *ngIf="((isHandset$ | async) || (isHandsetMd$ | async)) && loggedIn()">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span class="spread" *ngIf="(isHandset$ | async) || !loggedIn() || ((isHandsetMd$ | async) && loggedIn())"
+        [class.center]="(isHandset$ | async) && loggedIn()"><svg xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" version="1.1" width="120"
+          height="64" viewBox="0 0 1000 318">
+          <g transform="matrix(1,0,0,1,-0.6060606060606233,-0.04822565969064385)"><svg
+              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 396 126"
+              data-background-color="#ffffff" preserveAspectRatio="xMidYMid meet" height="318" width="1000">
+              <g id="tight-bounds" transform="matrix(1,0,0,1,0.2400000000000091,0.01910828025478395)"><svg
+                  viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                  <g><svg viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                      <g><svg viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045" width="395.52">
+                          <g id="textblocktransform"><svg viewBox="0 0 395.52 125.96178343949045"
+                              height="125.96178343949045" width="395.52" id="textblock">
+                              <g><svg viewBox="0 0 395.52 125.96178343949045" height="125.96178343949045"
+                                  width="395.52">
+                                  <g transform="matrix(1,0,0,1,0,0)"><svg width="395.52"
+                                      viewBox="0.9500000000000002 -39 134.44 43.5" height="125.96178343949045"
+                                      data-palette-color="#000000">
+                                      <g class="undefined-text-0" data-fill-palette-color="primary" id="text-0">
+                                        <path
+                                          d="M8.85 0L8.85-1.5 22.65-1.5 16.6-18.1 19.4-19.7Q22.85-21.6 22.85-25.75L22.85-25.75Q22.85-33.5 11.05-33.5L11.05-33.5 6.45-33.5 6.45 0 4.95 0 4.95-35 11.05-35Q17.65-35 21-32.58 24.35-30.15 24.35-25.75L24.35-25.75Q24.35-20.75 20.15-18.4L20.15-18.4 18.45-17.45 24.8 0 8.85 0ZM50.55-3.95L51.65-2.95Q48.9 0.5 42.65 0.5 36.4 0.5 33.7-3.05 31-6.6 31-14.5 31-22.4 33.7-25.95 36.4-29.5 42.65-29.5L42.65-29.5Q49.9-29.5 52.5-24.75L52.5-24.75 40.25-14.5 37.9-14.5 50.55-25.05Q48.35-28 42.65-28L42.65-28Q40.15-28 38.45-27.48 36.75-26.95 35.32-25.53 33.9-24.1 33.2-21.38 32.5-18.65 32.5-14.5 32.5-10.35 33.2-7.63 33.9-4.9 35.32-3.48 36.75-2.05 38.45-1.53 40.15-1 42.65-1L42.65-1Q48.35-1 50.55-3.95L50.55-3.95ZM62.3 0L62.3-1.5 78.59-1.5 68.34-25.65 57.45 0 55.85 0 68.34-29.5 80.84 0 62.3 0ZM87.99-3.05Q85.29-6.6 85.29-14.5 85.29-22.4 87.99-25.95 90.69-29.5 96.94-29.5 103.19-29.5 105.94-26.05L105.94-26.05 104.84-25.05Q102.64-28 96.94-28L96.94-28Q94.44-28 92.74-27.48 91.04-26.95 89.62-25.53 88.19-24.1 87.49-21.38 86.79-18.65 86.79-14.5 86.79-10.35 87.49-7.63 88.19-4.9 89.62-3.48 91.04-2.05 92.74-1.53 94.44-1 96.94-1L96.94-1Q102.64-1 104.84-3.95L104.84-3.95 105.94-2.95Q103.19 0.5 96.94 0.5 90.69 0.5 87.99-3.05ZM131.39-29L131.39 0 129.89 0 129.89-14.5 114.89-14.5 114.89 0 113.39 0 113.39-29 114.89-29 114.89-16 129.89-16 129.89-29 131.39-29Z"
+                                          fill="#000000" data-fill-palette-color="primary" />
+                                      </g>
+                                    </svg></g>
+                                </svg></g>
+                            </svg></g>
+                        </svg></g>
+                    </svg></g>
+                  <defs />
+                </svg>
+                <rect width="395.52" height="125.96178343949045" fill="none" stroke="none" visibility="hidden" />
+              </g>
+            </svg></g>
+        </svg></span>
+
+      <button *ngIf="!(isHandset$ | async)" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active"
+        mat-button routerLink="/">JobsFeed</button>
+
+      <button mat-button *ngIf="loggedIn() && !(isHandset$ | async)" routerLinkActive="active" class="profile-box"
+        [class.active]="active" [matMenuTriggerFor]="menu" (click)="expanded = !expanded">
+        <img *ngIf="!loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+        <span style="text-transform: capitalize;">{{user.name}}</span>
+        <span class='material-icons' [class.rotate]="expanded">expand_more</span>
+      </button>
+
+      <button *ngIf="loggedIn() && !(isHandset$ | async)" routerLinkActive="active" mat-button title="Messaging"
+        routerLink="/messaging" [matBadge]="msgBadge" [matBadgeHidden]="msgBadgeHidden"><mat-icon>{{messaging? 'mail' :
+          'mail_outline'}}</mat-icon></button>
+
+      <button *ngIf="loggedIn() && !(isHandset$ | async)" routerLinkActive="active" mat-button title="notifications"
+        routerLink="/notifications" [matBadge]="notiBadge" [matBadgeHidden]="notiBadgeHidden"><mat-icon>{{notifications?
+          'notifications' : 'notifications_none'}}</mat-icon></button>
+
+      <!-- >>>>>>>>>>>>>>>>>>>>>>             Search               <<<<<<<<<<<<<<<<<<<<<<<<<< -->
+      <div *ngIf="loggedIn() && user.roles == 'employer'" class="userSearch-container">
+        <form (submit)="searchUsers($event)">
+          <input [class.mat-elevation-z3]="true" placeholder="Search for talents..." name="userSearch"
+            (keyup)="inputControl($event)" [(ngModel)]="search.search_terms" required title="Search for talents..."
+            class="userSearch" autocomplete="off" [matAutocomplete]="auto">
+          <mat-icon (click)="inputControl($event)">close</mat-icon>
+          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+            <mat-option *ngFor="let option of filteredOptions" (onSelectionChange)="searchUsers(option)"
+              [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+          <div class="icon">
+            <svg viewBox="0 0 512 512" class="ionicon" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-width="32" stroke-miterlimit="10" stroke="currentColor" fill="none"
+                d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z"></path>
+              <path d="M338.29 338.29L448 448" stroke-width="32" stroke-miterlimit="10" stroke-linecap="round"
+                stroke="currentColor" fill="none"></path>
+            </svg>
+          </div>
+        </form>
+      </div>
+      <div *ngIf="!loggedIn()" class="spacer"></div>
+      <button *ngIf="!loggedIn()" routerLinkActive="active" mat-button routerLink="/employers">For Employers</button>
+
+      <button class="logInBtn" *ngIf="!loggedIn()" mat-raised-button routerLink="/login">Login</button>
+
+      <mat-menu #menu="matMenu" [overlapTrigger]="false" (close)="expanded = !expanded">
+        <div class="matMenu">
+          <a mat-menu-item *ngIf="loggedIn()" routerLink="/profile">Profile</a>
+          <a mat-menu-item *ngIf="loggedIn()" routerLink="/" (click)="logOut()">Logout</a>
+        </div>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div appSpy *ngIf="!delayedClose && loggedIn()" (click)="close_dialog_click_outside($event)"
+      class="search-results-viewr">
+      <div class="slider-backdrop" [class.fadeIn]="openDialog"></div>
+      <app-user-search role="dialog" aria-modal="true" [class.slideIn]="openDialog" [class.slideOut]="!openDialog"
+        class="slider" [users]="searchResults" [passedValue]="passedValue" [loading]="searching"
+        (close_dialog)="close_dialog($event)"></app-user-search>
+    </div>
+
+
+    <main [@routeAnimations]='prepareRoute(outlet)'>
+      <router-outlet #outlet="outlet"></router-outlet>
+    </main>
+
+    <div *ngIf="(isHandset$ | async)" class="dock">
+      <button *ngIf="(isHandset$ | async)" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active"
+        mat-button routerLink="/">
+        <span class="{{home? 'material-icons' : 'material-icons-outlined'}} homeIcon">home</span>
+      </button>
+
+      <button *ngIf="loggedIn() && (isHandset$ | async)" routerLinkActive="active" mat-button title="Messaging"
+        routerLink="/messaging" [matBadge]="msgBadge" [matBadgeHidden]="msgBadgeHidden"><mat-icon>{{messaging? 'mail' :
+          'mail_outline'}}</mat-icon></button>
+
+      <button *ngIf="loggedIn() && (isHandset$ | async)" routerLinkActive="active" mat-button title="notifications"
+        routerLink="/notifications" [matBadge]="notiBadge" [matBadgeHidden]="notiBadgeHidden"><mat-icon>{{notifications?
+          'notifications' : 'notifications_none'}}</mat-icon></button>
+
+      <button mat-button *ngIf="loggedIn() && (isHandset$ | async)" routerLinkActive="active" routerLink="/profile">
+        <img *ngIf="!loading" class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+      </button>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

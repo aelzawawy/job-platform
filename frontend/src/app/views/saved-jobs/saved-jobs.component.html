@@ -1,0 +1,29 @@
+<div class="container sub" [class.container-max-width]="(isHandsetMd$ | async)">
+    <div class="content" style="transform: translateY(12px);">
+        <h3 *ngIf="posts.length == 0 && !loading">Nothing here!</h3>
+        <ul class="content__posts" [class.flex1]="(isHandset$ | async)">
+            <li *ngFor="let post of posts; let i = index">
+                <div (click)="showDetails(post._id, i)" class="card" [class.selected]="index == i">
+                    <div class="card-body">
+                        <h5 class="title">{{post.title}}</h5>
+                        <p>{{post.company}}</p>
+                        <p>{{post.location.address}}</p>
+                        <div class="detail-row">
+                            <p class="detail-row--item">{{currencyFormat(post.salary)}}</p>
+                            <p class="detail-row--item">{{post.type}}</p>
+                            <p class="detail-row--item" *ngIf="post.remote">Remote</p>
+                        </div>
+                        <p class="post-date">{{post.date | date:'short'}}</p>
+                    </div>
+                </div>
+            </li>
+            <app-loader1 *ngIf="loading"></app-loader1>
+        </ul>
+
+        <div *ngIf="posts.length != 0 && !(isHandset$ | async)" class="content__details">
+            <app-loader1 *ngIf="loadingPost"></app-loader1>
+            <app-job-details *ngIf="!loadingPost" (unSave)="unSave($event)" [job]="job"></app-job-details>
+        </div>
+
+    </div>
+</div>

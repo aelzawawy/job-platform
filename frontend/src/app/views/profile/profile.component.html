@@ -1,0 +1,106 @@
+<div class="container">
+    <app-loader1 *ngIf="loading"></app-loader1>
+    <div *ngIf="!loading" class="bgPic" [class.isHandset]="(isHandset$ | async)">
+        <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
+            alt="backgoround picture">
+
+        <input accept="image/*" type="file" name="backgoroundImage" id="bgupload" (change)="uploadBgImg($event)">
+        <div *ngIf="toView" class="imgOptions">
+            <div title="Change_backgroung" class="imgOptions__icon" [matMenuTriggerFor]="menu">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                    fill="currentColor" class="mercado-match" width="30" height="30" focusable="false">
+                    <path
+                        d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                    </path>
+                </svg>
+            </div>
+
+            <mat-menu #menu="matMenu">
+                <label mat-menu-item for="bgupload">Change</label>
+                <button mat-menu-item (click)="delBg()">Remove!</button>
+            </mat-menu>
+        </div>
+
+    </div>
+    <div class="pic-wrapper">
+        <div *ngIf="!loading" class="pic">
+            <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+            <input *ngIf="toView" accept="image/*" type="file" name="image" id="upload" (change)="uploadImg($event)">
+            <label *ngIf="toView" title="Change_picture" id="uploadImg" (click)="openDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"
+                    fill="currentColor" class="mercado-match" width="40" height="40" focusable="false">
+                    <path
+                        d="M10 9a2 2 0 11-2-2 2 2 0 012 2zm5-2.5V14H1V6.5A2.5 2.5 0 013.5 4h.75L5 2h6l.75 2h.75A2.5 2.5 0 0115 6.5zM11 9a3 3 0 10-3 3 3 3 0 003-3z">
+                    </path>
+                </svg>
+            </label>
+        </div>
+    </div>
+    <div *ngIf="!loading" class="head">
+        <h2 style="text-transform: capitalize; margin: 0%;">{{user.name}}</h2>
+
+        <div class="actions">
+            <a mat-raised-button *ngIf="user.resume && !loading" id="resume"
+                href="data:application/pdf;base64,{{user.resume}}" download="resume"><span>Resume</span><span
+                    class="material-icons">
+                    download
+                </span></a>
+            <div *ngIf="toView  && !loading" class="uploadResume">
+                <input style="display:none" accept=".pdf" type="file" name="resume" id="upload-resume"
+                    (change)="uploadResume($event)">
+                <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
+                    <span>Upload Resume</span>
+                    <span class="material-icons">check</span>
+                </label>
+            </div>
+            <button *ngIf="toView" title="Edit_Info!" mat-fab color="primary" aria-label="Edit profile"
+                class="editProfile" [attr.isMobile]="(isHandset$ | async)" (click)="openEdit()">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button *ngIf="!toView" title="Send a message?" mat-raised-button color="primary" aria-label="Send message"
+                class="sendMsg" (click)="ContactUser(user)">
+                <span>Message {{user.name?.split(' ')?.splice(0,1)}} </span>
+                <span><mat-icon>send</mat-icon></span>
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="!loading" class="headline">
+        {{user.headline}}
+    </div>
+
+    <div *ngIf="!loading" class="body">
+        <div class="body__left card">
+            <h3 *ngIf="!user.about && !loading && toView">Please complete your profile...</h3>
+            <div class="body__left--about" [innerHTML]="user.about">
+            </div>
+        </div>
+        <div class="body__right card">
+            <span *ngIf="user.email"><span class='material-icons'>email</span><a class="email"
+                    href="mailto:{{user.email}}">{{user.email}}</a></span>
+            <p *ngIf="user.location?.address" style="text-transform: capitalize;"><span
+                    class='material-icons'>location_on</span>
+                {{user.location?.address}}</p>
+            <p *ngIf="user.phone"><span class='material-icons'>phone</span> {{user.phone}}</p>
+            <p *ngIf="user.company_name && user.roles == 'employer'"><span>company</span>
+                {{user.company_name}}</p>
+            <p *ngIf="user.company_website && user.roles == 'employer'"><span>company
+                    website</span> {{user.company_website}}</p>
+            <div *ngIf=" user.skills?.length != 0 && !loading && user.roles == 'user'" class="skills">
+                <hr style="margin: 0px; margin-top: 1rem;" *ngIf="user.skills?.length != 0">
+                <mat-label>Skillset:</mat-label>
+                <mat-chip-list class="chipList">
+                    <mat-chip class="chip" *ngFor="let skill of user.skills">
+                        {{skill}}
+                    </mat-chip>
+                </mat-chip-list>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="(isHandset$ | async) && !delayedClose" class="edit_wrapper">
+        <div class="edit_backdrop" [class.backdrop_fadeIn]="showEdit"></div>
+        <app-edit-profile [class.slideIn]="showEdit" [class.slideOut]="!showEdit"
+            class="edit_slider"></app-edit-profile>
+    </div>
+</div>

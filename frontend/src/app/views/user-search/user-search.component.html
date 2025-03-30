@@ -1,0 +1,205 @@
+<div class="slider-scroll">
+    <div class="slider-content">
+        <div class="slider-header">
+            <button [class.mat-elevation-z1]="true" mat-icon-button (click)="closeDialog()"><span
+                    class='material-icons'>arrow_back_ios</span></button>
+        </div>
+        <div class="slider-body">
+            <div class="row">
+                <div *ngIf="((isHandsetMd$ | async) || (isHandset$ | async)) && !delayedClose" class="filters_wrapper"
+                    (click)="close_click_outside($event)">
+                    <div class="filter-backdrop" [class.filter_fadeIn]="open_filters"></div>
+                    <div [class.slideIn]="open_filters" [class.slideOut]="!open_filters" class="filters_slider">
+                        <div class="title">
+                            <span class="display-6">Filters</span>
+                            <button mat-icon-button class="close" (click)="closeFilters()">
+                                <span class='material-icons'>close</span>
+                            </button>
+                        </div>
+                        <hr>
+                        <mat-expansion-panel [class.mat-elevation-z1]="true" [expanded]="loading || users.length != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <h5>Industry</h5>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <mat-list>
+                                <mat-list-item data-section="industry" [class.selected]="appliedFilters.length == 0"
+                                    (click)="resetFilters('industry')">
+                                    All industries
+                                </mat-list-item>
+                                <mat-list-item data-section="industry" *ngFor="let el of industries; let i = index"
+                                    [class.selected]="isSelected(el)" (click)="filter($event)">
+                                    {{el}}
+                                </mat-list-item>
+                            </mat-list>
+                        </mat-expansion-panel>
+                        <!-- <hr> -->
+                        <mat-expansion-panel [class.mat-elevation-z1]="true" [expanded]="loading || users.length != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <h5>Location</h5>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <form (submit)="searchUsers($event)">
+                                <input placeholder="Search locations" name="location" (keyup)="inputControl($event)"
+                                    [(ngModel)]="search.location" required title="location"
+                                    class="form-control locationFilter" autocomplete="off">
+                                <mat-icon data-closes="location" (click)="inputControl($event)">close</mat-icon>
+                            </form>
+                        </mat-expansion-panel>
+                        <!-- <hr> -->
+                        <mat-expansion-panel [class.mat-elevation-z1]="true" [expanded]="loading || users.length != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <h5>Skill</h5>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <mat-list>
+                                <mat-list-item data-section="skills" [class.selected]="appliedFilters.length == 0"
+                                    (click)="resetFilters('skills')">
+                                    All skills
+                                </mat-list-item>
+                                <mat-list-item data-section="skills" *ngFor="let skill of skills; let i = index"
+                                    [class.selected]="isSelected(skill)" (click)="filter($event)">
+                                    {{skill}}
+                                </mat-list-item>
+                            </mat-list>
+                        </mat-expansion-panel>
+                    </div>
+                </div>
+                <div class="col-3 d-md-block d-none">
+                    <div class="filters">
+                        <div class="title">
+                            <h3 class="display-6">Filter By</h3>
+                        </div>
+                        <hr>
+                        <mat-expansion-panel [class.mat-elevation-z1]="true" [expanded]="loading || users.length != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <h5>Industry</h5>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <mat-list>
+                                <mat-list-item data-section="industry" [class.selected]="appliedFilters.length == 0"
+                                    (click)="resetFilters('industry')">
+                                    All industries
+                                </mat-list-item>
+                                <mat-list-item data-section="industry" *ngFor="let el of industries; let i = index"
+                                    [class.selected]="isSelected(el)" (click)="filter($event)">
+                                    {{el}}
+                                </mat-list-item>
+                            </mat-list>
+                        </mat-expansion-panel>
+                        <!-- <hr> -->
+                        <mat-expansion-panel [class.mat-elevation-z1]="true" [expanded]="loading || users.length != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <h5>Location</h5>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <form (submit)="searchUsers($event)">
+                                <input placeholder="Search locations" name="location" (keyup)="inputControl($event)"
+                                    [(ngModel)]="search.location" required title="location"
+                                    class="form-control locationFilter" autocomplete="off">
+                                <mat-icon data-closes="location" (click)="inputControl($event)">close</mat-icon>
+                            </form>
+                        </mat-expansion-panel>
+                        <!-- <hr> -->
+                        <mat-expansion-panel [class.mat-elevation-z1]="true" [expanded]="loading || users.length != 0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <h5>Skill</h5>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <mat-list>
+                                <mat-list-item data-section="skills" [class.selected]="appliedFilters.length == 0"
+                                    (click)="resetFilters('skills')">
+                                    All skills
+                                </mat-list-item>
+                                <mat-list-item data-section="skills" *ngFor="let skill of skills; let i = index"
+                                    [class.selected]="isSelected(skill)" (click)="filter($event)">
+                                    {{skill}}
+                                </mat-list-item>
+                            </mat-list>
+                        </mat-expansion-panel>
+                    </div>
+                </div>
+                <div class="col-12 col-md-9">
+                    <div class="main">
+                        <form (submit)="searchUsers($event)" class="form d-flex">
+                            <div class="input-Wraper">
+                                <input placeholder="Search for talents..." name="userSearch"
+                                    (keyup)="inputControl($event)" [(ngModel)]="passedValue" required
+                                    title="Search for talents..." class="form-control userSearch" autocomplete="off"
+                                    [matAutocomplete]="auto">
+                                <mat-icon data-closes="userSearch" (click)="inputControl($event)">close</mat-icon>
+                                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                    <mat-option *ngFor="let option of filteredOptions"
+                                        (onSelectionChange)="searchUsers(option)" [value]="option">
+                                        {{option}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <button type="submit" class="btn">
+                                    <svg viewBox="0 0 512 512" class="ionicon" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-width="32" stroke-miterlimit="10" stroke="currentColor" fill="none"
+                                            d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z">
+                                        </path>
+                                        <path d="M338.29 338.29L448 448" stroke-width="32" stroke-miterlimit="10"
+                                            stroke-linecap="round" stroke="currentColor" fill="none"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="switch_wrapper">
+                                <a title="Filters" matRipple (click)="openFilters()"
+                                    [class.mat-elevation-z1]="true"><span class='material-icons'>filter_list</span></a>
+                                <input [class.mat-elevation-z1]="true" [checked]="false" type="checkbox" name="location"
+                                    class="switch" data-value="egypt" (click)="setToEGYPT($event)">
+                                <span class="ml-5">Egypt only</span>
+                            </div>
+                        </form>
+
+                        <div *ngIf="appliedFilters.length != 0" class="chipList">
+                            <mat-chip-list>
+                                <mat-chip class="chip" *ngFor="let filter of appliedFilters; let i = index"
+                                    (click)="remFilter(filter, i)">
+                                    {{filter.value}}
+                                    <mat-icon>close</mat-icon>
+                                </mat-chip>
+                                <mat-list-item (click)="resetFilters('all')">clear filters</mat-list-item>
+                            </mat-chip-list>
+                        </div>
+
+                        <div class="search-results">
+                            <app-loader2 [loader_posetion]="loader_posetion" *ngIf="loading"></app-loader2>
+                            <div *ngFor="let user of users" class="card" (click)="goToProfile($event, user._id)">
+                                <div class="card-head d-flex">
+                                    <div>
+                                        <img class="profile-pic" src="data:image/png;base64,{{user.image}}"
+                                            alt="profile picture">
+                                    </div>
+                                    <div class="profile-info d-flex f-d-c">
+                                        <div class="name">{{user.name}}</div>
+                                        <div class="headline">{{user.headline}}</div>
+                                        <div class="location">{{user.location?.address?.split(',')?.pop()}}</div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body d-flex">
+                                    <div class="about" [innerHTML]="user.about"></div>
+                                    <div class="skills">
+                                        <mat-chip-list class="chipList">
+                                            <mat-chip class="chip" *ngFor="let skill of user.skills">
+                                                {{skill}}
+                                            </mat-chip>
+                                        </mat-chip-list>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

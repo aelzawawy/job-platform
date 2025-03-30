@@ -1,0 +1,90 @@
+.container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  & #form {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    margin-top: 64px;
+    overflow-y: auto;
+    padding-top: 10px;
+    padding-bottom: 100px;
+    flex-grow: 1;
+    .field {
+      position: relative;
+      margin-bottom: 1.34375em;
+      &:hover .field--underline {
+        background-color: rgb(0, 0, 0);
+        height: 2px;
+      }
+      &.invalid .field--underline {
+        background-color: #f44336;
+        height: 2px;
+      }
+      &.valid .field--underline {
+        background-color: #1129ff;
+        height: 2px;
+      }
+      &.invalidFirst .field--underline {
+        background-color: #f44336;
+        height: 2px;
+      }
+      &.valid-underline .field--underline {
+        background-color: #1129ff;
+        height: 2px;
+      }
+      &.blue-again .field--underline {
+        background-color: #1129ff;
+        height: 2px;
+      }
+      &.invalid-underline .field--underline {
+        background-color: #f44336;
+        height: 2px;
+      }
+      &.no-underline .field--underline {
+        visibility: hidden;
+      }
+      &--underline {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.42);
+        transform-origin: 50%;
+        opacity: 1;
+        transition: background-color 100ms;
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.42);
+        transform-origin: 50%;
+        transform: scaleX(0.5);
+        opacity: 0;
+        transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1),
+          opacity 100ms cubic-bezier(0.25, 0.8, 0.25, 1),
+          background-color 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+    }
+    & > button {
+      margin-block: 1.34375em;
+    }
+  }
+}
+
+::ng-deep .mat-form-field-infix {
+  display: flex !important;
+}
+// @media (max-width: 600px) {
+//   .container #form{
+//     max-width: 100%;
+//   }
+// }

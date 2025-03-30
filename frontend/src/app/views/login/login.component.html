@@ -1,0 +1,70 @@
+<div class="mask d-flex align-items-center h-100">
+    <div class="container">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                <app-loader2 *ngIf="loading"></app-loader2>
+                <div *ngIf="!loading" class="card">
+                    <div class="card-body">
+                        <h2 class="text-uppercase text-center mb-5">{{!forgotPassword? 'Login': 'Send a password reset email'}}</h2>
+                        <form *ngIf="!forgotPassword" [formGroup]='loginForm' (ngSubmit)="login(loginForm.value)">
+
+                            <div class="form-outline mb-4">
+                                <input [class.active]="loginForm.value.email != ''" class="form-control form-control-lg"
+                                    formControlName="email" required email type="email" id="email" />
+                                <label class="form-label" for="email">Your Email</label>
+                                <div class="message d-flex">
+                                    <p *ngIf="loginForm.controls.email.errors?.['email']">enter valid email</p>
+                                </div>
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <input [class.active]="loginForm.value.password!= ''" [type]="pass_type" id="password"
+                                    class="form-control form-control-lg" formControlName="password" required
+                                    minlength="10" />
+                                <label class="form-label" for="password">Password</label>
+                                <a *ngIf="loginForm.value.password != ''" class="showPass fw-bold text-body"
+                                    (click)="showPass($event)" [innerHTML]="pass_state"></a>
+                                <div class="message d-flex">
+                                    <p
+                                        *ngIf="loginForm.controls.password.errors?.['minlength'] && !loginForm.controls.password.untouched">
+                                        min-length 10</p>
+                                </div>
+                            </div>
+
+                            <div *ngIf="invalidLogin" class="d-flex gap-1">
+                                <span style="color: brown;" [innerHTML]="wrongPassText"></span>
+                                <span
+                                    style="cursor: pointer; color: rgb(2, 2, 2); text-decoration: underline; font-weight: 500;"
+                                    (click)="forgotPass()">Forgot password</span>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <button type="submit"
+                                    class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Continue</button>
+                            </div>
+
+                            <p class="text-center text-muted mt-5 mb-0">Don't have an account? <a routerLink="/signup"
+                                    class="fw-bold text-body"><u>Signup here</u></a></p>
+
+                        </form>
+
+                        <form *ngIf="forgotPassword" [formGroup]='forgot' (submit)="resetPass(forgot.value)">
+                            <div class="form-outline mb-4">
+                                <input [class.active]="forgot.value.email != ''" class="form-control form-control-lg"
+                                    formControlName="email" required email type="email" />
+                                <label class="form-label" for="email">Your Email</label>
+                                <div class="message d-flex">
+                                    <p *ngIf="forgot.controls.email.errors?.['email']">enter valid email</p>
+                                    <p style="color: green;" *ngIf="success" [innerText]="successMsg"></p>
+                                </div>
+                            </div>
+                            <div *ngIf="forgotPassword" class="d-flex justify-content-center">
+                                <button type="submit"
+                                    class="btn btn-success btn-block btn-lg gradient-custom-3 text-body">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

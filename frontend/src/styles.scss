@@ -1,0 +1,104 @@
+@use "themes" as *;
+
+@use "@angular/material" as mat;
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$reach-primary: mat.define-palette(mat.$indigo-palette);
+$reach-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$reach-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$reach-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $reach-primary,
+      accent: $reach-accent,
+      warn: $reach-warn,
+    ),
+  )
+);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($reach-theme);
+
+// html{
+//     font-size: 62.5%;
+// }
+// body{
+//     margin: 0;
+//     width: 100vw;
+// }
+// *{
+//     box-sizing: border-box;
+// }
+// .no-margin{
+//     margin: 0%;
+// }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(230, 196, 85);
+  transition: background 0.3s ease-in-out;
+  border-radius: 30px;
+  &:hover {
+    background: rgb(218, 178, 48);
+  }
+}
+.ck-editor__editable {
+  min-height: 300px;
+  max-height: 500px;
+}
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+  background-color: rgba(206, 206, 206, 0.04);
+  border-color: var(--ck-color-base-border);
+}
+.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
+  // background-color: rgba(0, 0, 0, 0.04);
+  box-shadow: none !important;
+  border: 1px solid var(--ck-color-base-border) !important;
+}
+.mapboxgl-ctrl-top-right {
+  right: 10px;
+  top: 70px;
+}
+.mapboxgl-ctrl-bottom-right,
+.mapboxgl-ctrl-bottom-left {
+  display: none;
+}
+@media (max-width: 600px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+}
