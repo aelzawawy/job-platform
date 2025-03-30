@@ -29,17 +29,17 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+.angular
 .sass-cache/
 /connect.lock
 /coverage
 /libpeerconnection.log
 testem.log
 /typings
-/.firebase
+.firebase
 .firebaserc
 firebase.json
-.github\workflows
+.github
 /android
 capacitor.config.ts
 # System files
