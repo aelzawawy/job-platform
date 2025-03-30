@@ -1,0 +1,162 @@
+<div class="container sub" [class.container-max-width]="(isHandsetMd$ | async)">
+    <div class="chat-container">
+        <main class="chat-main" [class.isHandset]="(isHandset$ | async)">
+            <div class="chat-sidebar" [ngClass]="{
+                'flex1': (isHandset$ | async ) && !contact,
+                'flex0': (isHandset$ | async) && contact}" [class.isHandset]="(isHandset$ | async)">
+                <input #searchInput class="form-control searchInput" [(ngModel)]="search_value" placeholder="Search"
+                    (keyup)="search($event)">
+                <div *ngIf="users.length != 0" class="userSearch">
+                    <ul class="users">
+                        <li matRipple *ngFor="let user of users; let i=index" class="user"
+                            (click)="profileBiId($event,user, i)">
+                            <img class="profile-pic" src="data:image/png;base64,{{user.image}}" alt="profile picture">
+                            {{user.name}}
+                        </li>
+                    </ul>
+                    <div class="userSearch--border"></div>
+                </div>
+                <app-loader2 *ngIf="loadingContacts && !(isHandset$ | async)"></app-loader2>
+                <ul *ngIf="!loadingContacts" class="contacts">
+                    <li matRipple *ngFor="let contact of contacts; let i=index" class="contact"
+                        [class.unread]="checkUnread(contact._id)" (click)="profileBiId($event,contact, i)">
+                        <img class="profile-pic" src="data:image/png;base64,{{contact.image}}" alt="profile picture">
+                        <div class="contact__info">
+                            <div class="contact__info--name">{{contact.name}}</div>
+                            <div class="contact__info--haedline">{{contact.headline}}</div>
+                        </div>
+                        <div *ngIf="contact.online" class="online-indicator">
+                            <span class="blink"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <app-loader2 *ngIf="loadingContacts && (isHandset$ | async)"></app-loader2>
+            <div *ngIf="contact && !loadingContacts" class="chat" [ngClass]="{
+                'flex1': (isHandset$ | async) && contact,
+                'flex0': ((isHandset$ | async) && !contact) }" (click)="read_msgs($event, toUser)">
+                <div class="toUser">
+                    <button aria-label="Back button" id="backBtn" (click)="backButton($event)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 200 200"
+                            data-name="Layer 1" id="Layer_1">
+                            <path
+                                d="M160,89.75H56l53-53a9.67,9.67,0,0,0,0-14,9.67,9.67,0,0,0-14,0l-56,56a30.18,30.18,0,0,0-8.5,18.5c0,1-.5,1.5-.5,2.5a6.34,6.34,0,0,0,.5,3,31.47,31.47,0,0,0,8.5,18.5l56,56a9.9,9.9,0,0,0,14-14l-52.5-53.5H160a10,10,0,0,0,0-20Z" />
+                        </svg>
+                    </button>
+                    <a routerLink="/user/{{toUser}}">
+                        <div class="selected_contact">
+                            <img *ngIf="(isHandset$ | async) && contact" class="profile-pic" class="profile-pic"
+                                src="data:image/png;base64,{{currContact.image}}" alt="profile picture">
+                            <div class="nameWrapper">
+                                <span class="name">{{currContact.name}}</span>
+                                <p *ngIf="!currContact.online && currContact.lastActive" class="meta">Active
+                                    <strong>{{currContact.lastActive|dateAgo}}</strong> ago
+                                </p>
+                                <p *ngIf="currContact.online" class="meta">Online</p>
+                            </div>
+                        </div>
+                    </a>
+                    <button mat-icon-button class="delete-chat" [matMenuTriggerFor]="menu"><span
+                            class='material-icons'>more_vert</span></button>
+                    <mat-menu #menu="matMenu" [overlapTrigger]="false" xPosition="before">
+                        <button mat-menu-item class="delChat" (click)="delChatDialog()">
+                            <span class="material-icons"
+                                style="position: relative;top: 6px; padding-right: 5px;">delete</span>
+                            <span>Delete chat</span>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <div #chat class="chat-messages">
+                    <div *ngFor="let msg of msgs; let i=index">
+                        <div *ngIf="i != msgs.length-1" class="wrapper">
+                            <div class="{{msg.sent? 'message-sent' : 'message'}}">
+                                <a *ngIf="msg.file" id="attach_file" href="data:application/pdf;base64,{{msg.file}}"
+                                    download="{{msg.file_name}}">
+                                    <div class="file">
+                                        <div class="file__icon"><svg xmlns="http://www.w3.org/2000/svg" height="30"
+                                                viewBox="0 96 960 960" width="30">
+                                                <path
+                                                    d="M220 976q-24 0-42-18t-18-42V236q0-24 18-42t42-18h361l219 219v521q0 24-18 42t-42 18H220Zm331-554h189L551 236v186Z" />
+                                            </svg></div>
+                                        <div class="file__info">
+                                            <span class="file__info--name">{{msg.file_name}}</span>
+                                            <span class="file__info--size">{{msg.file_size}}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="text">
+                                    <p *ngIf="msg.message" class="text__msg" attr.state="{{msg.sent}}">{{msg.message}}
+                                    </p>
+                                    <p class="text__meta">{{formatDate(msg.time)}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="i == msgs.length-1" class="wrapper" #topMsg>
+                            <div class="{{msg.sent? 'message-sent' : 'message'}}">
+                                <a *ngIf="msg.file" id="attach_file" href="data:application/pdf;base64,{{msg.file}}"
+                                    download="{{msg.file_name}}">
+                                    <div class="file">
+                                        <div class="file__icon"><svg xmlns="http://www.w3.org/2000/svg" height="30"
+                                                viewBox="0 96 960 960" width="30">
+                                                <path
+                                                    d="M220 976q-24 0-42-18t-18-42V236q0-24 18-42t42-18h361l219 219v521q0 24-18 42t-42 18H220Zm331-554h189L551 236v186Z" />
+                                            </svg></div>
+                                        <div class="file__info">
+                                            <span class="file__info--name">{{msg.file_name}}</span>
+                                            <span class="file__info--size">{{msg.file_size}}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="text">
+                                    <p *ngIf="msg.message" class="text__msg" attr.state="{{msg.sent}}">{{msg.message}}
+                                    </p>
+                                    <p class="text__meta">{{formatDate(msg.time)}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-form-container">
+                    <form id="chat-form" (submit)="sendMsg()">
+                        <div class="uploadResume">
+                            <input style="display:none" accept="file/*" type="file" name="file" id="upload-resume"
+                                (change)="getFile($event)">
+                            <label style="padding:10px; cursor: pointer;" id="uploadResume" for="upload-resume">
+                                <span class="material-icons">attachment</span>
+                                <span class='material-icons'>done</span>
+                            </label>
+                        </div>
+                        <input #msgBox class="form-control msgBox" id="msg" [(ngModel)]="message" name="message"
+                            placeholder="Send message" autocomplete="off" />
+                        <!-- <textarea class="form-control" name="message" id="msg" rows="1" placeholder="Send message" [(ngModel)]="message" required (input)="checkHeight($event)"></textarea> -->
+                        <button type="submit" class="btn"><mat-icon>send</mat-icon></button>
+                    </form>
+                </div>
+
+            </div>
+            <div *ngIf="!(isHandset$ | async) && !contact" class="chat-guideMsg">
+                <p>Select a contact to send a message</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- <div class="context-menu" [ngStyle]="context_menu" (clickOutSide)="closeMenu()">
+        <ul>
+            <li><button><mat-icon mat-list-icon>delete</mat-icon>
+                <span>Delete</span></button></li>
+            <li><button><mat-icon mat-list-icon>person_add</mat-icon>
+                <span>Add</span></button></li>
+        </ul>
+    </div> -->
+    <!-- <mat-action-list>
+        <mat-list-item>
+            <mat-icon mat-list-icon>delete</mat-icon>
+            <span>Delete</span>
+        </mat-list-item>
+        <mat-list-item>
+            <mat-icon mat-list-icon>person_add</mat-icon>
+            <span>Add</span>
+        </mat-list-item>
+    </mat-action-list> -->
+</div>

@@ -1,0 +1,14 @@
+<div class="deleteChat_popup">
+    <p>Are you sure you want to delete all messages with {{currContact.name}}?</p>
+    <p>This action cannot be undone.</p>
+    <mat-checkbox color="warn" [(ngModel)]="rmContact" labelPosition="after">
+        Remove contact
+    </mat-checkbox>
+    <mat-checkbox color="warn" [(ngModel)]="forBoth" labelPosition="after">
+        Also delete for {{currContact.name?.split(' ')?.splice(0,1)}}
+    </mat-checkbox>
+    <div class="deleteChat_popup--actions d-flex">
+        <button mat-button (click)="cancel()">Cancel</button>
+        <button mat-button color="warn" (click)="signalToDelete(currContact._id || '')">Delete</button>
+    </div>
+</div>
