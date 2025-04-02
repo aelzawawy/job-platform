@@ -1,43 +1,42 @@
 import { NgModule } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatInputModule } from '@angular/material/input';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatListModule } from '@angular/material/list';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatRippleModule } from '@angular/material/core';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatOptionModule, MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-const components = [
-  MatToolbarModule,
-  MatButtonModule,
-  MatMenuModule,
-  MatIconModule,
-  MatDialogModule,
-  MatInputModule,
-  MatSnackBarModule,
-  MatSidenavModule,
-  MatTabsModule,
-  MatListModule,
-  MatSelectModule,
-  MatCheckboxModule,
-  MatBadgeModule,
-  MatRippleModule,
-  MatChipsModule,
-  MatAutocompleteModule,
-  MatExpansionModule,
-];
 @NgModule({
-  imports: [components],
-  exports: [components],
+  exports: [
+    MatAutocompleteModule,
+    MatBadgeModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatOptionModule,
+    MatRippleModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatExpansionModule,
+    MatSnackBarModule
+  ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

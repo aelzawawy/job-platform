@@ -23,7 +23,9 @@ export class MapBoxComponent implements OnInit {
   @Input() locations: Location[] = [];
   @Input() flyToo!: [number, number];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initializeMap();
+  }
   loggedIn(): boolean {
     if (localStorage['token']) {
       return true;
@@ -78,7 +80,7 @@ export class MapBoxComponent implements OnInit {
       center: [this.lng, this.lat],
       zoom: 5,
     });
-
+    
     //! If on mobile and touching one finger
     if (/Mobi/.test(navigator.userAgent)) {
       this.map.dragPan.disable();

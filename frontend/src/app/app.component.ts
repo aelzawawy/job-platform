@@ -70,7 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (currentToken) {
           this.userService.saveToken(currentToken).subscribe({
             next: (res: any) => {
-              console.log(res);
+              // console.log(res);
             },
             error: (e: any) => {
               console.log(e);

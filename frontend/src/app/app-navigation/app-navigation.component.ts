@@ -5,7 +5,7 @@ import {
   Router,
   RouterOutlet,
 } from '@angular/router';
-import { Observable, filter, skip } from 'rxjs';
+import { Observable, filter, skip, tap } from 'rxjs';
 import { User } from 'src/app/interfaces/user';
 import { ObserverService } from 'src/app/services/observer.service';
 import { UserService } from 'src/app/services/user.service';
@@ -56,17 +56,21 @@ export class AppNavigationComponent implements OnInit {
   searching = true;
 
   ngOnInit(): void {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
+    this.user = JSON.parse(localStorage['user'] || '[]');
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationStart))
+      .subscribe((event: any) => {
         this.active = event.url.includes('/profile');
-        this.user = JSON.parse(localStorage['user'] || '[]');
         this.messaging = event.url.includes('/messaging');
         this.notifications = event.url.includes('/notifications');
-        this.home = event.url == '/';
+        this.home = event.url === '/' || event.url === '';
+
+        if (localStorage['user']) {
+          this.user = JSON.parse(localStorage['user']);
+        }
 
         this.close_dialog(true);
-      }
-    });
+      });
 
     this.userService.unread_notifications$
       .pipe(filter((res) => res != undefined))
@@ -82,23 +86,25 @@ export class AppNavigationComponent implements OnInit {
         this.msgBadge = num;
       });
 
-    this.userService.users$
-      .pipe(filter((res) => Object.keys(res[0]).length != 0))
-      .subscribe((res) => {
-        res
-          .filter((user) => user.roles !== 'employer')
-          .map((user) => {
-            this.searchOptions = Array.from(
-              new Set([
-                ...this.searchOptions,
-                ...(user.skills || []),
-                ...(user.headline?.split(' | ') || []),
-                user.name || '',
-                user.industry || '',
-              ])
-            );
-          });
-      });
+    if (JSON.parse(localStorage['user']).roles == 'employer') {
+      this.userService.users$
+        .pipe(filter((res) => Object.keys(res[0] || {}).length != 0))
+        .subscribe((res) => {
+          res
+            .filter((user) => user.roles !== 'employer')
+            .map((user) => {
+              this.searchOptions = Array.from(
+                new Set([
+                  ...this.searchOptions,
+                  ...(user.skills || []),
+                  ...(user.headline?.split(' | ') || []),
+                  user.name || '',
+                  user.industry || '',
+                ])
+              );
+            });
+        });
+    }
   }
 
   prepareRoute(outlet: RouterOutlet) {

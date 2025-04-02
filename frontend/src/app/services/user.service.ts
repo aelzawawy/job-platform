@@ -9,8 +9,8 @@ import { User } from '../interfaces/user';
 })
 export class UserService {
   constructor(private http: HttpClient) {}
-  url: string = 'https://inreach-api.onrender.com/api/';
-  socket = io('https://inreach-api.onrender.com/');
+  url: string = 'http://localhost:3000/api/';
+  socket = io('http://localhost:3000/');
   public message$: BehaviorSubject<any> = new BehaviorSubject(undefined);
   public fire$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public body$: BehaviorSubject<any> = new BehaviorSubject(undefined);
@@ -104,8 +104,8 @@ export class UserService {
     return this.http.post(this.url + 'profileImage', image);
   }
 
-  backgoroundImage(image: any) {
-    return this.http.post(this.url + 'backgoroundImage', image);
+  backgroundImage(image: any) {
+    return this.http.post(this.url + 'backgroundImage', image);
   }
 
   resume(file: any) {
@@ -117,7 +117,7 @@ export class UserService {
   }
 
   removeBg() {
-    return this.http.delete(this.url + 'backgoroundImage');
+    return this.http.delete(this.url + 'backgroundImage');
   }
 
   profileById(id: any) {

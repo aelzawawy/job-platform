@@ -148,6 +148,7 @@ export class JobPostsComponent implements OnInit {
       .subscribe((res) => {
         this.posts = res;
         this.job = this.posts[0];
+        console.log(this.posts)
       });
     this.jobsService.loadingMyPosts$.subscribe((res) => {
       this.loading = this.loadingPost = res;

@@ -24,7 +24,7 @@ export interface User {
   ];
   image?: File;
   resume?: File;
-  backgoroundImage?: File;
+  backgroundImage?: File;
   online?: boolean;
   lastActive?: string;
 }

@@ -1,10 +1,10 @@
 <div class="container">
     <app-loader1 *ngIf="loading"></app-loader1>
     <div *ngIf="!loading" class="bgPic" [class.isHandset]="(isHandset$ | async)">
-        <img id="backgoround-pic" height="250" src="data:image/png;base64,{{user.backgoroundImage}}"
-            alt="backgoround picture">
+        <img id="background-pic" height="250" src="data:image/png;base64,{{user.backgroundImage}}"
+            alt="background picture">
 
-        <input accept="image/*" type="file" name="backgoroundImage" id="bgupload" (change)="uploadBgImg($event)">
+        <input accept="image/*" type="file" name="backgroundImage" id="bgupload" (change)="uploadBgImg($event)">
         <div *ngIf="toView" class="imgOptions">
             <div title="Change_backgroung" class="imgOptions__icon" [matMenuTriggerFor]="menu">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-supported-dps="16x16"

@@ -30,15 +30,22 @@
   "dataGroups": [
     {
       "name": "dbQuery",
-      "urls": [
-        "https://inreach-api.onrender.com/api/*",
-        "http://localhost:3000/api/*"
-      ],
+      "urls": ["http://localhost:3000/api/*"],
       "cacheConfig": {
         "maxAge": "1d",
         "maxSize": 200,
         "strategy": "freshness",
         "timeout": "5s"
+      }
+    },
+    {
+      "name": "mapboxTiles",
+      "urls": ["https://api.mapbox.com/fonts/v1/**"],
+      "cacheConfig": {
+        "maxAge": "1d",
+        "maxSize": 1000,
+        "strategy": "performance",
+        "timeout": "10s"
       }
     }
   ]

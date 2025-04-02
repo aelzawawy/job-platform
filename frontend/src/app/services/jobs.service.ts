@@ -9,8 +9,8 @@ import { User } from '../interfaces/user';
 })
 export class JobsService {
   constructor(private http: HttpClient) {}
-  url: string = 'https://inreach-api.onrender.com/api/';
-  socket = io('https://inreach-api.onrender.com/');
+  url: string = 'http://localhost:3000/api/';
+  socket = io('http://localhost:3000/');
   public saveRm$: BehaviorSubject<string> = new BehaviorSubject('');
   public job$: BehaviorSubject<JobPost> = new BehaviorSubject({});
   public jobs$: BehaviorSubject<JobPost[]> = new BehaviorSubject([{}]);

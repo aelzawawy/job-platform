@@ -17,10 +17,8 @@ import { UserService } from 'src/app/services/user.service';
 export class ProfileComponent implements OnInit {
   constructor(
     private userService: UserService,
-    private jobsService: JobsService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder,
     public dialog: MatDialog,
     private observer: ObserverService
   ) {
@@ -33,7 +31,7 @@ export class ProfileComponent implements OnInit {
   users: User[] = [];
   user: User = {};
   profileImg: any;
-  backgoroundImg: any;
+  backgroundImg: any;
   resume: any;
   expanded: boolean = true;
   toView: boolean = true;
@@ -68,12 +66,12 @@ export class ProfileComponent implements OnInit {
 
   uploadBgImg(e: any) {
     const imageOut = document.getElementById(
-      'backgoround-pic'
+      'background-pic'
     ) as HTMLImageElement;
-    this.backgoroundImg = e.target.files[0];
+    this.backgroundImg = e.target.files[0];
     const myBgImg = new FormData();
-    myBgImg.append('backgoroundImage', this.backgoroundImg);
-    this.userService.backgoroundImage(myBgImg).subscribe({
+    myBgImg.append('backgroundImage', this.backgroundImg);
+    this.userService.backgroundImage(myBgImg).subscribe({
       next: (res: any) => {
         console.log(res.message);
         localStorage.setItem('user', JSON.stringify(res.user));
@@ -82,7 +80,7 @@ export class ProfileComponent implements OnInit {
         console.log(e);
       },
     });
-    imageOut.src = URL.createObjectURL(this.backgoroundImg);
+    imageOut.src = URL.createObjectURL(this.backgroundImg);
   }
 
   ContactUser(user: User) {
@@ -110,9 +108,7 @@ export class ProfileComponent implements OnInit {
   }
 
   delBg() {
-    const bgOut = document.getElementById(
-      'backgoround-pic'
-    ) as HTMLImageElement;
+    const bgOut = document.getElementById('background-pic') as HTMLImageElement;
     this.userService.removeBg().subscribe({
       next: (res: any) => {
         console.log(res.message);

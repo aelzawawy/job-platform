@@ -42,6 +42,7 @@ firebase.json
 .github
 /android
 capacitor.config.ts
+/src/environments
 # System files
 .DS_Store
 Thumbs.db
